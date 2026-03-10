@@ -1,0 +1,1449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Binary Trie Group-Depth Benchmark — Wider Isn't Better</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600;700;800&family=IBM+Plex+Sans:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: #0A0E17;
+    color: #E2E8F0;
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 16px;
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+  }
+  .container { max-width: 780px; margin: 0 auto; padding: 0 24px; }
+
+  /* Header */
+  .report-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: #F59E0B;
+    margin-bottom: 12px;
+  }
+  h1.hero-title {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 42px;
+    font-weight: 800;
+    line-height: 1.15;
+    background: linear-gradient(135deg, #94A3B8, #F59E0B);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 12px;
+  }
+  .hero-subtitle {
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 18px;
+    color: #94A3B8;
+    margin-bottom: 36px;
+    line-height: 1.5;
+  }
+  .meta-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 48px;
+  }
+  .meta-card {
+    background: #0F172A;
+    border: 1px solid #1E293B;
+    border-radius: 8px;
+    padding: 16px;
+    text-align: center;
+  }
+  .meta-card-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #64748B;
+    margin-bottom: 6px;
+  }
+  .meta-card-value {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    font-weight: 600;
+    color: #E2E8F0;
+    line-height: 1.4;
+  }
+
+  /* Nav */
+  .section-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 24px;
+    padding: 16px 0;
+    border-top: 1px solid #1E293B;
+    border-bottom: 1px solid #1E293B;
+    position: sticky;
+    top: 0;
+    background: #0A0E17;
+    z-index: 100;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  }
+  .nav-pill {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 6px 14px;
+    border-radius: 20px;
+    border: 1px solid #1E293B;
+    background: transparent;
+    color: #94A3B8;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+  .nav-pill:hover {
+    border-color: #F59E0B;
+    color: #F59E0B;
+  }
+  .nav-pill.active {
+    border-color: #F59E0B;
+    background: rgba(245, 158, 11, 0.1);
+    color: #F59E0B;
+  }
+
+  /* Sections */
+  .section { margin-bottom: 72px; }
+  .section-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: #64748B;
+    margin-bottom: 8px;
+  }
+  h2 {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 28px;
+    font-weight: 700;
+    color: #E2E8F0;
+    margin-bottom: 24px;
+    line-height: 1.3;
+  }
+  h3 {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 20px;
+    font-weight: 700;
+    color: #CBD5E1;
+    margin-top: 36px;
+    margin-bottom: 16px;
+  }
+  p { margin-bottom: 16px; }
+  .muted { color: #94A3B8; }
+
+  /* Callouts */
+  .callout {
+    border-left: 3px solid;
+    padding: 16px 20px;
+    margin: 24px 0;
+    background: #0F172A;
+    border-radius: 0 8px 8px 0;
+    font-size: 15px;
+    line-height: 1.6;
+  }
+  .callout-green { border-color: #2ca02c; }
+  .callout-amber { border-color: #F59E0B; }
+  .callout-red { border-color: #d62728; }
+  .callout strong { color: #F8FAFC; }
+
+  /* Tables */
+  .data-table-wrap {
+    overflow-x: auto;
+    margin: 20px 0;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+  }
+  thead th {
+    text-align: left;
+    padding: 10px 12px;
+    border-bottom: 2px solid #1E293B;
+    color: #64748B;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+  tbody td {
+    padding: 8px 12px;
+    border-bottom: 1px solid #1E293B;
+    color: #CBD5E1;
+  }
+  tbody tr:hover { background: rgba(30, 41, 59, 0.5); }
+  .cell-bold { font-weight: 700; color: #F8FAFC; }
+  .cell-green { color: #2ca02c; }
+  .cell-red { color: #d62728; }
+  .cell-amber { color: #F59E0B; }
+  .cell-dim { color: #64748B; }
+
+  /* Cards */
+  .dark-card {
+    background: #0F172A;
+    border: 1px solid #1E293B;
+    border-radius: 8px;
+    padding: 20px;
+    margin: 20px 0;
+  }
+  .verdict-card {
+    background: #0F172A;
+    border: 1px solid #1E293B;
+    border-radius: 12px;
+    padding: 28px;
+    margin: 28px 0;
+  }
+
+  /* Images */
+  .graph-img {
+    width: 100%;
+    border-radius: 8px;
+    border: 1px solid #1E293B;
+    margin: 16px 0;
+  }
+  .graph-hero {
+    width: 100%;
+    border-radius: 8px;
+    border: 2px solid #1E293B;
+    margin: 20px 0;
+  }
+
+  /* Bullet lists */
+  ul, ol { padding-left: 24px; margin-bottom: 16px; }
+  li { margin-bottom: 6px; }
+  .dot {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    margin-right: 8px;
+    vertical-align: middle;
+  }
+
+  /* SVG diagrams */
+  .diagram-wrap {
+    margin: 28px 0;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid #1E293B;
+  }
+  .diagram-wrap svg { display: block; width: 100%; height: auto; }
+  .diagram-caption {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    color: #64748B;
+    text-align: center;
+    padding: 10px;
+    background: #0F172A;
+    border-top: 1px solid #1E293B;
+  }
+
+  /* Mini pattern cards */
+  .pattern-card {
+    border-left: 3px solid;
+    padding: 14px 18px;
+    margin: 12px 0;
+    background: #0F172A;
+    border-radius: 0 8px 8px 0;
+  }
+  .pattern-card p { margin: 0; font-size: 14px; }
+
+  /* Open question cards */
+  .oq-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin: 20px 0;
+  }
+  .oq-card {
+    background: #0F172A;
+    border: 1px solid #1E293B;
+    border-radius: 8px;
+    padding: 16px;
+  }
+  .oq-number {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    color: #F59E0B;
+    margin-bottom: 4px;
+  }
+  .oq-card p { font-size: 14px; margin: 0; color: #94A3B8; }
+
+  /* Comparison items */
+  .comparison-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid #1E293B;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+  }
+  .comparison-item:last-child { border-bottom: none; }
+  .check { color: #2ca02c; font-size: 16px; }
+  .cross { color: #d62728; font-size: 16px; }
+
+  /* Recommendation */
+  .recommendation {
+    border-left: 4px solid #2ca02c;
+    padding: 24px 28px;
+    margin: 28px 0;
+    background: #0F172A;
+    border-radius: 0 12px 12px 0;
+  }
+  .recommendation .big-text {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 22px;
+    font-weight: 700;
+    color: #2ca02c;
+    margin-bottom: 8px;
+  }
+
+  /* Footer */
+  footer {
+    border-top: 1px solid #1E293B;
+    padding: 32px 0 48px;
+    text-align: center;
+    color: #475569;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+  }
+  footer a { color: #64748B; text-decoration: none; }
+  footer a:hover { color: #F59E0B; }
+
+  /* Responsive */
+  @media (max-width: 640px) {
+    h1.hero-title { font-size: 28px; }
+    .meta-grid { grid-template-columns: 1fr 1fr; }
+    .oq-grid { grid-template-columns: 1fr; }
+    .section-nav { gap: 6px; }
+    .nav-pill { font-size: 11px; padding: 5px 10px; }
+  }
+  @media (max-width: 768px) {
+    h1.hero-title { font-size: 32px; }
+    h2 { font-size: 22px; }
+    .container { padding: 0 16px; }
+  }
+  code {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.9em;
+    background: rgba(30, 41, 59, 0.8);
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: #F59E0B;
+  }
+</style>
+</head>
+<body>
+
+<!-- ============================================================ -->
+<!-- HEADER                                                        -->
+<!-- ============================================================ -->
+<header style="padding-top: 64px; padding-bottom: 16px;">
+  <div class="container">
+    <div class="report-label">BENCHMARK REPORT — 2026</div>
+    <h1 class="hero-title">Wider Isn't Better</h1>
+    <p class="hero-subtitle">Why Ethereum's Binary Trie Should Group 4 Bits at a Time</p>
+    <div class="meta-grid">
+      <div class="meta-card">
+        <div class="meta-card-label">Configs</div>
+        <div class="meta-card-value">GD-1, 2, 4, 8</div>
+      </div>
+      <div class="meta-card">
+        <div class="meta-card-label">Database</div>
+        <div class="meta-card-value">~360 GB<br>~400M entries</div>
+      </div>
+      <div class="meta-card">
+        <div class="meta-card-label">Protocol</div>
+        <div class="meta-card-value">Cold Cache</div>
+      </div>
+      <div class="meta-card">
+        <div class="meta-card-label">Runs</div>
+        <div class="meta-card-value">9 &times; 5<br>benchmarks</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ============================================================ -->
+<!-- SECTION NAV                                                   -->
+<!-- ============================================================ -->
+<nav class="container section-nav" id="section-nav">
+  <button class="nav-pill active" data-target="s1">&sect;1 Summary</button>
+  <button class="nav-pill" data-target="s2">&sect;2 Background</button>
+  <button class="nav-pill" data-target="s3">&sect;3 Methodology</button>
+  <button class="nav-pill" data-target="s4">&sect;4 Reads</button>
+  <button class="nav-pill" data-target="s5">&sect;5 Writes</button>
+  <button class="nav-pill" data-target="s6">&sect;6 Trade-off</button>
+  <button class="nav-pill" data-target="s7">&sect;7 Patterns</button>
+  <button class="nav-pill" data-target="s8">&sect;8 Conclusions</button>
+</nav>
+
+<main class="container">
+
+<!-- ============================================================ -->
+<!-- §1 EXECUTIVE SUMMARY                                          -->
+<!-- ============================================================ -->
+<section class="section" id="s1">
+  <div class="section-label">&sect;1</div>
+  <h2>Executive Summary</h2>
+
+  <p>The binary trie is on the <a href="https://strawmap.org/">Ethereum protocol strawman</a> as a future state tree replacement. No binary trie implementation has been benchmarked at scale — not group depth, not anything else. With this transition on the roadmap, assessing performance characteristics is a prerequisite for informed prototyping. The geth implementation (<a href="https://eips.ethereum.org/EIPS/eip-7864">EIP-7864</a>) exposes a <code>--bintrie.groupdepth</code> parameter that controls how binary levels are packed into on-disk nodes; this study benchmarks four configurations to determine the optimal setting.</p>
+
+  <div class="callout callout-green">
+    <strong>Bottom line:</strong> GD-4 is optimal — statistically identical read performance to GD-8 (p=0.045), but 45% faster writes (p&nbsp;&lt;&nbsp;1e-9). A 3% read sacrifice buys a 45% write gain.
+  </div>
+
+  <h3>What we tested</h3>
+  <p>Four group-depth configurations (GD-1, GD-2, GD-4, GD-8) on identical 360&nbsp;GB databases with ~400 million state entries. Five benchmark types — two synthetic (raw SLOAD/SSTORE) and three ERC20 contract workloads — each run 9 times under a cold-cache protocol. All results use medians with <a href="https://en.wikipedia.org/wiki/Mann%E2%80%93Whitney_U_test">Mann-Whitney U</a> significance tests.</p>
+
+  <h3>What we found</h3>
+  <ul>
+    <li><strong>Reads confirm the intuition</strong> (<a href="#s4">&sect;4</a>): GD-8 reads are 56% faster than GD-1 for ERC20 workloads. But GD-4→GD-8 gains only 3% more — diminishing returns.</li>
+    <li><strong>Writes reveal the surprise</strong> (<a href="#s5">&sect;5</a>): GD-8 writes are <em>nearly 2× slower</em> than GD-4. Each GD-8 node contains a 255-node internal binary subtree that must be rehashed on every modification — 17× the work of a GD-4 node (15 internal nodes).</li>
+    <li><strong>The trade-off is decisive</strong> (<a href="#s6">&sect;6</a>): GD-4 sacrifices 3% on reads but gains 45% on writes. For Ethereum's balanced read/write workload, GD-4 dominates.</li>
+  </ul>
+
+  <h3>How to read this post</h3>
+  <p><a href="#s2">&sect;2&nbsp;Background</a> covers the binary trie and group depth concept. <a href="#s3">&sect;3&nbsp;Methodology</a> details the benchmark setup (collapsible). <a href="#s4">&sect;4</a>–<a href="#s6">&sect;6</a> present the results in a narrative arc: reads, writes, then the trade-off. <a href="#s7">&sect;7&nbsp;Patterns</a> examines cross-cutting observations, and <a href="#s8">&sect;8&nbsp;Conclusions</a> gives the recommendation and open questions.</p>
+</section>
+
+<!-- ============================================================ -->
+<!-- §2 BACKGROUND                                                 -->
+<!-- ============================================================ -->
+<section class="section" id="s2">
+  <div class="section-label">&sect;2</div>
+  <h2>Background</h2>
+
+  <h3>What is the Binary Trie?</h3>
+  <p>EIP-7864 proposes replacing Ethereum's Merkle Patricia Trie (MPT) with a binary trie. The binary trie unifies the account trie and all storage tries into a single tree, uses SHA-256 for hashing instead of Keccak-256, and stores 32-byte stems that map to groups of 256 values. This design simplifies witness generation for stateless clients and enables more efficient proofs.</p>
+  <p>The transition from MPT to a binary trie is one of the most consequential changes to Ethereum's state layer. Performance characteristics of the new structure will directly affect block processing time, sync speed, and validator economics.</p>
+
+  <h3>What is Group Depth?</h3>
+  <p>The trie is <strong>always binary</strong> at the fundamental level — every internal node has exactly two children (left for bit 0, right for bit 1). Group depth controls how many binary levels are <em>bundled into a single on-disk node</em>. At GD-N, each stored node encapsulates an N-level binary subtree, so it <em>appears</em> to have 2<sup>N</sup> children when viewed from the outside:</p>
+  <ul style="list-style: none; padding-left: 0;">
+    <li><span class="dot" style="background: #1f77b4;"></span><strong>GD-1:</strong> 1 binary level per node → 2 child pointers, 256 nodes on the path to a leaf</li>
+    <li><span class="dot" style="background: #ff7f0e;"></span><strong>GD-2:</strong> 2 binary levels per node → 4 child pointers, 128 nodes on path</li>
+    <li><span class="dot" style="background: #2ca02c;"></span><strong>GD-4:</strong> 4 binary levels per node → 16 child pointers, 64 nodes on path</li>
+    <li><span class="dot" style="background: #d62728;"></span><strong>GD-8:</strong> 8 binary levels per node → 256 child pointers, 32 nodes on path</li>
+  </ul>
+  <p style="font-size: 14px; color: #94A3B8;">Think of it like a zip code: GD-1 reads your address one digit at a time (256 steps), while GD-8 reads 8 digits at once (32 steps). Fewer steps means fewer disk reads — but each "bundled node" is larger and more expensive to update, because the binary subtree inside it must be rehashed.</p>
+
+  <!-- SVG DIAGRAM 1: Tree Shape Comparison -->
+  <div class="diagram-wrap">
+    <svg viewBox="0 0 720 300" xmlns="http://www.w3.org/2000/svg" style="background: #0A0E17;">
+      <!-- GD-1 Tree (deep/narrow) -->
+      <text x="120" y="28" fill="#1f77b4" font-family="IBM Plex Mono" font-size="14" font-weight="700" text-anchor="middle">GD-1</text>
+      <!-- Level 0 -->
+      <circle cx="120" cy="52" r="6" fill="#1f77b4"/>
+      <!-- Level 1 -->
+      <line x1="120" y1="58" x2="100" y2="82" stroke="#1f77b4" stroke-width="1.5" opacity="0.6"/>
+      <line x1="120" y1="58" x2="140" y2="82" stroke="#1f77b4" stroke-width="1.5" opacity="0.6"/>
+      <circle cx="100" cy="86" r="5" fill="#1f77b4"/>
+      <circle cx="140" cy="86" r="5" fill="#1f77b4"/>
+      <!-- Level 2 -->
+      <line x1="100" y1="91" x2="86" y2="115" stroke="#1f77b4" stroke-width="1.2" opacity="0.5"/>
+      <line x1="100" y1="91" x2="114" y2="115" stroke="#1f77b4" stroke-width="1.2" opacity="0.5"/>
+      <line x1="140" y1="91" x2="126" y2="115" stroke="#1f77b4" stroke-width="1.2" opacity="0.5"/>
+      <line x1="140" y1="91" x2="154" y2="115" stroke="#1f77b4" stroke-width="1.2" opacity="0.5"/>
+      <circle cx="86" cy="119" r="4" fill="#1f77b4"/>
+      <circle cx="114" cy="119" r="4" fill="#1f77b4"/>
+      <circle cx="126" cy="119" r="4" fill="#1f77b4"/>
+      <circle cx="154" cy="119" r="4" fill="#1f77b4"/>
+      <!-- Level 3 -->
+      <line x1="86" y1="123" x2="78" y2="147" stroke="#1f77b4" stroke-width="1" opacity="0.4"/>
+      <line x1="86" y1="123" x2="94" y2="147" stroke="#1f77b4" stroke-width="1" opacity="0.4"/>
+      <line x1="114" y1="123" x2="106" y2="147" stroke="#1f77b4" stroke-width="1" opacity="0.4"/>
+      <line x1="114" y1="123" x2="122" y2="147" stroke="#1f77b4" stroke-width="1" opacity="0.4"/>
+      <line x1="126" y1="123" x2="118" y2="147" stroke="#1f77b4" stroke-width="1" opacity="0.4"/>
+      <line x1="126" y1="123" x2="134" y2="147" stroke="#1f77b4" stroke-width="1" opacity="0.4"/>
+      <line x1="154" y1="123" x2="146" y2="147" stroke="#1f77b4" stroke-width="1" opacity="0.4"/>
+      <line x1="154" y1="123" x2="162" y2="147" stroke="#1f77b4" stroke-width="1" opacity="0.4"/>
+      <circle cx="78" cy="151" r="3.5" fill="#1f77b4" opacity="0.7"/>
+      <circle cx="94" cy="151" r="3.5" fill="#1f77b4" opacity="0.7"/>
+      <circle cx="106" cy="151" r="3.5" fill="#1f77b4" opacity="0.7"/>
+      <circle cx="122" cy="151" r="3.5" fill="#1f77b4" opacity="0.7"/>
+      <circle cx="118" cy="151" r="3.5" fill="#1f77b4" opacity="0.7"/>
+      <circle cx="134" cy="151" r="3.5" fill="#1f77b4" opacity="0.7"/>
+      <circle cx="146" cy="151" r="3.5" fill="#1f77b4" opacity="0.7"/>
+      <circle cx="162" cy="151" r="3.5" fill="#1f77b4" opacity="0.7"/>
+      <!-- Level 4-5 dots -->
+      <text x="120" y="185" fill="#1f77b4" font-family="IBM Plex Mono" font-size="16" text-anchor="middle" opacity="0.5">⋮</text>
+      <!-- Level 5 leaves -->
+      <circle cx="72" cy="210" r="3" fill="#1f77b4" opacity="0.5"/>
+      <circle cx="84" cy="210" r="3" fill="#1f77b4" opacity="0.5"/>
+      <circle cx="96" cy="210" r="3" fill="#1f77b4" opacity="0.5"/>
+      <circle cx="108" cy="210" r="3" fill="#1f77b4" opacity="0.5"/>
+      <circle cx="120" cy="210" r="3" fill="#1f77b4" opacity="0.5"/>
+      <circle cx="132" cy="210" r="3" fill="#1f77b4" opacity="0.5"/>
+      <circle cx="144" cy="210" r="3" fill="#1f77b4" opacity="0.5"/>
+      <circle cx="156" cy="210" r="3" fill="#1f77b4" opacity="0.5"/>
+      <circle cx="168" cy="210" r="3" fill="#1f77b4" opacity="0.5"/>
+      <text x="120" y="245" fill="#1f77b4" font-family="IBM Plex Mono" font-size="11" text-anchor="middle" opacity="0.8">256 nodes on path</text>
+      <text x="120" y="260" fill="#1f77b4" font-family="IBM Plex Mono" font-size="11" text-anchor="middle" opacity="0.6">1 binary level per node</text>
+
+      <!-- GD-4 Tree (balanced) -->
+      <text x="360" y="28" fill="#2ca02c" font-family="IBM Plex Mono" font-size="14" font-weight="700" text-anchor="middle">GD-4</text>
+      <!-- Dashed box showing one on-disk node bundles 4 binary levels -->
+      <rect x="295" y="38" width="130" height="80" rx="8" ry="8" fill="none" stroke="#2ca02c" stroke-width="1.2" stroke-dasharray="5,4" opacity="0.5"/>
+      <text x="430" y="55" fill="#2ca02c" font-family="IBM Plex Mono" font-size="9" opacity="0.6">← 1 on-disk node</text>
+      <text x="430" y="66" fill="#2ca02c" font-family="IBM Plex Mono" font-size="9" opacity="0.5">(4-level binary subtree)</text>
+      <!-- Level 0 -->
+      <circle cx="360" cy="52" r="7" fill="#2ca02c"/>
+      <!-- Level 1 - 4 visible children spread wider -->
+      <line x1="360" y1="59" x2="305" y2="98" stroke="#2ca02c" stroke-width="1.5" opacity="0.6"/>
+      <line x1="360" y1="59" x2="340" y2="98" stroke="#2ca02c" stroke-width="1.5" opacity="0.6"/>
+      <line x1="360" y1="59" x2="380" y2="98" stroke="#2ca02c" stroke-width="1.5" opacity="0.6"/>
+      <line x1="360" y1="59" x2="415" y2="98" stroke="#2ca02c" stroke-width="1.5" opacity="0.6"/>
+      <circle cx="305" cy="102" r="5.5" fill="#2ca02c"/>
+      <circle cx="340" cy="102" r="5.5" fill="#2ca02c"/>
+      <circle cx="380" cy="102" r="5.5" fill="#2ca02c"/>
+      <circle cx="415" cy="102" r="5.5" fill="#2ca02c"/>
+      <!-- Level 2 - sub-children -->
+      <line x1="305" y1="108" x2="290" y2="148" stroke="#2ca02c" stroke-width="1.2" opacity="0.45"/>
+      <line x1="305" y1="108" x2="300" y2="148" stroke="#2ca02c" stroke-width="1.2" opacity="0.45"/>
+      <line x1="305" y1="108" x2="310" y2="148" stroke="#2ca02c" stroke-width="1.2" opacity="0.45"/>
+      <line x1="305" y1="108" x2="320" y2="148" stroke="#2ca02c" stroke-width="1.2" opacity="0.45"/>
+      <line x1="340" y1="108" x2="330" y2="148" stroke="#2ca02c" stroke-width="1.2" opacity="0.45"/>
+      <line x1="340" y1="108" x2="340" y2="148" stroke="#2ca02c" stroke-width="1.2" opacity="0.45"/>
+      <line x1="340" y1="108" x2="350" y2="148" stroke="#2ca02c" stroke-width="1.2" opacity="0.45"/>
+      <line x1="380" y1="108" x2="370" y2="148" stroke="#2ca02c" stroke-width="1.2" opacity="0.45"/>
+      <line x1="380" y1="108" x2="380" y2="148" stroke="#2ca02c" stroke-width="1.2" opacity="0.45"/>
+      <line x1="380" y1="108" x2="390" y2="148" stroke="#2ca02c" stroke-width="1.2" opacity="0.45"/>
+      <line x1="415" y1="108" x2="400" y2="148" stroke="#2ca02c" stroke-width="1.2" opacity="0.45"/>
+      <line x1="415" y1="108" x2="410" y2="148" stroke="#2ca02c" stroke-width="1.2" opacity="0.45"/>
+      <line x1="415" y1="108" x2="420" y2="148" stroke="#2ca02c" stroke-width="1.2" opacity="0.45"/>
+      <line x1="415" y1="108" x2="430" y2="148" stroke="#2ca02c" stroke-width="1.2" opacity="0.45"/>
+      <!-- Level 2 nodes -->
+      <circle cx="290" cy="152" r="4" fill="#2ca02c" opacity="0.65"/>
+      <circle cx="300" cy="152" r="4" fill="#2ca02c" opacity="0.65"/>
+      <circle cx="310" cy="152" r="4" fill="#2ca02c" opacity="0.65"/>
+      <circle cx="320" cy="152" r="4" fill="#2ca02c" opacity="0.65"/>
+      <circle cx="330" cy="152" r="4" fill="#2ca02c" opacity="0.65"/>
+      <circle cx="340" cy="152" r="4" fill="#2ca02c" opacity="0.65"/>
+      <circle cx="350" cy="152" r="4" fill="#2ca02c" opacity="0.65"/>
+      <circle cx="370" cy="152" r="4" fill="#2ca02c" opacity="0.65"/>
+      <circle cx="380" cy="152" r="4" fill="#2ca02c" opacity="0.65"/>
+      <circle cx="390" cy="152" r="4" fill="#2ca02c" opacity="0.65"/>
+      <circle cx="400" cy="152" r="4" fill="#2ca02c" opacity="0.65"/>
+      <circle cx="410" cy="152" r="4" fill="#2ca02c" opacity="0.65"/>
+      <circle cx="420" cy="152" r="4" fill="#2ca02c" opacity="0.65"/>
+      <circle cx="430" cy="152" r="4" fill="#2ca02c" opacity="0.65"/>
+      <!-- dots -->
+      <text x="360" y="192" fill="#2ca02c" font-family="IBM Plex Mono" font-size="16" text-anchor="middle" opacity="0.5">⋮</text>
+      <!-- leaves -->
+      <circle cx="285" cy="218" r="3" fill="#2ca02c" opacity="0.4"/>
+      <circle cx="300" cy="218" r="3" fill="#2ca02c" opacity="0.4"/>
+      <circle cx="315" cy="218" r="3" fill="#2ca02c" opacity="0.4"/>
+      <circle cx="330" cy="218" r="3" fill="#2ca02c" opacity="0.4"/>
+      <circle cx="345" cy="218" r="3" fill="#2ca02c" opacity="0.4"/>
+      <circle cx="360" cy="218" r="3" fill="#2ca02c" opacity="0.4"/>
+      <circle cx="375" cy="218" r="3" fill="#2ca02c" opacity="0.4"/>
+      <circle cx="390" cy="218" r="3" fill="#2ca02c" opacity="0.4"/>
+      <circle cx="405" cy="218" r="3" fill="#2ca02c" opacity="0.4"/>
+      <circle cx="420" cy="218" r="3" fill="#2ca02c" opacity="0.4"/>
+      <circle cx="435" cy="218" r="3" fill="#2ca02c" opacity="0.4"/>
+      <text x="360" y="245" fill="#2ca02c" font-family="IBM Plex Mono" font-size="11" text-anchor="middle" opacity="0.8">64 nodes on path</text>
+      <text x="360" y="260" fill="#2ca02c" font-family="IBM Plex Mono" font-size="11" text-anchor="middle" opacity="0.6">4 binary levels per node</text>
+
+      <!-- GD-8 Tree (shallow/wide) -->
+      <text x="600" y="28" fill="#d62728" font-family="IBM Plex Mono" font-size="14" font-weight="700" text-anchor="middle">GD-8</text>
+      <!-- Dashed box showing one on-disk node bundles 8 binary levels -->
+      <rect x="510" y="38" width="180" height="82" rx="8" ry="8" fill="none" stroke="#d62728" stroke-width="1.2" stroke-dasharray="5,4" opacity="0.5"/>
+      <text x="600" y="130" fill="#d62728" font-family="IBM Plex Mono" font-size="9" text-anchor="middle" opacity="0.5">↑ 1 on-disk node (8-level binary subtree)</text>
+      <!-- Level 0 -->
+      <circle cx="600" cy="52" r="8" fill="#d62728"/>
+      <!-- Level 1 - 8 visible children very wide -->
+      <line x1="600" y1="60" x2="520" y2="105" stroke="#d62728" stroke-width="1.5" opacity="0.6"/>
+      <line x1="600" y1="60" x2="543" y2="105" stroke="#d62728" stroke-width="1.5" opacity="0.6"/>
+      <line x1="600" y1="60" x2="566" y2="105" stroke="#d62728" stroke-width="1.5" opacity="0.6"/>
+      <line x1="600" y1="60" x2="589" y2="105" stroke="#d62728" stroke-width="1.5" opacity="0.6"/>
+      <line x1="600" y1="60" x2="611" y2="105" stroke="#d62728" stroke-width="1.5" opacity="0.6"/>
+      <line x1="600" y1="60" x2="634" y2="105" stroke="#d62728" stroke-width="1.5" opacity="0.6"/>
+      <line x1="600" y1="60" x2="657" y2="105" stroke="#d62728" stroke-width="1.5" opacity="0.6"/>
+      <line x1="600" y1="60" x2="680" y2="105" stroke="#d62728" stroke-width="1.5" opacity="0.6"/>
+      <circle cx="520" cy="109" r="5" fill="#d62728"/>
+      <circle cx="543" cy="109" r="5" fill="#d62728"/>
+      <circle cx="566" cy="109" r="5" fill="#d62728"/>
+      <circle cx="589" cy="109" r="5" fill="#d62728"/>
+      <circle cx="611" cy="109" r="5" fill="#d62728"/>
+      <circle cx="634" cy="109" r="5" fill="#d62728"/>
+      <circle cx="657" cy="109" r="5" fill="#d62728"/>
+      <circle cx="680" cy="109" r="5" fill="#d62728"/>
+      <!-- Level 2 - lots of children, dense -->
+      <line x1="520" y1="114" x2="510" y2="155" stroke="#d62728" stroke-width="0.8" opacity="0.35"/>
+      <line x1="520" y1="114" x2="517" y2="155" stroke="#d62728" stroke-width="0.8" opacity="0.35"/>
+      <line x1="520" y1="114" x2="523" y2="155" stroke="#d62728" stroke-width="0.8" opacity="0.35"/>
+      <line x1="520" y1="114" x2="530" y2="155" stroke="#d62728" stroke-width="0.8" opacity="0.35"/>
+      <line x1="543" y1="114" x2="536" y2="155" stroke="#d62728" stroke-width="0.8" opacity="0.35"/>
+      <line x1="543" y1="114" x2="543" y2="155" stroke="#d62728" stroke-width="0.8" opacity="0.35"/>
+      <line x1="543" y1="114" x2="550" y2="155" stroke="#d62728" stroke-width="0.8" opacity="0.35"/>
+      <line x1="566" y1="114" x2="559" y2="155" stroke="#d62728" stroke-width="0.8" opacity="0.35"/>
+      <line x1="566" y1="114" x2="566" y2="155" stroke="#d62728" stroke-width="0.8" opacity="0.35"/>
+      <line x1="566" y1="114" x2="573" y2="155" stroke="#d62728" stroke-width="0.8" opacity="0.35"/>
+      <line x1="589" y1="114" x2="582" y2="155" stroke="#d62728" stroke-width="0.8" opacity="0.35"/>
+      <line x1="589" y1="114" x2="589" y2="155" stroke="#d62728" stroke-width="0.8" opacity="0.35"/>
+      <line x1="589" y1="114" x2="596" y2="155" stroke="#d62728" stroke-width="0.8" opacity="0.35"/>
+      <line x1="611" y1="114" x2="604" y2="155" stroke="#d62728" stroke-width="0.8" opacity="0.35"/>
+      <line x1="611" y1="114" x2="611" y2="155" stroke="#d62728" stroke-width="0.8" opacity="0.35"/>
+      <line x1="611" y1="114" x2="618" y2="155" stroke="#d62728" stroke-width="0.8" opacity="0.35"/>
+      <line x1="634" y1="114" x2="627" y2="155" stroke="#d62728" stroke-width="0.8" opacity="0.35"/>
+      <line x1="634" y1="114" x2="634" y2="155" stroke="#d62728" stroke-width="0.8" opacity="0.35"/>
+      <line x1="634" y1="114" x2="641" y2="155" stroke="#d62728" stroke-width="0.8" opacity="0.35"/>
+      <line x1="657" y1="114" x2="650" y2="155" stroke="#d62728" stroke-width="0.8" opacity="0.35"/>
+      <line x1="657" y1="114" x2="657" y2="155" stroke="#d62728" stroke-width="0.8" opacity="0.35"/>
+      <line x1="657" y1="114" x2="664" y2="155" stroke="#d62728" stroke-width="0.8" opacity="0.35"/>
+      <line x1="680" y1="114" x2="673" y2="155" stroke="#d62728" stroke-width="0.8" opacity="0.35"/>
+      <line x1="680" y1="114" x2="680" y2="155" stroke="#d62728" stroke-width="0.8" opacity="0.35"/>
+      <line x1="680" y1="114" x2="687" y2="155" stroke="#d62728" stroke-width="0.8" opacity="0.35"/>
+      <!-- Level 2 nodes -->
+      <circle cx="510" cy="159" r="3" fill="#d62728" opacity="0.5"/>
+      <circle cx="517" cy="159" r="3" fill="#d62728" opacity="0.5"/>
+      <circle cx="523" cy="159" r="3" fill="#d62728" opacity="0.5"/>
+      <circle cx="530" cy="159" r="3" fill="#d62728" opacity="0.5"/>
+      <circle cx="536" cy="159" r="3" fill="#d62728" opacity="0.5"/>
+      <circle cx="543" cy="159" r="3" fill="#d62728" opacity="0.5"/>
+      <circle cx="550" cy="159" r="3" fill="#d62728" opacity="0.5"/>
+      <circle cx="559" cy="159" r="3" fill="#d62728" opacity="0.5"/>
+      <circle cx="566" cy="159" r="3" fill="#d62728" opacity="0.5"/>
+      <circle cx="573" cy="159" r="3" fill="#d62728" opacity="0.5"/>
+      <circle cx="582" cy="159" r="3" fill="#d62728" opacity="0.5"/>
+      <circle cx="589" cy="159" r="3" fill="#d62728" opacity="0.5"/>
+      <circle cx="596" cy="159" r="3" fill="#d62728" opacity="0.5"/>
+      <circle cx="604" cy="159" r="3" fill="#d62728" opacity="0.5"/>
+      <circle cx="611" cy="159" r="3" fill="#d62728" opacity="0.5"/>
+      <circle cx="618" cy="159" r="3" fill="#d62728" opacity="0.5"/>
+      <circle cx="627" cy="159" r="3" fill="#d62728" opacity="0.5"/>
+      <circle cx="634" cy="159" r="3" fill="#d62728" opacity="0.5"/>
+      <circle cx="641" cy="159" r="3" fill="#d62728" opacity="0.5"/>
+      <circle cx="650" cy="159" r="3" fill="#d62728" opacity="0.5"/>
+      <circle cx="657" cy="159" r="3" fill="#d62728" opacity="0.5"/>
+      <circle cx="664" cy="159" r="3" fill="#d62728" opacity="0.5"/>
+      <circle cx="673" cy="159" r="3" fill="#d62728" opacity="0.5"/>
+      <circle cx="680" cy="159" r="3" fill="#d62728" opacity="0.5"/>
+      <circle cx="687" cy="159" r="3" fill="#d62728" opacity="0.5"/>
+      <!-- leaves indicator -->
+      <text x="600" y="195" fill="#d62728" font-family="IBM Plex Mono" font-size="10" text-anchor="middle" opacity="0.45">• • • • • • • • • • • • • • • • • • • • • • • •</text>
+      <text x="600" y="245" fill="#d62728" font-family="IBM Plex Mono" font-size="11" text-anchor="middle" opacity="0.8">32 nodes on path</text>
+      <text x="600" y="260" fill="#d62728" font-family="IBM Plex Mono" font-size="11" text-anchor="middle" opacity="0.6">8 binary levels per node</text>
+
+      <!-- Arrows/labels -->
+      <text x="120" y="286" fill="#475569" font-family="IBM Plex Mono" font-size="10" text-anchor="middle">Deep &amp; Narrow</text>
+      <text x="360" y="286" fill="#475569" font-family="IBM Plex Mono" font-size="10" text-anchor="middle">Balanced</text>
+      <text x="600" y="286" fill="#475569" font-family="IBM Plex Mono" font-size="10" text-anchor="middle">Shallow &amp; Wide</text>
+    </svg>
+    <div class="diagram-caption">Figure 1 — Tree shape at different group depths. Each node bundles N binary levels internally, reducing the number of on-disk nodes on the path to a leaf.</div>
+  </div>
+
+  <p>The trade-off is straightforward in theory: reads benefit from shallow trees (fewer disk I/O operations to reach a leaf), while writes suffer from wide nodes (more internal hashing when a node is modified). The question is where the crossover point lies.</p>
+</section>
+
+<!-- ============================================================ -->
+<!-- §3 METHODOLOGY                                                -->
+<!-- ============================================================ -->
+<section class="section" id="s3">
+  <div class="section-label">&sect;3</div>
+  <h2>Methodology</h2>
+
+<details open>
+  <summary style="cursor:pointer; font-family:'IBM Plex Mono',monospace; font-size:14px; font-weight:600; color:#94A3B8; margin-bottom:16px;">
+    Methodology Details (click to collapse)
+  </summary>
+
+  <div class="dark-card" style="color: #94A3B8;">
+    <h3 style="margin-top: 0; color: #94A3B8;">Benchmark Setup</h3>
+    <div class="data-table-wrap">
+      <table>
+        <thead>
+          <tr><th>Parameter</th><th>Value</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Machine</td><td>QEMU VM — 8 vCPUs, 30 GB RAM, 3.9 TB SSD, Ubuntu 24.04 LTS</td></tr>
+          <tr><td>Database</td><td>~360 GB, ~400M accounts + slots</td></tr>
+          <tr><td>Configs</td><td>GD-1, GD-2, GD-4, GD-8 (Pebble, the LSM-tree storage engine used by geth) 4KB block size</td></tr>
+          <tr><td>Protocol</td><td>Cold cache (OS + Pebble caches dropped between runs)</td></tr>
+          <tr><td>Runs</td><td>10 per benchmark, run 1 excluded as warm-up</td></tr>
+          <tr><td>Gas target</td><td>100M gas per block</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <h3 style="color: #94A3B8;">Statistical Approach</h3>
+  <ul style="color: #94A3B8;">
+    <li>Per-run block medians aggregated across 9 retained runs</li>
+    <li>Mann-Whitney U test for pairwise comparisons (non-parametric)</li>
+    <li>Effect sizes reported as percentage difference from baseline (GD-1)</li>
+    <li>Coefficient of variation (CV%) for consistency assessment</li>
+  </ul>
+
+  <h3 style="color: #94A3B8;">Data Completeness</h3>
+  <div class="data-table-wrap">
+    <table>
+      <thead>
+        <tr><th>Benchmark</th><th>GD-1</th><th>GD-2</th><th>GD-4</th><th>GD-8</th></tr>
+      </thead>
+      <tbody style="color: #94A3B8;">
+        <tr><td>sload_benchmark</td><td style="color:#2ca02c;">&#10003;</td><td style="color:#2ca02c;">&#10003;</td><td style="color:#2ca02c;">&#10003;</td><td style="color:#64748B;">&#8212;</td></tr>
+        <tr><td>sstore_variants</td><td style="color:#2ca02c;">&#10003;</td><td style="color:#2ca02c;">&#10003;</td><td style="color:#2ca02c;">&#10003;</td><td style="color:#F59E0B;">&#9888;</td></tr>
+        <tr><td>balanceof</td><td style="color:#2ca02c;">&#10003;</td><td style="color:#2ca02c;">&#10003;</td><td style="color:#2ca02c;">&#10003;</td><td style="color:#2ca02c;">&#10003;</td></tr>
+        <tr><td>approve</td><td style="color:#2ca02c;">&#10003;</td><td style="color:#2ca02c;">&#10003;</td><td style="color:#2ca02c;">&#10003;</td><td style="color:#2ca02c;">&#10003;</td></tr>
+        <tr><td>mixed</td><td style="color:#2ca02c;">&#10003;</td><td style="color:#2ca02c;">&#10003;</td><td style="color:#2ca02c;">&#10003;</td><td style="color:#2ca02c;">&#10003;</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="callout callout-amber">
+    <strong>Data gap:</strong> GD-8 synthetic benchmarks (sload_benchmark, sstore_variants) were not completed — each configuration requires a full 360 GB database rebuild and multi-day benchmark run. We prioritized ERC20 benchmarks because sequential-key synthetic tests showed minimal performance differentiation across group depths, while random-access ERC20 tests exposed the real trade-offs. All ERC20 benchmarks have complete data for all four group depths.
+  </div>
+
+  <h3 style="color: #94A3B8;">Benchmark Taxonomy</h3>
+  <p style="color: #94A3B8;"><strong style="color: #CBD5E1;">a) Synthetic benchmarks</strong> &mdash; <code>sstore_variants</code> (writes) and <code>sload_benchmark</code> (reads). These use EIP-7702 delegations with sequential storage slots. Keys are numerically sequential, causing heavy prefix sharing in the trie.</p>
+  <p style="color: #94A3B8;"><strong style="color: #CBD5E1;">b) ERC20 benchmarks</strong> &mdash; <code>balanceof</code> (reads), <code>approve</code> (writes), and <code>mixed</code>. These use real ERC-20 contract code. Storage keys are keccak hashes of random addresses, producing uniformly distributed access patterns across the trie.</p>
+
+  <!-- SVG DIAGRAM 2: Sequential vs Random Access -->
+  <div class="diagram-wrap">
+    <svg viewBox="0 0 720 250" xmlns="http://www.w3.org/2000/svg" style="background: #0A0E17;">
+      <!-- Divider -->
+      <line x1="360" y1="20" x2="360" y2="230" stroke="#1E293B" stroke-width="1" stroke-dasharray="4,4"/>
+
+      <!-- LEFT: Sequential -->
+      <text x="180" y="30" fill="#2ca02c" font-family="IBM Plex Mono" font-size="13" font-weight="700" text-anchor="middle">Sequential (Synthetic)</text>
+
+      <!-- Trie structure - root -->
+      <circle cx="180" cy="58" r="7" fill="#334155" stroke="#475569" stroke-width="1.5"/>
+      <!-- Level 1 - only left path active -->
+      <line x1="180" y1="65" x2="130" y2="95" stroke="#475569" stroke-width="1" opacity="0.3"/>
+      <line x1="180" y1="65" x2="180" y2="95" stroke="#2ca02c" stroke-width="2"/>
+      <line x1="180" y1="65" x2="230" y2="95" stroke="#475569" stroke-width="1" opacity="0.3"/>
+      <circle cx="130" cy="99" r="5" fill="#1E293B" stroke="#475569" stroke-width="1" opacity="0.4"/>
+      <circle cx="180" cy="99" r="5" fill="#334155" stroke="#2ca02c" stroke-width="1.5"/>
+      <circle cx="230" cy="99" r="5" fill="#1E293B" stroke="#475569" stroke-width="1" opacity="0.4"/>
+      <!-- Level 2 - all cluster to same branch -->
+      <line x1="180" y1="104" x2="160" y2="134" stroke="#2ca02c" stroke-width="2"/>
+      <line x1="180" y1="104" x2="180" y2="134" stroke="#2ca02c" stroke-width="2"/>
+      <line x1="180" y1="104" x2="200" y2="134" stroke="#2ca02c" stroke-width="2"/>
+      <circle cx="160" cy="138" r="5" fill="#334155" stroke="#2ca02c" stroke-width="1.5"/>
+      <circle cx="180" cy="138" r="5" fill="#334155" stroke="#2ca02c" stroke-width="1.5"/>
+      <circle cx="200" cy="138" r="5" fill="#334155" stroke="#2ca02c" stroke-width="1.5"/>
+      <!-- Leaves -->
+      <line x1="160" y1="143" x2="155" y2="170" stroke="#2ca02c" stroke-width="1.5" opacity="0.7"/>
+      <line x1="180" y1="143" x2="180" y2="170" stroke="#2ca02c" stroke-width="1.5" opacity="0.7"/>
+      <line x1="200" y1="143" x2="205" y2="170" stroke="#2ca02c" stroke-width="1.5" opacity="0.7"/>
+      <rect x="147" y="172" width="18" height="14" rx="3" fill="#2ca02c" opacity="0.2" stroke="#2ca02c" stroke-width="1"/>
+      <rect x="172" y="172" width="18" height="14" rx="3" fill="#2ca02c" opacity="0.2" stroke="#2ca02c" stroke-width="1"/>
+      <rect x="197" y="172" width="18" height="14" rx="3" fill="#2ca02c" opacity="0.2" stroke="#2ca02c" stroke-width="1"/>
+      <text x="156" y="183" fill="#2ca02c" font-family="IBM Plex Mono" font-size="7" text-anchor="middle">01</text>
+      <text x="181" y="183" fill="#2ca02c" font-family="IBM Plex Mono" font-size="7" text-anchor="middle">02</text>
+      <text x="206" y="183" fill="#2ca02c" font-family="IBM Plex Mono" font-size="7" text-anchor="middle">03</text>
+
+      <text x="180" y="210" fill="#2ca02c" font-family="IBM Plex Mono" font-size="10" text-anchor="middle" opacity="0.8">Keys cluster → cache-friendly</text>
+      <text x="180" y="225" fill="#64748B" font-family="IBM Plex Mono" font-size="9" text-anchor="middle">0x0001, 0x0002, 0x0003</text>
+
+      <!-- RIGHT: Random -->
+      <text x="540" y="30" fill="#d62728" font-family="IBM Plex Mono" font-size="13" font-weight="700" text-anchor="middle">Random (ERC20)</text>
+
+      <!-- Root -->
+      <circle cx="540" cy="58" r="7" fill="#334155" stroke="#475569" stroke-width="1.5"/>
+      <!-- Level 1 - all three paths diverge -->
+      <line x1="540" y1="65" x2="480" y2="95" stroke="#d62728" stroke-width="2"/>
+      <line x1="540" y1="65" x2="540" y2="95" stroke="#d62728" stroke-width="2"/>
+      <line x1="540" y1="65" x2="600" y2="95" stroke="#d62728" stroke-width="2"/>
+      <circle cx="480" cy="99" r="5" fill="#334155" stroke="#d62728" stroke-width="1.5"/>
+      <circle cx="540" cy="99" r="5" fill="#334155" stroke="#d62728" stroke-width="1.5"/>
+      <circle cx="600" cy="99" r="5" fill="#334155" stroke="#d62728" stroke-width="1.5"/>
+      <!-- Level 2 - each diverges further -->
+      <line x1="480" y1="104" x2="465" y2="134" stroke="#d62728" stroke-width="1.5" opacity="0.7"/>
+      <line x1="540" y1="104" x2="545" y2="134" stroke="#d62728" stroke-width="1.5" opacity="0.7"/>
+      <line x1="600" y1="104" x2="615" y2="134" stroke="#d62728" stroke-width="1.5" opacity="0.7"/>
+      <circle cx="465" cy="138" r="5" fill="#334155" stroke="#d62728" stroke-width="1.5" opacity="0.7"/>
+      <circle cx="545" cy="138" r="5" fill="#334155" stroke="#d62728" stroke-width="1.5" opacity="0.7"/>
+      <circle cx="615" cy="138" r="5" fill="#334155" stroke="#d62728" stroke-width="1.5" opacity="0.7"/>
+      <!-- Leaves - scattered -->
+      <line x1="465" y1="143" x2="458" y2="170" stroke="#d62728" stroke-width="1.2" opacity="0.5"/>
+      <line x1="545" y1="143" x2="548" y2="170" stroke="#d62728" stroke-width="1.2" opacity="0.5"/>
+      <line x1="615" y1="143" x2="622" y2="170" stroke="#d62728" stroke-width="1.2" opacity="0.5"/>
+      <rect x="450" y="172" width="18" height="14" rx="3" fill="#d62728" opacity="0.15" stroke="#d62728" stroke-width="1"/>
+      <rect x="540" y="172" width="18" height="14" rx="3" fill="#d62728" opacity="0.15" stroke="#d62728" stroke-width="1"/>
+      <rect x="614" y="172" width="18" height="14" rx="3" fill="#d62728" opacity="0.15" stroke="#d62728" stroke-width="1"/>
+      <text x="459" y="183" fill="#d62728" font-family="IBM Plex Mono" font-size="6" text-anchor="middle">3a</text>
+      <text x="549" y="183" fill="#d62728" font-family="IBM Plex Mono" font-size="6" text-anchor="middle">b7</text>
+      <text x="623" y="183" fill="#d62728" font-family="IBM Plex Mono" font-size="6" text-anchor="middle">f1</text>
+
+      <text x="540" y="210" fill="#d62728" font-family="IBM Plex Mono" font-size="10" text-anchor="middle" opacity="0.8">Keys scatter → 40× more expensive</text>
+      <text x="540" y="225" fill="#64748B" font-family="IBM Plex Mono" font-size="9" text-anchor="middle">keccak(a), keccak(b), keccak(c)</text>
+    </svg>
+    <div class="diagram-caption">Figure 2 — Sequential keys share trie prefixes and benefit from caching. Keccak-hashed keys scatter uniformly, forcing cold reads at every level.</div>
+  </div>
+
+</details>
+</section>
+
+<!-- ============================================================ -->
+<!-- §4 ACT I: READS                                               -->
+<!-- ============================================================ -->
+<section class="section" id="s4">
+  <div class="section-label">&sect;4</div>
+  <h2>Act I: Reads Confirm the Intuition</h2>
+  <p>Wider trees should mean faster reads. And they do.</p>
+
+  <h3>Synthetic Reads: The Baseline</h3>
+  <img src="graphs/q1_read_latency_boxplot.png" alt="Q1: Read latency boxplot" class="graph-img"/>
+  <img src="graphs/q1_read_timeseries.png" alt="Q1: Per-block read latency time series" class="graph-img"/>
+  <div class="diagram-caption">Per-block read latency for a representative run per config, confirming stable measurements with no degradation over time.</div>
+  <div class="data-table-wrap">
+    <table>
+      <thead>
+        <tr><th>Group Depth</th><th>Median Read (ms)</th><th>vs GD-1</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><span class="dot" style="background:#1f77b4;"></span>GD-1</td><td>53.0</td><td class="cell-dim">baseline</td></tr>
+        <tr><td><span class="dot" style="background:#ff7f0e;"></span>GD-2</td><td>48.0</td><td class="cell-green">&minus;9%</td></tr>
+        <tr><td><span class="dot" style="background:#2ca02c;"></span>GD-4</td><td>47.6</td><td class="cell-green">&minus;10%</td></tr>
+        <tr><td><span class="dot" style="background:#d62728;"></span>GD-8</td><td colspan="2" class="cell-dim">no data</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>Only ~10% improvement from GD-1 to GD-4. Sequential access doesn't differentiate group depths because shared prefixes keep the working set small and cache-friendly regardless of tree shape.</p>
+
+  <h3>ERC20 Reads: Where Depth Matters</h3>
+  <img src="graphs/q4_erc20_read_boxplot.png" alt="Q4: ERC20 read latency boxplot — the hero chart" class="graph-hero"/>
+  <div class="data-table-wrap">
+    <table>
+      <thead>
+        <tr><th>GD</th><th>state_read (ms)</th><th>total (ms)</th><th>Mgas/s</th><th>vs GD-1 (state_read)</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="dot" style="background:#1f77b4;"></span>1</td>
+          <td>5,878</td><td>6,284</td><td>2.65</td>
+          <td class="cell-dim">baseline</td>
+        </tr>
+        <tr>
+          <td><span class="dot" style="background:#ff7f0e;"></span>2</td>
+          <td>3,840</td><td>4,230</td><td>3.95</td>
+          <td class="cell-green">&minus;35%</td>
+        </tr>
+        <tr>
+          <td><span class="dot" style="background:#2ca02c;"></span>4</td>
+          <td>2,677</td><td>3,067</td><td>5.46</td>
+          <td class="cell-green">&minus;54%</td>
+        </tr>
+        <tr>
+          <td><span class="dot" style="background:#d62728;"></span>8</td>
+          <td>2,598</td><td>2,977</td><td>5.59</td>
+          <td class="cell-green">&minus;56%</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout callout-green">
+    <strong>56% faster reads.</strong> A 3.3-second reduction per block from GD-1 to GD-8. ERC20 reads expose the full depth penalty because keccak-hashed keys scatter across the entire 256-bit keyspace.
+  </div>
+
+  <p>Why the dramatic difference from synthetic? Keccak scatters keys uniformly, forcing a full traversal from root to leaf. GD-1 must descend 256 levels; GD-8 only 32. Every level is a potential disk seek. Random access exposes the full depth penalty: 54% improvement versus 10% for synthetic reads.</p>
+
+  <p>Per-slot cost: synthetic reads cost ~0.02&nbsp;ms/slot. ERC20 reads cost ~0.4&ndash;1.0&nbsp;ms/slot &mdash; a <strong>40&times; penalty</strong> from random access patterns.</p>
+
+  <div class="callout callout-green">
+    <strong>Why random access is the baseline, not the exception.</strong> The binary trie unifies all accounts and storage into a single tree. Every key — whether an account balance, a storage slot, or a code chunk — is SHA256-hashed into the 256-bit keyspace. A single contract's storage slots scatter across completely different tree paths. This makes random access the <em>fundamental</em> access pattern of the binary trie, not a pathological case. The synthetic sequential benchmarks represent an unrealistic best case that cannot occur in a unified trie deployment.
+  </div>
+
+  <h3>The Cache Mechanism</h3>
+  <img src="graphs/q7_storage_cache_hit_rates.png" alt="Q7: Storage cache hit rates" class="graph-img"/>
+  <div class="data-table-wrap">
+    <table>
+      <thead>
+        <tr><th>Benchmark</th><th>GD-1</th><th>GD-2</th><th>GD-4</th><th>GD-8</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>sstore (synthetic)</td><td>44.1%</td><td>42.7%</td><td>44.1%</td><td>43.4%</td></tr>
+        <tr><td>sload (synthetic)</td><td>44.2%</td><td>44.4%</td><td>43.9%</td><td class="cell-dim">&mdash;</td></tr>
+        <tr><td>balanceOf — reads (ERC20)</td><td>28.1%</td><td>32.8%</td><td class="cell-bold">36.7%</td><td class="cell-bold">37.0%</td></tr>
+        <tr><td>approve — writes (ERC20)</td><td>25.1%</td><td>30.6%</td><td class="cell-bold">35.6%</td><td class="cell-bold">36.3%</td></tr>
+        <tr><td>mixed (ERC20)</td><td>21.7%</td><td>31.3%</td><td class="cell-bold">35.5%</td><td class="cell-bold">38.8%</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="muted"><code>balanceOf</code> is a read-only ERC20 function (returns a token balance). <code>approve</code> is a write operation (sets a spending allowance, modifying storage). ERC20 is the most common contract type on Ethereum mainnet, making it a representative benchmark target. The ERC20 used here is a minimal implementation — results indicate clear trends in how group depth affects read vs write performance, though production contracts with more complex storage layouts may show variation.</p>
+
+  <p>Two distinct patterns emerge. Synthetic benchmarks: cache rates are flat at ~43&ndash;44% regardless of group depth &mdash; sequential access is inherently cache-friendly. ERC20 benchmarks: cache rates <strong>increase by 17 percentage points</strong> from GD-1 (21&ndash;28%) to GD-4/8 (35&ndash;39%). In shallower trees, upper-level nodes are shared by many keys &mdash; the &ldquo;shared prefix&rdquo; effect. But rates plateau at ~39%, as the 256-bit keyspace is too sparse for deeper cache reuse.</p>
+
+  <p style="font-style: italic; color: #94A3B8;">So far, wider is better. GD-8 leads on reads. Then we tested writes.</p>
+</section>
+
+<!-- ============================================================ -->
+<!-- §5 ACT II: THE WRITE SURPRISE                                 -->
+<!-- ============================================================ -->
+<section class="section" id="s5">
+  <div class="section-label">&sect;5</div>
+  <h2>Act II: The Write Surprise</h2>
+
+  <p style="font-size: 18px; font-weight: 600; color: #F8FAFC; margin-bottom: 24px;">This is the most important finding in the study.</p>
+
+  <img src="graphs/q5_erc20_write_boxplot.png" alt="Q5: ERC20 write latency boxplot — the money graph" class="graph-hero" style="border-color: #F59E0B;"/>
+
+  <div class="data-table-wrap">
+    <table>
+      <thead>
+        <tr><th>GD</th><th>state_read</th><th>trie_updates</th><th>commit</th><th>Write Cost</th><th>Total (ms)</th><th>Mgas/s</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="dot" style="background:#1f77b4;"></span>1</td>
+          <td>812</td><td>690</td><td>76</td><td>762</td><td>1,645</td><td>2.67</td>
+        </tr>
+        <tr>
+          <td><span class="dot" style="background:#ff7f0e;"></span>2</td>
+          <td>483</td><td>393</td><td>61</td><td>457</td><td>993</td><td>4.42</td>
+        </tr>
+        <tr>
+          <td><span class="dot" style="background:#2ca02c;"></span>4</td>
+          <td class="cell-bold">313</td><td class="cell-bold">254</td><td class="cell-bold">53</td><td class="cell-bold">308</td><td class="cell-bold">678</td><td class="cell-bold">6.47</td>
+        </tr>
+        <tr>
+          <td><span class="dot" style="background:#d62728;"></span>8</td>
+          <td>313</td><td style="color:#d62728;">433</td><td style="color:#d62728;">158</td><td style="color:#d62728;">603</td><td style="color:#d62728;">982</td><td>4.47</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="muted" style="font-size: 13px; margin-top: 8px;"><code>trie_updates</code> = <code>AccountHashes + AccountUpdates + StorageUpdates</code> — this metric covers the full trie mutation and rehash phase, not just hashing.</p>
+
+  <div class="callout callout-red">
+    <strong>GD-8 writes are 2&times; slower than GD-4.</strong> Trie updates: +71%. Commit: +198%. The wider tree that wins on reads loses decisively on writes.
+  </div>
+
+  <div class="dark-card">
+    <div class="comparison-item">
+      <span class="check">&#10003;</span>
+      <span style="color: #2ca02c; flex: 1;">Reads: GD-4 &asymp; GD-8 (tied at ~313&nbsp;ms)</span>
+    </div>
+    <div class="comparison-item">
+      <span class="cross">&#10007;</span>
+      <span style="color: #d62728; flex: 1;">Trie updates: GD-8 433&nbsp;ms vs GD-4 254&nbsp;ms (+71%)</span>
+    </div>
+    <div class="comparison-item">
+      <span class="cross">&#10007;</span>
+      <span style="color: #d62728; flex: 1;">Commit: GD-8 158&nbsp;ms vs GD-4 53&nbsp;ms (+198%)</span>
+    </div>
+  </div>
+
+  <h3>Why? The Internal Subtree</h3>
+
+  <p>Each trie node at group depth <em>g</em> contains an internal binary subtree with 2<sup>g</sup>&minus;1 nodes that must be rehashed on every write. This is the mechanism behind the surprise.</p>
+
+  <!-- SVG DIAGRAM 3: Internal Subtree Rehashing -->
+  <div class="diagram-wrap">
+    <svg viewBox="0 0 720 340" xmlns="http://www.w3.org/2000/svg" style="background: #0F172A;">
+      <!-- LEFT: GD-4 Node -->
+      <text x="200" y="30" fill="#2ca02c" font-family="IBM Plex Mono" font-size="14" font-weight="700" text-anchor="middle">GD-4 Node</text>
+
+      <!-- 4-level binary tree (15 nodes) -->
+      <!-- Level 0 -->
+      <circle cx="200" cy="56" r="6" fill="#2ca02c"/>
+      <!-- Level 1 -->
+      <line x1="200" y1="62" x2="160" y2="88" stroke="#2ca02c" stroke-width="1.2" opacity="0.7"/>
+      <line x1="200" y1="62" x2="240" y2="88" stroke="#2ca02c" stroke-width="1.2" opacity="0.7"/>
+      <circle cx="160" cy="92" r="5" fill="#2ca02c" opacity="0.85"/>
+      <circle cx="240" cy="92" r="5" fill="#2ca02c" opacity="0.85"/>
+      <!-- Level 2 -->
+      <line x1="160" y1="97" x2="140" y2="123" stroke="#2ca02c" stroke-width="1" opacity="0.55"/>
+      <line x1="160" y1="97" x2="180" y2="123" stroke="#2ca02c" stroke-width="1" opacity="0.55"/>
+      <line x1="240" y1="97" x2="220" y2="123" stroke="#2ca02c" stroke-width="1" opacity="0.55"/>
+      <line x1="240" y1="97" x2="260" y2="123" stroke="#2ca02c" stroke-width="1" opacity="0.55"/>
+      <circle cx="140" cy="127" r="4.5" fill="#2ca02c" opacity="0.7"/>
+      <circle cx="180" cy="127" r="4.5" fill="#2ca02c" opacity="0.7"/>
+      <circle cx="220" cy="127" r="4.5" fill="#2ca02c" opacity="0.7"/>
+      <circle cx="260" cy="127" r="4.5" fill="#2ca02c" opacity="0.7"/>
+      <!-- Level 3 -->
+      <line x1="140" y1="132" x2="130" y2="155" stroke="#2ca02c" stroke-width="0.8" opacity="0.4"/>
+      <line x1="140" y1="132" x2="150" y2="155" stroke="#2ca02c" stroke-width="0.8" opacity="0.4"/>
+      <line x1="180" y1="132" x2="170" y2="155" stroke="#2ca02c" stroke-width="0.8" opacity="0.4"/>
+      <line x1="180" y1="132" x2="190" y2="155" stroke="#2ca02c" stroke-width="0.8" opacity="0.4"/>
+      <line x1="220" y1="132" x2="210" y2="155" stroke="#2ca02c" stroke-width="0.8" opacity="0.4"/>
+      <line x1="220" y1="132" x2="230" y2="155" stroke="#2ca02c" stroke-width="0.8" opacity="0.4"/>
+      <line x1="260" y1="132" x2="250" y2="155" stroke="#2ca02c" stroke-width="0.8" opacity="0.4"/>
+      <line x1="260" y1="132" x2="270" y2="155" stroke="#2ca02c" stroke-width="0.8" opacity="0.4"/>
+      <circle cx="130" cy="159" r="3.5" fill="#2ca02c" opacity="0.55"/>
+      <circle cx="150" cy="159" r="3.5" fill="#2ca02c" opacity="0.55"/>
+      <circle cx="170" cy="159" r="3.5" fill="#2ca02c" opacity="0.55"/>
+      <circle cx="190" cy="159" r="3.5" fill="#2ca02c" opacity="0.55"/>
+      <circle cx="210" cy="159" r="3.5" fill="#2ca02c" opacity="0.55"/>
+      <circle cx="230" cy="159" r="3.5" fill="#2ca02c" opacity="0.55"/>
+      <circle cx="250" cy="159" r="3.5" fill="#2ca02c" opacity="0.55"/>
+      <circle cx="270" cy="159" r="3.5" fill="#2ca02c" opacity="0.55"/>
+
+      <!-- Labels -->
+      <text x="200" y="190" fill="#2ca02c" font-family="IBM Plex Mono" font-size="13" font-weight="600" text-anchor="middle">15 hash operations</text>
+      <text x="200" y="210" fill="#94A3B8" font-family="IBM Plex Mono" font-size="11" text-anchor="middle">× 64 nodes on path</text>
+      <rect x="140" y="220" width="120" height="26" rx="4" fill="#2ca02c" opacity="0.15" stroke="#2ca02c" stroke-width="1"/>
+      <text x="200" y="238" fill="#2ca02c" font-family="IBM Plex Mono" font-size="12" font-weight="700" text-anchor="middle">= 960 total ops</text>
+
+      <!-- CENTER: vs -->
+      <text x="360" y="130" fill="#475569" font-family="IBM Plex Mono" font-size="28" font-weight="800" text-anchor="middle">vs</text>
+
+      <!-- RIGHT: GD-8 Node -->
+      <text x="520" y="30" fill="#d62728" font-family="IBM Plex Mono" font-size="14" font-weight="700" text-anchor="middle">GD-8 Node</text>
+
+      <!-- 8-level tree (show top 5 levels, indicate rest) -->
+      <!-- Level 0 -->
+      <circle cx="520" cy="56" r="6" fill="#d62728"/>
+      <!-- Level 1 -->
+      <line x1="520" y1="62" x2="470" y2="82" stroke="#d62728" stroke-width="1.2" opacity="0.7"/>
+      <line x1="520" y1="62" x2="570" y2="82" stroke="#d62728" stroke-width="1.2" opacity="0.7"/>
+      <circle cx="470" cy="86" r="5" fill="#d62728" opacity="0.85"/>
+      <circle cx="570" cy="86" r="5" fill="#d62728" opacity="0.85"/>
+      <!-- Level 2 -->
+      <line x1="470" y1="91" x2="445" y2="108" stroke="#d62728" stroke-width="1" opacity="0.55"/>
+      <line x1="470" y1="91" x2="463" y2="108" stroke="#d62728" stroke-width="1" opacity="0.55"/>
+      <line x1="470" y1="91" x2="477" y2="108" stroke="#d62728" stroke-width="1" opacity="0.55"/>
+      <line x1="470" y1="91" x2="495" y2="108" stroke="#d62728" stroke-width="1" opacity="0.55"/>
+      <line x1="570" y1="91" x2="545" y2="108" stroke="#d62728" stroke-width="1" opacity="0.55"/>
+      <line x1="570" y1="91" x2="563" y2="108" stroke="#d62728" stroke-width="1" opacity="0.55"/>
+      <line x1="570" y1="91" x2="577" y2="108" stroke="#d62728" stroke-width="1" opacity="0.55"/>
+      <line x1="570" y1="91" x2="595" y2="108" stroke="#d62728" stroke-width="1" opacity="0.55"/>
+      <circle cx="445" cy="112" r="3.5" fill="#d62728" opacity="0.65"/>
+      <circle cx="463" cy="112" r="3.5" fill="#d62728" opacity="0.65"/>
+      <circle cx="477" cy="112" r="3.5" fill="#d62728" opacity="0.65"/>
+      <circle cx="495" cy="112" r="3.5" fill="#d62728" opacity="0.65"/>
+      <circle cx="545" cy="112" r="3.5" fill="#d62728" opacity="0.65"/>
+      <circle cx="563" cy="112" r="3.5" fill="#d62728" opacity="0.65"/>
+      <circle cx="577" cy="112" r="3.5" fill="#d62728" opacity="0.65"/>
+      <circle cx="595" cy="112" r="3.5" fill="#d62728" opacity="0.65"/>
+      <!-- Level 3 - dense small dots -->
+      <line x1="445" y1="116" x2="438" y2="130" stroke="#d62728" stroke-width="0.6" opacity="0.35"/>
+      <line x1="445" y1="116" x2="445" y2="130" stroke="#d62728" stroke-width="0.6" opacity="0.35"/>
+      <line x1="445" y1="116" x2="452" y2="130" stroke="#d62728" stroke-width="0.6" opacity="0.35"/>
+      <line x1="463" y1="116" x2="456" y2="130" stroke="#d62728" stroke-width="0.6" opacity="0.35"/>
+      <line x1="463" y1="116" x2="463" y2="130" stroke="#d62728" stroke-width="0.6" opacity="0.35"/>
+      <line x1="463" y1="116" x2="470" y2="130" stroke="#d62728" stroke-width="0.6" opacity="0.35"/>
+      <line x1="477" y1="116" x2="474" y2="130" stroke="#d62728" stroke-width="0.6" opacity="0.35"/>
+      <line x1="477" y1="116" x2="480" y2="130" stroke="#d62728" stroke-width="0.6" opacity="0.35"/>
+      <line x1="495" y1="116" x2="489" y2="130" stroke="#d62728" stroke-width="0.6" opacity="0.35"/>
+      <line x1="495" y1="116" x2="495" y2="130" stroke="#d62728" stroke-width="0.6" opacity="0.35"/>
+      <line x1="495" y1="116" x2="501" y2="130" stroke="#d62728" stroke-width="0.6" opacity="0.35"/>
+      <line x1="545" y1="116" x2="538" y2="130" stroke="#d62728" stroke-width="0.6" opacity="0.35"/>
+      <line x1="545" y1="116" x2="545" y2="130" stroke="#d62728" stroke-width="0.6" opacity="0.35"/>
+      <line x1="545" y1="116" x2="552" y2="130" stroke="#d62728" stroke-width="0.6" opacity="0.35"/>
+      <line x1="563" y1="116" x2="556" y2="130" stroke="#d62728" stroke-width="0.6" opacity="0.35"/>
+      <line x1="563" y1="116" x2="563" y2="130" stroke="#d62728" stroke-width="0.6" opacity="0.35"/>
+      <line x1="563" y1="116" x2="570" y2="130" stroke="#d62728" stroke-width="0.6" opacity="0.35"/>
+      <line x1="577" y1="116" x2="574" y2="130" stroke="#d62728" stroke-width="0.6" opacity="0.35"/>
+      <line x1="577" y1="116" x2="580" y2="130" stroke="#d62728" stroke-width="0.6" opacity="0.35"/>
+      <line x1="595" y1="116" x2="589" y2="130" stroke="#d62728" stroke-width="0.6" opacity="0.35"/>
+      <line x1="595" y1="116" x2="595" y2="130" stroke="#d62728" stroke-width="0.6" opacity="0.35"/>
+      <line x1="595" y1="116" x2="601" y2="130" stroke="#d62728" stroke-width="0.6" opacity="0.35"/>
+      <!-- Tiny level 3 nodes -->
+      <circle cx="438" cy="134" r="2.5" fill="#d62728" opacity="0.4"/>
+      <circle cx="445" cy="134" r="2.5" fill="#d62728" opacity="0.4"/>
+      <circle cx="452" cy="134" r="2.5" fill="#d62728" opacity="0.4"/>
+      <circle cx="456" cy="134" r="2.5" fill="#d62728" opacity="0.4"/>
+      <circle cx="463" cy="134" r="2.5" fill="#d62728" opacity="0.4"/>
+      <circle cx="470" cy="134" r="2.5" fill="#d62728" opacity="0.4"/>
+      <circle cx="474" cy="134" r="2.5" fill="#d62728" opacity="0.4"/>
+      <circle cx="480" cy="134" r="2.5" fill="#d62728" opacity="0.4"/>
+      <circle cx="489" cy="134" r="2.5" fill="#d62728" opacity="0.4"/>
+      <circle cx="495" cy="134" r="2.5" fill="#d62728" opacity="0.4"/>
+      <circle cx="501" cy="134" r="2.5" fill="#d62728" opacity="0.4"/>
+      <circle cx="538" cy="134" r="2.5" fill="#d62728" opacity="0.4"/>
+      <circle cx="545" cy="134" r="2.5" fill="#d62728" opacity="0.4"/>
+      <circle cx="552" cy="134" r="2.5" fill="#d62728" opacity="0.4"/>
+      <circle cx="556" cy="134" r="2.5" fill="#d62728" opacity="0.4"/>
+      <circle cx="563" cy="134" r="2.5" fill="#d62728" opacity="0.4"/>
+      <circle cx="570" cy="134" r="2.5" fill="#d62728" opacity="0.4"/>
+      <circle cx="574" cy="134" r="2.5" fill="#d62728" opacity="0.4"/>
+      <circle cx="580" cy="134" r="2.5" fill="#d62728" opacity="0.4"/>
+      <circle cx="589" cy="134" r="2.5" fill="#d62728" opacity="0.4"/>
+      <circle cx="595" cy="134" r="2.5" fill="#d62728" opacity="0.4"/>
+      <circle cx="601" cy="134" r="2.5" fill="#d62728" opacity="0.4"/>
+      <!-- More levels indicator -->
+      <text x="520" y="157" fill="#d62728" font-family="IBM Plex Mono" font-size="12" text-anchor="middle" opacity="0.4">... 4 more levels ...</text>
+
+      <!-- Labels -->
+      <text x="520" y="190" fill="#d62728" font-family="IBM Plex Mono" font-size="13" font-weight="600" text-anchor="middle">255 hash operations</text>
+      <text x="520" y="210" fill="#94A3B8" font-family="IBM Plex Mono" font-size="11" text-anchor="middle">× 32 nodes on path</text>
+      <rect x="460" y="220" width="120" height="26" rx="4" fill="#d62728" opacity="0.15" stroke="#d62728" stroke-width="1"/>
+      <text x="520" y="238" fill="#d62728" font-family="IBM Plex Mono" font-size="12" font-weight="700" text-anchor="middle">= 8,160 total ops</text>
+
+      <!-- Bottom comparison -->
+      <rect x="220" y="268" width="280" height="30" rx="6" fill="#0A0E17" stroke="#1E293B" stroke-width="1"/>
+      <text x="360" y="288" fill="#F59E0B" font-family="IBM Plex Mono" font-size="13" font-weight="700" text-anchor="middle">8.5× more total rehashing for GD-8</text>
+    </svg>
+    <div class="diagram-caption">Figure 3 — Each trie node contains an internal binary subtree. Wider nodes mean exponentially more hashing per write.</div>
+  </div>
+
+  <!-- SVG DIAGRAM 4: Read Path vs Write Path -->
+  <div class="diagram-wrap">
+    <svg viewBox="0 0 720 320" xmlns="http://www.w3.org/2000/svg" style="background: #0F172A;">
+      <!-- Title -->
+      <text x="360" y="25" fill="#CBD5E1" font-family="IBM Plex Mono" font-size="13" font-weight="700" text-anchor="middle">Read Path vs Write Path</text>
+
+      <!-- Divider -->
+      <line x1="360" y1="38" x2="360" y2="285" stroke="#1E293B" stroke-width="1" stroke-dasharray="4,4"/>
+
+      <!-- LEFT: READ PATH -->
+      <text x="180" y="52" fill="#2ca02c" font-family="IBM Plex Mono" font-size="12" font-weight="700" text-anchor="middle">READ</text>
+
+      <!-- Trie nodes -->
+      <circle cx="180" cy="78" r="8" fill="#334155" stroke="#475569" stroke-width="1.5"/>
+      <text x="180" y="82" fill="#94A3B8" font-family="IBM Plex Mono" font-size="7" text-anchor="middle">root</text>
+
+      <circle cx="180" cy="120" r="7" fill="#334155" stroke="#475569" stroke-width="1.5"/>
+      <circle cx="180" cy="158" r="7" fill="#334155" stroke="#475569" stroke-width="1.5"/>
+      <circle cx="180" cy="196" r="7" fill="#334155" stroke="#475569" stroke-width="1.5"/>
+      <circle cx="180" cy="234" r="7" fill="#334155" stroke="#475569" stroke-width="1.5"/>
+      <rect x="170" y="258" width="20" height="12" rx="3" fill="#2ca02c" opacity="0.3" stroke="#2ca02c" stroke-width="1"/>
+      <text x="180" y="268" fill="#2ca02c" font-family="IBM Plex Mono" font-size="7" text-anchor="middle">val</text>
+
+      <!-- Green downward arrows -->
+      <line x1="180" y1="86" x2="180" y2="113" stroke="#2ca02c" stroke-width="2.5"/>
+      <polygon points="180,113 176,107 184,107" fill="#2ca02c"/>
+      <line x1="180" y1="127" x2="180" y2="151" stroke="#2ca02c" stroke-width="2.5"/>
+      <polygon points="180,151 176,145 184,145" fill="#2ca02c"/>
+      <line x1="180" y1="165" x2="180" y2="189" stroke="#2ca02c" stroke-width="2.5"/>
+      <polygon points="180,189 176,183 184,183" fill="#2ca02c"/>
+      <line x1="180" y1="203" x2="180" y2="227" stroke="#2ca02c" stroke-width="2.5"/>
+      <polygon points="180,227 176,221 184,221" fill="#2ca02c"/>
+      <line x1="180" y1="241" x2="180" y2="256" stroke="#2ca02c" stroke-width="2.5"/>
+      <polygon points="180,256 176,250 184,250" fill="#2ca02c"/>
+
+      <!-- Label -->
+      <text x="120" y="160" fill="#2ca02c" font-family="IBM Plex Mono" font-size="11" font-weight="600" text-anchor="end">Step 1:</text>
+      <text x="120" y="174" fill="#2ca02c" font-family="IBM Plex Mono" font-size="11" text-anchor="end">Traverse ↓</text>
+      <text x="120" y="200" fill="#64748B" font-family="IBM Plex Mono" font-size="9" text-anchor="end">Favors GD-8</text>
+      <text x="120" y="212" fill="#64748B" font-family="IBM Plex Mono" font-size="9" text-anchor="end">(fewer levels)</text>
+
+      <!-- RIGHT: WRITE PATH -->
+      <text x="540" y="52" fill="#d62728" font-family="IBM Plex Mono" font-size="12" font-weight="700" text-anchor="middle">WRITE</text>
+
+      <!-- Trie nodes -->
+      <circle cx="540" cy="78" r="8" fill="#334155" stroke="#475569" stroke-width="1.5"/>
+      <text x="540" y="82" fill="#94A3B8" font-family="IBM Plex Mono" font-size="7" text-anchor="middle">root</text>
+
+      <circle cx="540" cy="120" r="7" fill="#334155" stroke="#475569" stroke-width="1.5"/>
+      <circle cx="540" cy="158" r="7" fill="#334155" stroke="#475569" stroke-width="1.5"/>
+      <circle cx="540" cy="196" r="7" fill="#334155" stroke="#475569" stroke-width="1.5"/>
+      <circle cx="540" cy="234" r="7" fill="#334155" stroke="#475569" stroke-width="1.5"/>
+      <rect x="530" y="258" width="20" height="12" rx="3" fill="#2ca02c" opacity="0.3" stroke="#2ca02c" stroke-width="1"/>
+      <text x="540" y="268" fill="#2ca02c" font-family="IBM Plex Mono" font-size="7" text-anchor="middle">val</text>
+
+      <!-- Green downward arrows (traverse) -->
+      <line x1="533" y1="86" x2="533" y2="113" stroke="#2ca02c" stroke-width="2"/>
+      <polygon points="533,113 530,108 536,108" fill="#2ca02c"/>
+      <line x1="533" y1="127" x2="533" y2="151" stroke="#2ca02c" stroke-width="2"/>
+      <polygon points="533,151 530,146 536,146" fill="#2ca02c"/>
+      <line x1="533" y1="165" x2="533" y2="189" stroke="#2ca02c" stroke-width="2"/>
+      <polygon points="533,189 530,184 536,184" fill="#2ca02c"/>
+      <line x1="533" y1="203" x2="533" y2="227" stroke="#2ca02c" stroke-width="2"/>
+      <polygon points="533,227 530,222 536,222" fill="#2ca02c"/>
+      <line x1="533" y1="241" x2="533" y2="256" stroke="#2ca02c" stroke-width="2"/>
+      <polygon points="533,256 530,251 536,251" fill="#2ca02c"/>
+
+      <!-- Red upward arrows (rehash) -->
+      <line x1="547" y1="256" x2="547" y2="241" stroke="#d62728" stroke-width="2"/>
+      <polygon points="547,241 544,246 550,246" fill="#d62728"/>
+      <line x1="547" y1="227" x2="547" y2="203" stroke="#d62728" stroke-width="2"/>
+      <polygon points="547,203 544,208 550,208" fill="#d62728"/>
+      <line x1="547" y1="189" x2="547" y2="165" stroke="#d62728" stroke-width="2"/>
+      <polygon points="547,165 544,170 550,170" fill="#d62728"/>
+      <line x1="547" y1="151" x2="547" y2="127" stroke="#d62728" stroke-width="2"/>
+      <polygon points="547,127 544,132 550,132" fill="#d62728"/>
+      <line x1="547" y1="113" x2="547" y2="86" stroke="#d62728" stroke-width="2"/>
+      <polygon points="547,86 544,91 550,91" fill="#d62728"/>
+
+      <!-- Orange dots (serialize/commit) -->
+      <circle cx="558" cy="120" r="4" fill="#F59E0B" opacity="0.7"/>
+      <circle cx="558" cy="158" r="4" fill="#F59E0B" opacity="0.7"/>
+      <circle cx="558" cy="196" r="4" fill="#F59E0B" opacity="0.7"/>
+      <circle cx="558" cy="234" r="4" fill="#F59E0B" opacity="0.7"/>
+
+      <!-- Labels - Step 1 -->
+      <text x="475" y="116" fill="#2ca02c" font-family="IBM Plex Mono" font-size="9" text-anchor="end">Step 1:</text>
+      <text x="475" y="128" fill="#2ca02c" font-family="IBM Plex Mono" font-size="9" text-anchor="end">Traverse ↓</text>
+
+      <!-- Labels - Step 2 -->
+      <text x="610" y="170" fill="#d62728" font-family="IBM Plex Mono" font-size="9">Step 2:</text>
+      <text x="610" y="182" fill="#d62728" font-family="IBM Plex Mono" font-size="9">Rehash ↑</text>
+      <text x="610" y="198" fill="#64748B" font-family="IBM Plex Mono" font-size="8">Favors GD-4</text>
+      <text x="610" y="208" fill="#64748B" font-family="IBM Plex Mono" font-size="8">(cheaper nodes)</text>
+
+      <!-- Labels - Step 3 -->
+      <text x="610" y="232" fill="#F59E0B" font-family="IBM Plex Mono" font-size="9">Step 3:</text>
+      <text x="610" y="244" fill="#F59E0B" font-family="IBM Plex Mono" font-size="9">Commit → disk</text>
+      <text x="610" y="260" fill="#64748B" font-family="IBM Plex Mono" font-size="8">Favors GD-4</text>
+      <text x="610" y="270" fill="#64748B" font-family="IBM Plex Mono" font-size="8">(smaller nodes)</text>
+
+      <!-- Bottom summary -->
+      <rect x="130" y="290" width="460" height="22" rx="4" fill="#0A0E17" stroke="#1E293B" stroke-width="1"/>
+      <text x="360" y="305" fill="#94A3B8" font-family="IBM Plex Mono" font-size="10" text-anchor="middle">Reads = Step 1 only. Writes = Steps 1 + 2 + 3. Steps 2-3 dominate write cost.</text>
+    </svg>
+    <div class="diagram-caption">Figure 4 — For reads, only the downward traversal matters (favors GD-8). For writes, rehashing and commit dominate (favors GD-4).</div>
+  </div>
+
+  <p>GD-8's path is 2&times; shorter than GD-4 (32 vs 64 levels), but each node is ~17&times; more expensive to rehash (255 vs 15 internal operations). For reads, only Step 1 matters &mdash; the traversal. For writes, Steps 2 and 3 dominate, and the per-node cost overwhelms the shorter path.</p>
+
+  <p class="muted" style="font-size:13px; margin-top:16px;"><strong>Note:</strong> The 17× ratio (255 vs 15 internal hash operations) is the theoretical upper bound from the data structure definition. Our benchmarks support the mechanism: GD-8 trie update costs are 1.71× more than GD-4 (433ms vs 254ms), consistent with random writes modifying a fraction of each node's internal subtree. The geth implementation (<code>go-ethereum/trie</code>) is the authoritative source for the exact rehashing algorithm.</p>
+
+  <h3>Node Serialization Size</h3>
+  <p>Each trie node stores up to 2<sup>N</sup> child pointers (32 bytes each). A GD-8 node holds up to 256 × 32 = <strong>~8 KB</strong>. A GD-4 node: 16 × 32 = <strong>~512 bytes</strong>. The 16× size difference has cascading effects:</p>
+  <ul style="margin-left:24px;">
+    <li><strong>Pebble cache efficiency:</strong> Fewer GD-8 nodes fit in a given cache budget</li>
+    <li><strong>Write amplification:</strong> Larger serialized nodes increase LSM compaction overhead</li>
+    <li><strong>Commit cost:</strong> The 198% commit penalty (158ms vs 53ms) partly reflects serializing 16× more data per modified node</li>
+  </ul>
+
+  <h3>Why Synthetic SSTORE Didn't Show This</h3>
+  <p>Sequential slot access clusters writes into the same trie branch, enabling Pebble's write batch to amortize commit costs. The trie update penalty is also reduced because adjacent keys modify the same internal subtrees. The ERC20 benchmark's random access pattern defeated both amortization mechanisms.</p>
+
+  <img src="graphs/q2_write_cost_boxplot.png" alt="Q2: Synthetic write cost boxplot" class="graph-img"/>
+  <img src="graphs/q2_write_scaling_scatter.png" alt="Q2: Trie update cost vs slots written scatter plot" class="graph-img"/>
+  <div class="diagram-caption">Trie update cost scales linearly with slots written. The distinct horizontal bands correspond to different sub-variants. GD-8 points (red) sit slightly above the others at each band.</div>
+  <p class="muted">Even with sequential access, GD-8 showed a slight elevation in write cost &mdash; a hint of the penalty that ERC20 workloads would expose fully.</p>
+</section>
+
+<!-- ============================================================ -->
+<!-- §6 ACT III: THE TRADE-OFF                                     -->
+<!-- ============================================================ -->
+<section class="section" id="s6">
+  <div class="section-label">&sect;6</div>
+  <h2>Act III: The Trade-off</h2>
+
+  <h3>The Verdict</h3>
+  <div class="verdict-card">
+    <div class="data-table-wrap">
+      <table>
+        <thead>
+          <tr><th>Criterion</th><th style="color:#2ca02c;">GD-4</th><th style="color:#d62728;">GD-8</th><th>Winner</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Reads (balanceOf)</td>
+            <td>3,067 ms</td>
+            <td>2,977 ms</td>
+            <td class="cell-amber">GD-8 by 3% (p=0.045, borderline)</td>
+          </tr>
+          <tr>
+            <td>Writes (approve)</td>
+            <td class="cell-bold">678 ms</td>
+            <td style="color:#d62728;">982 ms</td>
+            <td class="cell-green"><strong>GD-4 by 45%</strong> (p &lt; 1e-9)</td>
+          </tr>
+          <tr>
+            <td>Mixed</td>
+            <td>2,302 ms</td>
+            <td>2,145 ms</td>
+            <td class="cell-dim">Indistinguishable (p=0.37)</td>
+          </tr>
+          <tr>
+            <td>Synthetic writes</td>
+            <td class="cell-bold">91.6 ms</td>
+            <td><span class="cell-amber">101.5 ms &#9888;</span></td>
+            <td class="cell-green">GD-4 by 10%</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="callout callout-green">
+    <strong>3% read sacrifice. 45% write gain.</strong> The asymmetry is decisive. GD-4 trades a borderline-significant read disadvantage for a massively significant write advantage.
+  </div>
+
+  <h3>Mixed Workloads</h3>
+  <img src="graphs/q6_mixed_boxplot.png" alt="Q6: Mixed workload boxplot" class="graph-img"/>
+  <img src="graphs/q6_mixed_mgas.png" alt="Q6: Mixed workload Mgas/s" class="graph-img"/>
+
+  <div class="data-table-wrap">
+    <table>
+      <thead>
+        <tr><th>GD</th><th>state_read (ms)</th><th>trie_updates (ms)</th><th>commit (ms)</th><th>total (ms)</th><th>Mgas/s</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="dot" style="background:#1f77b4;"></span>1</td>
+          <td>4,711</td><td>345</td><td>53</td><td>5,363</td><td>2.18</td>
+        </tr>
+        <tr>
+          <td><span class="dot" style="background:#ff7f0e;"></span>2</td>
+          <td>3,003</td><td>217</td><td>44</td><td>3,518</td><td>3.35</td>
+        </tr>
+        <tr>
+          <td><span class="dot" style="background:#2ca02c;"></span>4</td>
+          <td>1,893</td><td class="cell-bold">138</td><td class="cell-bold">43</td><td>2,302</td><td>5.13</td>
+        </tr>
+        <tr>
+          <td><span class="dot" style="background:#d62728;"></span>8</td>
+          <td class="cell-bold">1,612</td><td>221</td><td>87</td><td class="cell-bold">2,145</td><td class="cell-bold">5.43</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>GD-4 and GD-8 are statistically indistinguishable on mixed workloads (p=0.37). The read advantage of GD-8 is partially offset by its write penalty, bringing the two configurations to near-parity when reads and writes are interleaved. The crossover depends on the read/write ratio: write-heavy workloads favor GD-4; read-heavy workloads favor GD-8.</p>
+
+  <div class="callout callout-amber">
+    <strong>Open question:</strong> The optimal group depth ultimately depends on the read/write ratio of real Ethereum blocks. While state reads clearly dominate block processing time in our benchmarks, the exact mainnet split has not been systematically measured. A historical analysis of mainnet read vs write access patterns would further inform this recommendation.
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- §7 CROSS-CUTTING PATTERNS                                     -->
+<!-- ============================================================ -->
+<section class="section" id="s7">
+  <div class="section-label">&sect;7</div>
+  <h2>Cross-Cutting Patterns</h2>
+
+  <h3>Where Does Time Go?</h3>
+  <img src="graphs/q3_erc20_time_breakdown_stacked.png" alt="ERC20 Time Breakdown" class="graph-img"/>
+  <img src="graphs/q3_erc20_hash_vs_commit_ratio.png" alt="ERC20 Trie Updates vs Commit Cost" class="graph-img"/>
+  <p>State reads dominate ERC20 block processing time across all group-depth configurations, accounting for 50–85% of total time. Trie update and commit costs are negligible for read-only benchmarks (balanceOf) but become the dominant cost component for writes (approve) — especially at higher group depths where internal subtree rehashing is most expensive.</p>
+
+  <h3>Overall Throughput</h3>
+  <img src="graphs/q8_mgas_overview.png" alt="Q8: Mgas/s overview across all benchmarks" class="graph-img"/>
+
+
+</section>
+
+<!-- ============================================================ -->
+<!-- §8 CONCLUSIONS                                                -->
+<!-- ============================================================ -->
+<section class="section" id="s8">
+  <div class="section-label">&sect;8</div>
+  <h2>Conclusions</h2>
+
+  <div class="recommendation">
+    <div class="big-text">GD-4 is the recommended configuration</div>
+    <p style="margin-bottom: 4px;"><strong>Confidence:</strong> High (ERC20 benchmarks), Moderate (synthetic, pending GD-8 re-run)</p>
+  </div>
+
+  <h3>Root Causes</h3>
+  <p>The recommendation rests on a three-step mechanism that governs every state access in the binary trie:</p>
+  <ol>
+    <li><strong>Traverse</strong> &mdash; descend from root to leaf. Cost proportional to tree depth. Favors wider trees (GD-8: 32 levels vs GD-4: 64 levels).</li>
+    <li><strong>Rehash</strong> &mdash; recompute the internal subtree of every node on the path back to root. Cost proportional to 2<sup>g</sup>&minus;1 per node. Favors narrower trees (GD-4: 15 ops/node vs GD-8: 255 ops/node).</li>
+    <li><strong>Commit</strong> &mdash; serialize and write modified nodes to disk. Cost proportional to node size. Favors narrower trees.</li>
+  </ol>
+  <p>The math: GD-8 has a 2&times; shorter path but each node is 17&times; more expensive to rehash. For reads, only Step 1 matters, and GD-8 wins by 3%. For writes, Steps 2&ndash;3 dominate, and GD-4 wins by 45%. The asymmetry is structural and will persist across workloads.</p>
+
+  <h3>Five Patterns That Hold Across All Group Depths</h3>
+
+  <div class="pattern-card" style="border-color: #1f77b4;">
+    <p><strong style="color: #1f77b4;">1. State reads dominate.</strong> 50&ndash;85% of block processing time is spent reading state from disk, regardless of group depth or benchmark type.</p>
+  </div>
+  <div class="pattern-card" style="border-color: #ff7f0e;">
+    <p><strong style="color: #ff7f0e;">2. Random access is ~40&times; more expensive per slot.</strong> Keccak-hashed keys (ERC20) cost 0.4&ndash;1.0 ms/slot vs 0.02 ms/slot for sequential access (synthetic).</p>
+  </div>
+  <div class="pattern-card" style="border-color: #2ca02c;">
+    <p><strong style="color: #2ca02c;">3. Cache hit rates plateau at ~37&ndash;39% for random access.</strong> Despite increasing group depth, the storage cache hit rate never exceeds ~39% for keccak-hashed workloads. The 256-bit keyspace is too sparse for meaningful cache reuse beyond shared upper-level trie nodes.</p>
+  </div>
+  <div class="pattern-card" style="border-color: #d62728;">
+    <p><strong style="color: #d62728;">4. Trie updates are negligible for reads, dominant for writes.</strong> Read benchmarks show &lt;1% time in trie updates. Write benchmarks at GD-8 spend up to 44% of time rehashing internal subtrees.</p>
+  </div>
+  <div class="pattern-card" style="border-color: #64748B;">
+    <p><strong style="color: #94A3B8;">5. Run-to-run CV &lt; 6%.</strong> Cold-cache protocol and dedicated hardware produce highly reproducible results across all configurations.</p>
+  </div>
+
+  <h3>On the Snapshot Layer</h3>
+  <p>These benchmarks ran without a flat snapshot layer. The binary trie already performs efficient path-based reads via Pebble's BTree index — approaching the read efficiency that MPT achieves only with a snapshot layer. This means the read differences measured here (GD-8 leads GD-4 by only 3%) are close to what real deployments would see. The 45% write penalty of GD-8 remains fully exposed regardless. Snapshots would further favor GD-4 by making its small read disadvantage even more negligible.</p>
+
+  <h3>Open Questions</h3>
+  <div class="oq-grid">
+    <div class="oq-card">
+      <div class="oq-number">01</div>
+      <p>Non-power-of-2 group depths (GD-5, GD-6) may offer a better balance between traversal and rehashing costs.</p>
+    </div>
+    <div class="oq-card">
+      <div class="oq-number">02</div>
+      <p>Snapshot layer validation: empirically confirm that snapshots further favor GD-4 as our analysis predicts.</p>
+    </div>
+    <div class="oq-card">
+      <div class="oq-number">03</div>
+      <p>Pebble block size interaction: this study fixed block size at 4KB. The GD &times; block-size matrix is unexplored.</p>
+    </div>
+    <div class="oq-card">
+      <div class="oq-number">04</div>
+      <p>Mainnet state distribution: real Ethereum state may have different access patterns than our synthetic 400M-entry database.</p>
+    </div>
+    <div class="oq-card">
+      <div class="oq-number">05</div>
+      <p>Concurrent block processing: parallel EVM execution may change the read/write ratio and shift the optimal group depth.</p>
+    </div>
+    <div class="oq-card">
+      <div class="oq-number">06</div>
+      <p>GD-8 synthetic re-run: completing the missing sload_benchmark data to confirm synthetic read scaling.</p>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- ============================================================ -->
+<!-- FOOTER                                                        -->
+<!-- ============================================================ -->
+<footer>
+  <div class="container">
+    <p style="margin-bottom: 8px;">Binary Trie Group-Depth Benchmark Analysis &mdash; 2026</p>
+    <p style="margin-bottom: 4px;"><a href="https://github.com/ethereum/execution-specs">Execution Specs Repository</a></p>
+    <p><a href="#s3">Methodology</a> &middot; <a href="#s7">Raw Data</a></p>
+  </div>
+</footer>
+
+<!-- ============================================================ -->
+<!-- JAVASCRIPT                                                    -->
+<!-- ============================================================ -->
+<script>
+(function() {
+  const nav = document.getElementById('section-nav');
+  const pills = nav.querySelectorAll('.nav-pill');
+  const sections = [];
+
+  pills.forEach(function(pill) {
+    var target = pill.getAttribute('data-target');
+    var section = document.getElementById(target);
+    if (section) sections.push({ pill: pill, section: section });
+
+    pill.addEventListener('click', function() {
+      var el = document.getElementById(target);
+      if (!el) return;
+      var navHeight = nav.offsetHeight + 16;
+      var top = el.getBoundingClientRect().top + window.pageYOffset - navHeight;
+      window.scrollTo({ top: top, behavior: 'smooth' });
+    });
+  });
+
+  function updateActive() {
+    var navBottom = nav.getBoundingClientRect().bottom + 40;
+    var current = null;
+    for (var i = sections.length - 1; i >= 0; i--) {
+      if (sections[i].section.getBoundingClientRect().top <= navBottom) {
+        current = sections[i];
+        break;
+      }
+    }
+    pills.forEach(function(p) { p.classList.remove('active'); });
+    if (current) current.pill.classList.add('active');
+  }
+
+  window.addEventListener('scroll', updateActive, { passive: true });
+  updateActive();
+})();
+</script>
+
+</body>
+</html>

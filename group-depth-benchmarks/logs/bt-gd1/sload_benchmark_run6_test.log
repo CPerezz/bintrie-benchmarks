@@ -1,0 +1,35 @@
+Executing: pytest -c 
+/home/CPerezz/execution-specs/packages/testing/src/execution_testing/cli/pytest_
+commands/pytest_ini_files/pytest-execute.ini --rootdir . --fork Prague 
+--gas-benchmark-values 100 --address-stubs 
+/home/CPerezz/execution-specs/tests/benchmark/stateful/bloatnet/stubs_bloatnet.j
+son -m stateful 
+tests/benchmark/stateful/bloatnet/test_single_opcode.py::test_storage_sload_benc
+hmark -k access_warm_False -v
+2026-03-07 23:55:22 [[36mINFO[0m] ./packages/testing/src/execution_testing/rpc/rpc.py:372: Requesting chainid of provided RPC endpoint..
+2026-03-07 23:55:22 [[36mINFO[0m] ./packages/testing/src/execution_testing/rpc/rpc.py:266: RPC Result: 0x539
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-8.4.2, pluggy-1.6.0 -- /home/CPerezz/execution-specs/.venv/bin/python
+[1mStart seed for EOA: 0xc47c07c3cfa07e85a5643b610368bbd1e8eb91ace93cc1886e4ea992712f5194 [39;49m
+[1mGenerating fixtures for: Prague[39;49m
+[1m[93mOnly generating fixtures with stable/deployed forks: Specify an upcoming fork via --until=fork to add forks under development.[39;49m
+cachedir: .pytest_cache
+Log file: logs/execute-remote-20260307-235522-main.log
+metadata: {'Python': '3.12.3', 'Platform': 'Linux-6.8.0-101-generic-x86_64-with-glibc2.39', 'Packages': {'pytest': '8.4.2', 'pluggy': '1.6.0'}, 'Plugins': {'json-report': '1.5.0', 'xdist': '3.8.0', 'cov': '4.1.0', 'html': '4.1.1', 'custom-report': '1.0.1', 'regex': '0.2.0', 'metadata': '3.1.1'}, 'Command-line args': '<code>execute -c /home/CPerezz/execution-specs/packages/testing/src/execution_testing/cli/pytest_commands/pytest_ini_files/pytest-execute.ini --rootdir . --fork Prague --gas-benchmark-values 100 --address-stubs /home/CPerezz/execution-specs/tests/benchmark/stateful/bloatnet/stubs_bloatnet.json -m stateful tests/benchmark/stateful/bloatnet/test_single_opcode.py::test_storage_sload_benchmark -k access_warm_False -v</code>', 'Senders': {}}
+rootdir: /home/CPerezz/execution-specs
+configfile: packages/testing/src/execution_testing/cli/pytest_commands/pytest_ini_files/pytest-execute.ini
+plugins: json-report-1.5.0, xdist-3.8.0, cov-4.1.0, html-4.1.1, custom-report-1.0.1, regex-0.2.0, metadata-3.1.1
+collecting ...  pytest-regex selected 4 tests to run for regex: .*
+collected 4 items / 2 deselected / 2 selected
+
+tests/benchmark/stateful/bloatnet/test_single_opcode.py::test_storage_sload_benchmark[fork_Prague-benchmark_test-storage_keys_pre_set_True-access_warm_False-benchmark-gas-value_100M] PASSED [1/2]
+tests/benchmark/stateful/bloatnet/test_single_opcode.py::test_storage_sload_benchmark[fork_Prague-benchmark_test-storage_keys_pre_set_False-access_warm_False-benchmark-gas-value_100M] PASSED [2/2]
+
+=============================== warnings summary ===============================
+.venv/lib/python3.12/site-packages/_pytest/config/__init__.py:812
+  /home/CPerezz/execution-specs/.venv/lib/python3.12/site-packages/_pytest/config/__init__.py:812: PytestAssertRewriteWarning: Module already imported so cannot be rewritten; execution_testing.cli.pytest_commands.plugins.execute.pre_alloc
+    self.import_plugin(arg, consider_entry_points=True)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+- Log file: /home/CPerezz/execution-specs/logs/execute-remote-20260307-235522-main.log -
+============ 2 passed, 2 deselected, 1 warning in 298.81s (0:04:58) ============

@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Binary Trie Benchmarks</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #0A0E17;
+      color: #CBD5E1;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 80px 24px;
+    }
+
+    .container { max-width: 720px; width: 100%; }
+
+    h1 {
+      font-size: 32px;
+      font-weight: 700;
+      color: #F8FAFC;
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      font-size: 15px;
+      color: #64748B;
+      margin-bottom: 48px;
+    }
+
+    .subtitle a { color: #60A5FA; text-decoration: none; }
+    .subtitle a:hover { text-decoration: underline; }
+
+    h2 {
+      font-size: 13px;
+      font-weight: 600;
+      color: #64748B;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      margin-bottom: 16px;
+    }
+
+    .card {
+      background: #111827;
+      border: 1px solid #1E293B;
+      border-radius: 8px;
+      padding: 24px 28px;
+      margin-bottom: 12px;
+      text-decoration: none;
+      display: block;
+      transition: border-color 0.15s, background 0.15s;
+    }
+
+    .card:hover {
+      border-color: #F59E0B;
+      background: #0F172A;
+    }
+
+    .card-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: #F8FAFC;
+      margin-bottom: 8px;
+    }
+
+    .card-summary {
+      font-size: 14px;
+      color: #94A3B8;
+      line-height: 1.6;
+      margin-bottom: 12px;
+    }
+
+    .card-result {
+      font-size: 14px;
+      color: #F59E0B;
+      font-weight: 500;
+    }
+
+    .card-meta {
+      font-size: 12px;
+      color: #475569;
+      margin-top: 12px;
+    }
+
+    .card-meta span { margin-right: 16px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Binary Trie Benchmarks</h1>
+    <p class="subtitle">Performance research for Ethereum's binary trie (<a href="https://eips.ethereum.org/EIPS/eip-7864">EIP-7864</a>)</p>
+
+    <h2>Experiments</h2>
+
+    <a class="card" href="group-depth-benchmarks/index.html">
+      <div class="card-title">Group Depth Benchmarks</div>
+      <div class="card-summary">
+        Compared GD-1, GD-2, GD-4, and GD-8 on 360 GB databases (~400M state entries).
+        Five benchmark types under cold-cache protocol: synthetic SLOAD/SSTORE and ERC20 contract workloads.
+      </div>
+      <div class="card-result">
+        Result: GD-4 is optimal &mdash; 3% read sacrifice buys a 45% write gain over GD-8.
+      </div>
+      <div class="card-meta">
+        <span>4 configurations</span>
+        <span>5 benchmark types</span>
+        <span>~450 runs</span>
+      </div>
+    </a>
+  </div>
+</body>
+</html>

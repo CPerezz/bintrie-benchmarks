@@ -1,0 +1,406 @@
+INFO [03-08|00:11:21.992] Starting Geth on Ethereum mainnet...
+INFO [03-08|00:11:21.996] Maximum peer count                       ETH=0 total=0
+INFO [03-08|00:11:21.998] Smartcard socket not found, disabling    err="stat /run/pcscd/pcscd.comm: no such file or directory"
+WARN [03-08|00:11:22.007] Option --miner.etherbase is deprecated as the etherbase is set by the consensus client post-merge
+WARN [03-08|00:11:22.020] Snap sync requested, resetting --cache.snapshot
+INFO [03-08|00:11:22.020] Set global gas cap                       cap=50,000,000
+INFO [03-08|00:11:22.122] Using developer account                  address=0x71562b71999873DB5b286dF957af199Ec94617F7
+INFO [03-08|00:11:22.880] Using pebble as the backing database
+INFO [03-08|00:11:22.880] Allocated cache and file handles         database=/home/CPerezz/dbs/bt-gd1/geth/chaindata cache=16.00MiB handles=524,288
+INFO [03-08|00:11:25.365] Opened ancient database                  database=/home/CPerezz/dbs/bt-gd1/geth/chaindata/ancient/chain readonly=true
+INFO [03-08|00:11:25.365] Opened Era store                         datadir=/home/CPerezz/dbs/bt-gd1/geth/chaindata/ancient/chain/era
+INFO [03-08|00:11:25.394] Initializing the KZG library             backend=gokzg
+INFO [03-08|00:11:25.399] Allocated trie memory caches             clean=0.00B dirty=0.00B
+INFO [03-08|00:11:25.537] Using pebble as the backing database
+INFO [03-08|00:11:25.537] Allocated cache and file handles         database=/home/CPerezz/dbs/bt-gd1/geth/chaindata cache=16.00MiB handles=524,288
+INFO [03-08|00:11:27.176] Opened ancient database                  database=/home/CPerezz/dbs/bt-gd1/geth/chaindata/ancient/chain readonly=false
+INFO [03-08|00:11:27.176] Opened Era store                         datadir=/home/CPerezz/dbs/bt-gd1/geth/chaindata/ancient/chain/era
+INFO [03-08|00:11:27.190] State scheme set to already existing     scheme=path
+INFO [03-08|00:11:27.191] Initialising Ethereum protocol           network=1337 dbversion=9
+INFO [03-08|00:11:27.191] Load database journal from file          path=/home/CPerezz/dbs/bt-gd1/geth/triedb/verkle.journal
+INFO [03-08|00:11:27.903] Opened ancient database                  database=/home/CPerezz/dbs/bt-gd1/geth/chaindata/ancient/state_verkle readonly=false
+INFO [03-08|00:11:27.908] State snapshot generator is not found
+INFO [03-08|00:11:27.908] Initialized path database                triecache=0.00B statecache=0.00B buffer=0.00B state-history="last 90000 blocks" journal-dir=/home/CPerezz/dbs/bt-gd1/geth/triedb verkle=true
+INFO [03-08|00:11:27.909] 
+INFO [03-08|00:11:27.909] ---------------------------------------------------------------------------------------------------------------------------------------------------------
+INFO [03-08|00:11:27.909] Chain ID:  1337 (unknown)
+INFO [03-08|00:11:27.909] Consensus: unknown
+INFO [03-08|00:11:27.909] 
+INFO [03-08|00:11:27.909] Pre-Merge hard forks (block based):
+INFO [03-08|00:11:27.909]  - Homestead:                   #0       
+INFO [03-08|00:11:27.909]  - Tangerine Whistle (EIP 150): #0       
+INFO [03-08|00:11:27.909]  - Spurious Dragon/1 (EIP 155): #0       
+INFO [03-08|00:11:27.909]  - Spurious Dragon/2 (EIP 158): #0       
+INFO [03-08|00:11:27.909]  - Byzantium:                   #0       
+INFO [03-08|00:11:27.909]  - Constantinople:              #0       
+INFO [03-08|00:11:27.909]  - Petersburg:                  #0       
+INFO [03-08|00:11:27.909]  - Istanbul:                    #0       
+INFO [03-08|00:11:27.909]  - Berlin:                      #0       
+INFO [03-08|00:11:27.909]  - London:                      #0       
+INFO [03-08|00:11:27.909] 
+INFO [03-08|00:11:27.909] Merge configured:
+INFO [03-08|00:11:27.909]  - Total terminal difficulty:  0
+INFO [03-08|00:11:27.909] 
+INFO [03-08|00:11:27.909] Post-Merge hard forks (timestamp based):
+INFO [03-08|00:11:27.909]  - Shanghai:                    @0         
+INFO [03-08|00:11:27.909]  - Cancun:                      @0          blob: (target: 3, max: 6, fraction: 3338477)
+INFO [03-08|00:11:27.909]  - Prague:                      @0          blob: (target: 6, max: 9, fraction: 5007716)
+INFO [03-08|00:11:27.909]  - Verkle:                      @0          blob: (target: 6, max: 9, fraction: 5007716)
+INFO [03-08|00:11:27.909] 
+INFO [03-08|00:11:27.909] All fork specifications can be found at https://ethereum.github.io/execution-specs/src/ethereum/forks/
+INFO [03-08|00:11:27.909] 
+INFO [03-08|00:11:27.909] ---------------------------------------------------------------------------------------------------------------------------------------------------------
+INFO [03-08|00:11:27.909] 
+INFO [03-08|00:11:27.915] Loaded most recent local block           number=1535 hash=fb9720..a77e49 age=19s
+INFO [03-08|00:11:27.915] Loaded most recent local finalized block number=1504 hash=b23782..523596 age=5m57s
+INFO [03-08|00:11:27.919] Initialized transaction indexer          range="last 2350000 blocks"
+INFO [03-08|00:11:27.920] Initialized log indexer                  firstblock=0 lastblock=1535 firstmap=0 lastmap=0 headindexed=true
+INFO [03-08|00:11:27.967] Enabled full-sync                        head=1535 hash=fb9720..a77e49
+INFO [03-08|00:11:27.969] Unprotected transactions allowed
+INFO [03-08|00:11:27.971] Gasprice oracle is ignoring threshold set threshold=2
+WARN [03-08|00:11:27.973] Unclean shutdown detected                booted=2026-03-07T18:43:02+0000 age=5h28m25s
+INFO [03-08|00:11:27.974] Registered sync override service
+WARN [03-08|00:11:27.974] You are running Geth in --dev mode. Please note the following:
+WARN [03-08|00:11:27.974] 
+WARN [03-08|00:11:27.974]   1. This mode is only intended for fast, iterative development without assumptions on
+WARN [03-08|00:11:27.974]      security or persistence.
+WARN [03-08|00:11:27.974]   2. The database is created in memory unless specified otherwise. Therefore, shutting down
+WARN [03-08|00:11:27.974]      your computer or losing power will wipe your entire block data and chain state for
+WARN [03-08|00:11:27.974]      your dev environment.
+WARN [03-08|00:11:27.974]   3. A random, pre-allocated developer account will be available and unlocked as
+WARN [03-08|00:11:27.974]      eth.coinbase, which can be used for testing. The random dev account is temporary,
+WARN [03-08|00:11:27.974]      stored on a ramdisk, and will be lost if your machine is restarted.
+WARN [03-08|00:11:27.974]   4. Mining is enabled by default. However, the client will only seal blocks if transactions
+WARN [03-08|00:11:27.974]      are pending in the mempool. The miner's minimum accepted gas price is 1.
+WARN [03-08|00:11:27.974]   5. Networking is disabled; there is no listen-address, the maximum number of peers is set
+WARN [03-08|00:11:27.974]      to 0, and discovery is disabled.
+WARN [03-08|00:11:27.974] 
+INFO [03-08|00:11:27.974] Starting peer-to-peer node               instance=Geth/v1.17.0-unstable-ea8e4aab-20260306/linux-amd64/go1.24.0
+WARN [03-08|00:11:27.974] P2P server will be useless, neither dialing nor listening
+INFO [03-08|00:11:28.063] New local node record                    seq=1,772,571,589,880 id=bcf220e3c6b67df3 ip=127.0.0.1 udp=0 tcp=0
+INFO [03-08|00:11:28.063] Started P2P networking                   self=enode://907a5ca17326ff8bb8caeb553d1b5e2c568737798615810c16ae826a233f48b671635dbc1e6509baeb622c67edc6787f725e76d895791b68fa63b173f1b0e7b0@127.0.0.1:0
+INFO [03-08|00:11:28.065] IPC endpoint opened                      url=/home/CPerezz/dbs/bt-gd1/geth.ipc
+ERROR[03-08|00:11:28.065] Unavailable modules in HTTP API list     unavailable=[personal] available="[admin debug web3 eth txpool miner net dev]"
+INFO [03-08|00:11:28.067] HTTP server started                      endpoint=[::]:8545 auth=false prefix= cors= vhosts=localhost
+INFO [03-08|00:11:28.067] WebSocket enabled                        url=ws://[::]:8546
+INFO [03-08|00:11:28.517] Loaded local transaction journal         transactions=4986 dropped=0
+INFO [03-08|00:11:30.336] Started log indexer
+INFO [03-08|00:11:30.428] Starting work on payload                 id=0x0382fe59b3d927e2
+INFO [03-08|00:11:30.436] Updated payload                          id=0x0382fe59b3d927e2 number=1536 hash=04bb5a..da0703 txs=0 withdrawals=0 gas=0 fees=0 root=cd5b1f..945242 elapsed=7.738ms
+INFO [03-08|00:11:30.436] Stopping work on payload                 id=0x0382fe59b3d927e2 reason=delivery
+WARN [03-08|00:11:30.457] {"level":"warn","msg":"Slow block","block":{"number":1536,"hash":"0x04bb5a133dadca7f4fd0a9a705b3f6ec1353f924088041757a5e2bd488da0703","gas_used":0,"tx_count":0},"timing":{"execution_ms":0.110155,"state_read_ms":6.201703,"state_hash_ms":0.020326,"commit_ms":0.256643,"total_ms":8.532576},"throughput":{"mgas_per_sec":0},"state_reads":{"accounts":4,"storage_slots":0,"code":0,"code_bytes":0},"state_writes":{"accounts":0,"accounts_deleted":0,"storage_slots":0,"storage_slots_deleted":0,"code":0,"code_bytes":0},"cache":{"account":{"hits":0,"misses":4,"hit_rate":0},"storage":{"hits":0,"misses":0,"hit_rate":0},"code":{"hits":0,"misses":0,"hit_rate":0,"hit_bytes":0,"miss_bytes":0}}}
+INFO [03-08|00:11:30.457] Imported new potential chain segment     number=1536 hash=04bb5a..da0703 blocks=1 txs=0 mgas=0.000 elapsed=20.695ms mgasps=0.000 triediffs=2.49MiB triedirty=0.00B
+INFO [03-08|00:11:30.457] Chain head was updated                   number=1536 hash=04bb5a..da0703 root=cd5b1f..945242 elapsed="88.882µs"
+INFO [03-08|00:11:34.274] Submitted contract creation              hash=0x9e532a20365d104b40dad98e6aad5a8730a42844a9a332a9523fd677b733131c from=0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266 nonce=2528 contract=0xC54c6f1296C01B840927B303Fd5DFea076599feC value=0
+INFO [03-08|00:11:34.280] Submitted contract creation              hash=0xf95548c8166cf5199b997abe49c79eec6b49547307f9dfef77f8954a1cf710fb from=0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266 nonce=2529 contract=0xf5C468f11D73c183619faac4cDeB6272b6C390Bb value=0
+INFO [03-08|00:11:34.285] Submitted transaction                    hash=0xbb413458fdf28af8e59d1a0f77c4196e5c995cb97a05e8954583bbdd92aa19cf from=0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266 nonce=2530 recipient=0xD9fc3eC9446FD9cE1F9560b4af7aA4a73F116B86 value=150,000,000,002,000,000,000
+INFO [03-08|00:11:34.290] Submitted transaction                    hash=0x71f72f54b9945aa869d814e87c910527237254554adfd6b4d3cbd4bc81053459 from=0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266 nonce=2531 recipient=0x3c909a454e1ea35B975D8e9E9E0b878ddC6d23cD value=76,474,479,000,509,829,860
+INFO [03-08|00:11:34.294] Submitted transaction                    hash=0x45ef4c2f154f57d33b71e0643b8f6acb90050bd38afbb27963da0ca486a2e5ff from=0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266 nonce=2532 recipient=0xb5A4bb308Cb7E0E4bFafcaC40C60Db9ef569D7CF value=76,474,497,000,509,829,980
+INFO [03-08|00:11:34.298] Submitted transaction                    hash=0x8e65e6d8dad67aa5b0f463fa4b5ebe1cbd2cdaae83c37a82a7bb6ae2576bac47 from=0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266 nonce=2533 recipient=0xe8fA3338211ADB29B257BEe8b2c3364ec03C4825 value=76,474,497,000,509,829,980
+INFO [03-08|00:11:34.302] Submitted transaction                    hash=0x9b7917503449e812433adb7d121b2baefb3a6e9796d3a1d00deeebbde9d1b4d0 from=0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266 nonce=2534 recipient=0xe8830D74Ae8DE8f25f1190b0FbD5d99dbD41CCA9 value=76,474,497,000,509,829,980
+INFO [03-08|00:11:34.312] Submitted transaction                    hash=0x6d3e659984dbf3d93ffebc48890974fda48f0c12489809c1ff03f1c8c66a738e from=0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266 nonce=2535 recipient=0x299FBf059618860411a4724F792efbBdB1e7d342 value=76,474,497,000,509,829,980
+INFO [03-08|00:11:34.318] Submitted transaction                    hash=0xb7c7642b57db4bbb39b8ee8c2a68cc0b26b365218a78e45ea943d43017406722 from=0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266 nonce=2536 recipient=0x5FF1fa64857EbC13BeD1e6899fDE2EcDA5bbAc7c value=76,474,497,000,509,829,980
+INFO [03-08|00:11:34.324] Submitted transaction                    hash=0xd8aec30304295f59e9f509a62197d457724c8c0218ce95dd00fc80bb1ede067f from=0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266 nonce=2537 recipient=0xa18F7b5F188C5DC358CCcDa092bC4a1341884Ae2 value=76,474,497,000,509,829,980
+INFO [03-08|00:11:34.329] Submitted transaction                    hash=0xa31c5c0291796e27c5e7c7170fdd5f1ccdc8251f18c377e4ca7cbbef3f718a23 from=0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266 nonce=2538 recipient=0x73E735dFF8019CB8c0aF21Afc3AF10C37232E856 value=76,474,497,000,509,829,980
+INFO [03-08|00:11:34.334] Submitted transaction                    hash=0xf9e887ac7649d63126a5f414b37beb4a7e5b320fe2b784b3af2ba12dbbbd4dbd from=0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266 nonce=2539 recipient=0xc158fb1122C7b46aDca4A165d56E11c3e95d27f4 value=76,474,497,000,509,829,980
+INFO [03-08|00:11:34.338] Submitted transaction                    hash=0x695767aca58a1336b290c9455e5bad4f6ccdf42abfce9d8210f17133a4b694f2 from=0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266 nonce=2540 recipient=0xD88Ea2Ba37265df416077423B8f5fb6ED2Ef09e6 value=76,474,497,000,509,829,980
+INFO [03-08|00:11:34.342] Submitted transaction                    hash=0x9701256978aed709e02beb5976d4e7e1c5e58e71d8196219069da91c147db471 from=0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266 nonce=2541 recipient=0x5c166b26Aa22aCf400e1b6D4637cE57b2F70039c value=76,474,497,000,509,829,980
+INFO [03-08|00:11:34.347] Submitted transaction                    hash=0xa68d5ac808c50d6751b417051ee5d43505a254e4b7d9f258d3a538cbdac1a83b from=0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266 nonce=2542 recipient=0x18AddF5Ef2D4C2F50aFD87588157E0954f388C08 value=76,474,497,000,509,829,980
+INFO [03-08|00:11:34.352] Submitted transaction                    hash=0xe65e63ba7fce5927dffb83a40e107c78961d9fb5fcedcb110cd6d198e79a216f from=0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266 nonce=2543 recipient=0xdF146472c8B89d2aAEA229DaB140D88757e5cA29 value=76,474,497,000,509,829,980
+INFO [03-08|00:11:34.357] Submitted transaction                    hash=0x9395a5a2232e3dcd4ea95a3024c65eff00f15f8a6914f6e870c535f362446450 from=0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266 nonce=2544 recipient=0x8A47c96730545ddF44f37654294d02718Ef4E944 value=76,474,497,000,509,829,980
+INFO [03-08|00:11:34.362] Submitted transaction                    hash=0x0c50131cc4baa466e9f41581dda6909e50bdda08d740113398164f5973b54243 from=0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266 nonce=2545 recipient=0xe9503953e0529758AD0b4ff7d30113FAFE78821c value=76,474,497,000,509,829,980
+INFO [03-08|00:11:34.367] Submitted transaction                    hash=0x6151a9ac5e456e9f473dd23c685a8ed3f88059b7ba83f7088331c0d6c85591e7 from=0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266 nonce=2546 recipient=0xfF1F9AF69e40a0413Ccb1B0B4f519BA7433B57df value=76,474,497,000,509,829,980
+INFO [03-08|00:11:34.371] Submitted transaction                    hash=0x8028005ef57bc64720c6e82571116bc75b916ada0493bca09524c2c03384e80d from=0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266 nonce=2547 recipient=0x81CcDb8CeB9283A04E993d6Cc85e2AF402b600C4 value=76,474,497,000,509,829,980
+INFO [03-08|00:11:34.376] Submitted transaction                    hash=0x83eaa32a173d76beed63c8c351355d2c6b3f0952de0fb9fbf8801c0bec46442c from=0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266 nonce=2548 recipient=0x9D306B27C621be43daD82f492E53585d4E6e7454 value=76,474,497,000,509,829,980
+INFO [03-08|00:11:34.380] Submitted transaction                    hash=0x06d8c4934850711c26c286d5dcb86b81e92f8348b79ba16d22d64aca31943fc5 from=0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266 nonce=2549 recipient=0x5E79677786640E130E65E6fA084CEA55CfA3337d value=76,474,497,000,509,829,980
+INFO [03-08|00:11:34.385] Submitted transaction                    hash=0x3b7f19c785dd863f2fe04112d6f38dfad883962428299cb5050bfa0b2cbbf574 from=0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266 nonce=2550 recipient=0x580ceD62C8D3662c9cFa22c07b0932934A251145 value=76,474,497,000,509,829,980
+INFO [03-08|00:11:34.390] Submitted transaction                    hash=0xfc4ff8afbb3931f1c2bc574cd77afed664499ae9129d0131040cc062329af836 from=0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266 nonce=2551 recipient=0xE1685de0b1066a7c8EaB58DB359bF5a3bdFDaF88 value=26,929,653,000,179,531,020
+INFO [03-08|00:11:34.395] Submitted transaction                    hash=0x39f31c72495b5ef4079123f2c69848d97f8dba0d3893ab53fe01e9df88af91e8 from=0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266 nonce=2552 recipient=0xE4F5b86ef4F267b41fDe13182AEB2e498379D5a5 value=149,998,806,000,999,992,040
+INFO [03-08|00:11:40.467] Starting work on payload                 id=0x0319309f90ae51d0
+INFO [03-08|00:11:40.820] Updated payload                          id=0x0319309f90ae51d0 number=1537 hash=2a6bd1..121522 txs=25 withdrawals=0 gas=604,010 fees=0.906015 root=4b54f6..a870cb elapsed=352.723ms
+INFO [03-08|00:11:40.820] Stopping work on payload                 id=0x0319309f90ae51d0 reason=delivery
+INFO [03-08|00:11:40.870] Paused snapshot generation
+WARN [03-08|00:11:40.874] {"level":"warn","msg":"Slow block","block":{"number":1537,"hash":"0x2a6bd1ee595537c6315cc464832e7c9af709f36d7cc2c60564d484ae67121522","gas_used":604010,"tx_count":25},"timing":{"execution_ms":1.299037,"state_read_ms":22.123269,"state_hash_ms":11.254801,"commit_ms":18.555453,"total_ms":53.448413},"throughput":{"mgas_per_sec":11.300803262390597},"state_reads":{"accounts":83,"storage_slots":0,"code":0,"code_bytes":0},"state_writes":{"accounts":27,"accounts_deleted":0,"storage_slots":0,"storage_slots_deleted":0,"code":2,"code_bytes":43},"cache":{"account":{"hits":71,"misses":12,"hit_rate":85.54216867469879},"storage":{"hits":0,"misses":0,"hit_rate":0},"code":{"hits":0,"misses":0,"hit_rate":0,"hit_bytes":0,"miss_bytes":0}}}
+INFO [03-08|00:11:40.881] Imported new potential chain segment     number=1537 hash=2a6bd1..121522 blocks=1 txs=25 mgas=0.604 elapsed=60.697ms   mgasps=9.951 triediffs=2.55MiB triedirty=0.00B
+INFO [03-08|00:11:40.883] Chain head was updated                   number=1537 hash=2a6bd1..121522 root=4b54f6..a870cb elapsed=1.019925ms
+WARN [03-08|00:11:40.985] Snapshot generation is not permitted
+INFO [03-08|00:11:41.317] Submitted transaction                    hash=0xe91b07ae3bf7bdbe4e6b33c6ca82517735bbc81b9f67c5a48fc695fd49030058 from=0xD9fc3eC9446FD9cE1F9560b4af7aA4a73F116B86 nonce=0    recipient=0xD9fc3eC9446FD9cE1F9560b4af7aA4a73F116B86 value=0
+INFO [03-08|00:11:50.896] Starting work on payload                 id=0x03fe2fae9f3ad67c
+INFO [03-08|00:11:50.923] Updated payload                          id=0x03fe2fae9f3ad67c number=1538 hash=dab195..10c89b txs=1  withdrawals=0 gas=46000   fees=0.0345   root=c82034..883c73 elapsed=26.339ms
+INFO [03-08|00:11:50.923] Stopping work on payload                 id=0x03fe2fae9f3ad67c reason=delivery
+INFO [03-08|00:11:50.934] Paused snapshot generation
+WARN [03-08|00:11:50.936] {"level":"warn","msg":"Slow block","block":{"number":1538,"hash":"0xdab1954792563886d8bb337cf0647ac02a002e909de3337318a6d2f5b010c89b","gas_used":46000,"tx_count":1},"timing":{"execution_ms":0.359438,"state_read_ms":5.85558,"state_hash_ms":1.063329,"commit_ms":5.184011,"total_ms":12.663618},"throughput":{"mgas_per_sec":3.6324532215043126},"state_reads":{"accounts":10,"storage_slots":0,"code":0,"code_bytes":0},"state_writes":{"accounts":3,"accounts_deleted":0,"storage_slots":0,"storage_slots_deleted":0,"code":1,"code_bytes":23},"cache":{"account":{"hits":6,"misses":4,"hit_rate":60},"storage":{"hits":0,"misses":0,"hit_rate":0},"code":{"hits":0,"misses":0,"hit_rate":0,"hit_bytes":0,"miss_bytes":0}}}
+INFO [03-08|00:11:50.936] Imported new potential chain segment     number=1538 hash=dab195..10c89b blocks=1 txs=1  mgas=0.046 elapsed=12.986ms   mgasps=3.542 triediffs=2.54MiB triedirty=0.00B
+INFO [03-08|00:11:50.937] Chain head was updated                   number=1538 hash=dab195..10c89b root=c82034..883c73 elapsed="99.163µs"
+WARN [03-08|00:11:51.006] Snapshot generation is not permitted
+INFO [03-08|00:11:51.437] Submitted transaction                    hash=0x7daa4f09b0a645c26bff654fe2bcbe04a01cdc31ce5a8310c3e1695490c5ffec from=0x3c909a454e1ea35B975D8e9E9E0b878ddC6d23cD nonce=0    recipient=0x229475fe3eFf2B811A015A11a06bFeF24caC79c4 value=0
+INFO [03-08|00:12:00.949] Starting work on payload                 id=0x03541c707b14003a
+INFO [03-08|00:12:01.091] Updated payload                          id=0x03541c707b14003a number=1539 hash=bd8619..0f425d txs=1  withdrawals=0 gas=1,767,486 fees=2.651229 root=2cfd14..e57d7d elapsed=141.477ms
+INFO [03-08|00:12:01.091] Stopping work on payload                 id=0x03541c707b14003a reason=delivery
+INFO [03-08|00:12:01.222] Paused snapshot generation
+WARN [03-08|00:12:01.224] {"level":"warn","msg":"Slow block","block":{"number":1539,"hash":"0xbd86195463374547f3f7b50676104fb680f10ac770a04dbe88c43a8c5a0f425d","gas_used":1767486,"tx_count":1},"timing":{"execution_ms":24.782173,"state_read_ms":45.502635,"state_hash_ms":43.201997,"commit_ms":18.948769,"total_ms":132.697621},"throughput":{"mgas_per_sec":13.319650998113975},"state_reads":{"accounts":8,"storage_slots":2302,"code":2,"code_bytes":0},"state_writes":{"accounts":3,"accounts_deleted":0,"storage_slots":2302,"storage_slots_deleted":0,"code":0,"code_bytes":0},"cache":{"account":{"hits":4,"misses":4,"hit_rate":50},"storage":{"hits":1175,"misses":1127,"hit_rate":51.04257167680279},"code":{"hits":2,"misses":0,"hit_rate":100,"hit_bytes":0,"miss_bytes":0}}}
+INFO [03-08|00:12:01.224] Imported new potential chain segment     number=1539 hash=bd8619..0f425d blocks=1 txs=1  mgas=1.767 elapsed=132.972ms  mgasps=13.292 triediffs=2.82MiB triedirty=0.00B
+INFO [03-08|00:12:01.224] Chain head was updated                   number=1539 hash=bd8619..0f425d root=2cfd14..e57d7d elapsed="100.151µs"
+WARN [03-08|00:12:01.311] Snapshot generation is not permitted
+INFO [03-08|00:12:01.535] Submitted transaction                    hash=0x19eca1239e1a3826783df8db3e0c374019614a429013620f2d67d0cf9f65140a from=0xb5A4bb308Cb7E0E4bFafcaC40C60Db9ef569D7CF nonce=0    recipient=0x229475fe3eFf2B811A015A11a06bFeF24caC79c4 value=0
+INFO [03-08|00:12:11.237] Starting work on payload                 id=0x038924a69544bc85
+INFO [03-08|00:12:11.421] Updated payload                          id=0x038924a69544bc85 number=1540 hash=939f27..b6ea3a txs=1  withdrawals=0 gas=1,769,398 fees=2.654097 root=fdfac8..4d8349 elapsed=182.983ms
+INFO [03-08|00:12:11.421] Stopping work on payload                 id=0x038924a69544bc85 reason=delivery
+INFO [03-08|00:12:11.506] Paused snapshot generation
+WARN [03-08|00:12:11.509] {"level":"warn","msg":"Slow block","block":{"number":1540,"hash":"0x939f274d6a50cb703df2e160279d3405dfd201038c5c43d6498d0c75cdb6ea3a","gas_used":1769398,"tx_count":1},"timing":{"execution_ms":19.106655,"state_read_ms":45.483485,"state_hash_ms":9.707293,"commit_ms":13.018649,"total_ms":87.498908},"throughput":{"mgas_per_sec":20.221943798430033},"state_reads":{"accounts":8,"storage_slots":2302,"code":2,"code_bytes":0},"state_writes":{"accounts":3,"accounts_deleted":0,"storage_slots":2302,"storage_slots_deleted":0,"code":0,"code_bytes":0},"cache":{"account":{"hits":4,"misses":4,"hit_rate":50},"storage":{"hits":941,"misses":1361,"hit_rate":40.877497827975674},"code":{"hits":2,"misses":0,"hit_rate":100,"hit_bytes":0,"miss_bytes":0}}}
+INFO [03-08|00:12:11.509] Imported new potential chain segment     number=1540 hash=939f27..b6ea3a blocks=1 txs=1  mgas=1.769 elapsed=87.796ms    mgasps=20.154 triediffs=3.10MiB triedirty=0.00B
+INFO [03-08|00:12:11.509] Chain head was updated                   number=1540 hash=939f27..b6ea3a root=fdfac8..4d8349 elapsed="96.351µs"
+WARN [03-08|00:12:11.596] Snapshot generation is not permitted
+INFO [03-08|00:12:11.653] Submitted transaction                    hash=0xa8c77930d8990895e9698e3e456566495f2ef4599eaa943a85082ba9700ea719 from=0xe8fA3338211ADB29B257BEe8b2c3364ec03C4825 nonce=0    recipient=0x229475fe3eFf2B811A015A11a06bFeF24caC79c4 value=0
+INFO [03-08|00:12:21.526] Starting work on payload                 id=0x038ed8fd4e3398c6
+INFO [03-08|00:12:21.716] Updated payload                          id=0x038ed8fd4e3398c6 number=1541 hash=810cf6..457c4a txs=1  withdrawals=0 gas=1,769,398 fees=2.654097 root=a0f49a..975020 elapsed=189.312ms
+INFO [03-08|00:12:21.716] Stopping work on payload                 id=0x038ed8fd4e3398c6 reason=delivery
+INFO [03-08|00:12:21.834] Paused snapshot generation
+WARN [03-08|00:12:21.837] {"level":"warn","msg":"Slow block","block":{"number":1541,"hash":"0x810cf68a22c9fa5a120ab8dbf8ed10d62792b9cf78cd2a5da92587536e457c4a","gas_used":1769398,"tx_count":1},"timing":{"execution_ms":24.448988,"state_read_ms":47.666803,"state_hash_ms":30.748602,"commit_ms":17.076913,"total_ms":120.111438},"throughput":{"mgas_per_sec":14.731303108701438},"state_reads":{"accounts":8,"storage_slots":2302,"code":2,"code_bytes":0},"state_writes":{"accounts":3,"accounts_deleted":0,"storage_slots":2302,"storage_slots_deleted":0,"code":0,"code_bytes":0},"cache":{"account":{"hits":4,"misses":4,"hit_rate":50},"storage":{"hits":1337,"misses":965,"hit_rate":58.07993049522155},"code":{"hits":2,"misses":0,"hit_rate":100,"hit_bytes":0,"miss_bytes":0}}}
+INFO [03-08|00:12:21.837] Imported new potential chain segment     number=1541 hash=810cf6..457c4a blocks=1 txs=1  mgas=1.769 elapsed=120.400ms   mgasps=14.696 triediffs=3.38MiB triedirty=0.00B
+INFO [03-08|00:12:21.837] Chain head was updated                   number=1541 hash=810cf6..457c4a root=a0f49a..975020 elapsed="99.496µs"
+WARN [03-08|00:12:21.953] Snapshot generation is not permitted
+INFO [03-08|00:12:22.778] Submitted transaction                    hash=0xb4e43d949d7031dbc89cea08a625c2058bf8aec8595030bdf9bcb9437eb39742 from=0xe8830D74Ae8DE8f25f1190b0FbD5d99dbD41CCA9 nonce=0    recipient=0x229475fe3eFf2B811A015A11a06bFeF24caC79c4 value=0
+INFO [03-08|00:12:31.848] Starting work on payload                 id=0x034d63956ddc54a6
+INFO [03-08|00:12:32.043] Updated payload                          id=0x034d63956ddc54a6 number=1542 hash=4d2754..c3fbcf txs=1  withdrawals=0 gas=1,769,398 fees=2.654097 root=a63c72..e0553a elapsed=194.359ms
+INFO [03-08|00:12:32.043] Stopping work on payload                 id=0x034d63956ddc54a6 reason=delivery
+INFO [03-08|00:12:32.187] Paused snapshot generation
+WARN [03-08|00:12:32.187] {"level":"warn","msg":"Slow block","block":{"number":1542,"hash":"0x4d2754282dc3154d0b108e7e0f97bba0eddd8a39d7feb1c7971d66fd18c3fbcf","gas_used":1769398,"tx_count":1},"timing":{"execution_ms":22.70615,"state_read_ms":65.815286,"state_hash_ms":45.993462,"commit_ms":8.729434,"total_ms":143.495917},"throughput":{"mgas_per_sec":12.330650495093877},"state_reads":{"accounts":8,"storage_slots":2302,"code":2,"code_bytes":0},"state_writes":{"accounts":3,"accounts_deleted":0,"storage_slots":2302,"storage_slots_deleted":0,"code":0,"code_bytes":0},"cache":{"account":{"hits":3,"misses":5,"hit_rate":37.5},"storage":{"hits":805,"misses":1497,"hit_rate":34.969591659426584},"code":{"hits":2,"misses":0,"hit_rate":100,"hit_bytes":0,"miss_bytes":0}}}
+INFO [03-08|00:12:32.187] Imported new potential chain segment     number=1542 hash=4d2754..c3fbcf blocks=1 txs=1  mgas=1.769 elapsed=143.824ms   mgasps=12.302 triediffs=3.68MiB triedirty=0.00B
+INFO [03-08|00:12:32.188] Chain head was updated                   number=1542 hash=4d2754..c3fbcf root=a63c72..e0553a elapsed="255.269µs"
+WARN [03-08|00:12:32.251] Snapshot generation is not permitted
+INFO [03-08|00:12:32.891] Submitted transaction                    hash=0xf18fc5c3b3dc1296a7a2580b00799bc49c256f739bd64f2284d60a40c91524b3 from=0x299FBf059618860411a4724F792efbBdB1e7d342 nonce=0    recipient=0x229475fe3eFf2B811A015A11a06bFeF24caC79c4 value=0
+INFO [03-08|00:12:42.204] Starting work on payload                 id=0x03134408c7c9e52c
+INFO [03-08|00:12:42.367] Updated payload                          id=0x03134408c7c9e52c number=1543 hash=699a6a..b2d8f1 txs=1  withdrawals=0 gas=1,769,398 fees=2.654097 root=e28907..6ec66f elapsed=162.860ms
+INFO [03-08|00:12:42.367] Stopping work on payload                 id=0x03134408c7c9e52c reason=delivery
+INFO [03-08|00:12:42.464] Paused snapshot generation
+WARN [03-08|00:12:42.465] {"level":"warn","msg":"Slow block","block":{"number":1543,"hash":"0x699a6a8d1826114be86fa8f175789e3a96b84abaa67f27c960aa1cf704b2d8f1","gas_used":1769398,"tx_count":1},"timing":{"execution_ms":22.895838,"state_read_ms":48.396102,"state_hash_ms":11.201132,"commit_ms":14.614719,"total_ms":97.299106},"throughput":{"mgas_per_sec":18.18514139276881},"state_reads":{"accounts":8,"storage_slots":2302,"code":2,"code_bytes":0},"state_writes":{"accounts":3,"accounts_deleted":0,"storage_slots":2302,"storage_slots_deleted":0,"code":0,"code_bytes":0},"cache":{"account":{"hits":4,"misses":4,"hit_rate":50},"storage":{"hits":956,"misses":1346,"hit_rate":41.52910512597741},"code":{"hits":2,"misses":0,"hit_rate":100,"hit_bytes":0,"miss_bytes":0}}}
+INFO [03-08|00:12:42.465] Imported new potential chain segment     number=1543 hash=699a6a..b2d8f1 blocks=1 txs=1  mgas=1.769 elapsed=97.691ms    mgasps=18.112 triediffs=3.97MiB triedirty=0.00B
+INFO [03-08|00:12:42.466] Chain head was updated                   number=1543 hash=699a6a..b2d8f1 root=e28907..6ec66f elapsed="296.391µs"
+WARN [03-08|00:12:42.526] Snapshot generation is not permitted
+INFO [03-08|00:12:43.008] Submitted transaction                    hash=0xab43be35c33894cfbae4bc77afab598809e29f497966bc3a2934bd25d2a84389 from=0x5FF1fa64857EbC13BeD1e6899fDE2EcDA5bbAc7c nonce=0    recipient=0x229475fe3eFf2B811A015A11a06bFeF24caC79c4 value=0
+INFO [03-08|00:12:52.479] Starting work on payload                 id=0x0355087db00801e1
+INFO [03-08|00:12:52.644] Updated payload                          id=0x0355087db00801e1 number=1544 hash=01ee8e..bcc089 txs=1  withdrawals=0 gas=1,769,398 fees=2.654097 root=b5120c..990653 elapsed=164.762ms
+INFO [03-08|00:12:52.644] Stopping work on payload                 id=0x0355087db00801e1 reason=delivery
+INFO [03-08|00:12:52.737] Paused snapshot generation
+WARN [03-08|00:12:52.737] {"level":"warn","msg":"Slow block","block":{"number":1544,"hash":"0x01ee8e52f5f1dc65b47210bdd5390651fcddefc28103b3f8e36c0c93a2bcc089","gas_used":1769398,"tx_count":1},"timing":{"execution_ms":19.806261,"state_read_ms":45.670183,"state_hash_ms":15.225826,"commit_ms":11.732013,"total_ms":92.620177},"throughput":{"mgas_per_sec":19.10380715424459},"state_reads":{"accounts":8,"storage_slots":2302,"code":2,"code_bytes":0},"state_writes":{"accounts":3,"accounts_deleted":0,"storage_slots":2302,"storage_slots_deleted":0,"code":0,"code_bytes":0},"cache":{"account":{"hits":3,"misses":5,"hit_rate":37.5},"storage":{"hits":678,"misses":1624,"hit_rate":29.452649869678538},"code":{"hits":2,"misses":0,"hit_rate":100,"hit_bytes":0,"miss_bytes":0}}}
+INFO [03-08|00:12:52.738] Imported new potential chain segment     number=1544 hash=01ee8e..bcc089 blocks=1 txs=1  mgas=1.769 elapsed=92.936ms    mgasps=19.039 triediffs=4.22MiB triedirty=0.00B
+INFO [03-08|00:12:52.738] Chain head was updated                   number=1544 hash=01ee8e..bcc089 root=b5120c..990653 elapsed="140.483µs"
+WARN [03-08|00:12:52.817] Snapshot generation is not permitted
+INFO [03-08|00:12:53.132] Submitted transaction                    hash=0xf6f29ab21d6ea2f3efb6f1271d22b99e2b5f1369639cde9f5498b827f1f52790 from=0xa18F7b5F188C5DC358CCcDa092bC4a1341884Ae2 nonce=0    recipient=0x229475fe3eFf2B811A015A11a06bFeF24caC79c4 value=0
+INFO [03-08|00:13:02.757] Starting work on payload                 id=0x03691a0202965f80
+INFO [03-08|00:13:02.953] Updated payload                          id=0x03691a0202965f80 number=1545 hash=60c6e3..863f06 txs=1  withdrawals=0 gas=1,769,398 fees=2.654097 root=788e61..8b6653 elapsed=196.148ms
+INFO [03-08|00:13:02.953] Stopping work on payload                 id=0x03691a0202965f80 reason=delivery
+INFO [03-08|00:13:03.095] Paused snapshot generation
+WARN [03-08|00:13:03.095] {"level":"warn","msg":"Slow block","block":{"number":1545,"hash":"0x60c6e33a0fb64656ca0ed7888275e7bd81495124c38f25192bfd08b8e7863f06","gas_used":1769398,"tx_count":1},"timing":{"execution_ms":28.495156,"state_read_ms":64.991889,"state_hash_ms":36.219896,"commit_ms":11.312407,"total_ms":141.262065},"throughput":{"mgas_per_sec":12.525641615107354},"state_reads":{"accounts":8,"storage_slots":2302,"code":2,"code_bytes":0},"state_writes":{"accounts":3,"accounts_deleted":0,"storage_slots":2302,"storage_slots_deleted":0,"code":0,"code_bytes":0},"cache":{"account":{"hits":4,"misses":4,"hit_rate":50},"storage":{"hits":1136,"misses":1166,"hit_rate":49.348392701998264},"code":{"hits":2,"misses":0,"hit_rate":100,"hit_bytes":0,"miss_bytes":0}}}
+INFO [03-08|00:13:03.095] Imported new potential chain segment     number=1545 hash=60c6e3..863f06 blocks=1 txs=1  mgas=1.769 elapsed=141.523ms   mgasps=12.502 triediffs=4.50MiB triedirty=0.00B
+INFO [03-08|00:13:03.096] Chain head was updated                   number=1545 hash=60c6e3..863f06 root=788e61..8b6653 elapsed="120.362µs"
+WARN [03-08|00:13:03.181] Snapshot generation is not permitted
+INFO [03-08|00:13:03.252] Submitted transaction                    hash=0x00aab7c5bd5043900db54453b7d534ed8fe33c6486b87c113cb48817bfb5d0a7 from=0x73E735dFF8019CB8c0aF21Afc3AF10C37232E856 nonce=0    recipient=0x229475fe3eFf2B811A015A11a06bFeF24caC79c4 value=0
+INFO [03-08|00:13:13.105] Starting work on payload                 id=0x0300b1a0fd9deb02
+INFO [03-08|00:13:13.256] Updated payload                          id=0x0300b1a0fd9deb02 number=1546 hash=009234..3bda99 txs=1  withdrawals=0 gas=1,769,398 fees=2.654097 root=d3110a..f16f8d elapsed=150.918ms
+INFO [03-08|00:13:13.256] Stopping work on payload                 id=0x0300b1a0fd9deb02 reason=delivery
+INFO [03-08|00:13:13.335] Paused snapshot generation
+WARN [03-08|00:13:13.335] {"level":"warn","msg":"Slow block","block":{"number":1546,"hash":"0x009234b12f90e2dd97629803e09c781f1a7ff785a07d1f83cef8bfa68e3bda99","gas_used":1769398,"tx_count":1},"timing":{"execution_ms":18.1455,"state_read_ms":41.635773,"state_hash_ms":10.5621,"commit_ms":7.732084,"total_ms":78.298244},"throughput":{"mgas_per_sec":22.59818240623634},"state_reads":{"accounts":8,"storage_slots":2302,"code":2,"code_bytes":0},"state_writes":{"accounts":3,"accounts_deleted":0,"storage_slots":2302,"storage_slots_deleted":0,"code":0,"code_bytes":0},"cache":{"account":{"hits":3,"misses":5,"hit_rate":37.5},"storage":{"hits":1096,"misses":1206,"hit_rate":47.6107732406603},"code":{"hits":2,"misses":0,"hit_rate":100,"hit_bytes":0,"miss_bytes":0}}}
+INFO [03-08|00:13:13.335] Imported new potential chain segment     number=1546 hash=009234..3bda99 blocks=1 txs=1  mgas=1.769 elapsed=78.580ms    mgasps=22.517 triediffs=4.80MiB triedirty=0.00B
+INFO [03-08|00:13:13.336] Chain head was updated                   number=1546 hash=009234..3bda99 root=d3110a..f16f8d elapsed="154.566µs"
+INFO [03-08|00:13:13.365] Submitted transaction                    hash=0xc57b98ec2493567a0e5e78bb4d0874b7c46e9dac4e6b22bea88c12c25e8e3685 from=0xc158fb1122C7b46aDca4A165d56E11c3e95d27f4 nonce=0    recipient=0x229475fe3eFf2B811A015A11a06bFeF24caC79c4 value=0
+WARN [03-08|00:13:13.412] Snapshot generation is not permitted
+INFO [03-08|00:13:23.349] Starting work on payload                 id=0x036e78d95a0bd45e
+INFO [03-08|00:13:23.489] Updated payload                          id=0x036e78d95a0bd45e number=1547 hash=821fb8..32ecfe txs=1  withdrawals=0 gas=1,769,398 fees=2.654097 root=84b4c6..1187ce elapsed=139.375ms
+INFO [03-08|00:13:23.489] Stopping work on payload                 id=0x036e78d95a0bd45e reason=delivery
+INFO [03-08|00:13:23.566] Paused snapshot generation
+WARN [03-08|00:13:23.566] {"level":"warn","msg":"Slow block","block":{"number":1547,"hash":"0x821fb8855bebddcdf38df6441e0cbb0e03a7bc155001a46e0f924d788832ecfe","gas_used":1769398,"tx_count":1},"timing":{"execution_ms":18.460113,"state_read_ms":41.705185,"state_hash_ms":9.245696,"commit_ms":7.19839,"total_ms":76.764995},"throughput":{"mgas_per_sec":23.049542307662495},"state_reads":{"accounts":8,"storage_slots":2302,"code":2,"code_bytes":0},"state_writes":{"accounts":3,"accounts_deleted":0,"storage_slots":2302,"storage_slots_deleted":0,"code":0,"code_bytes":0},"cache":{"account":{"hits":3,"misses":5,"hit_rate":37.5},"storage":{"hits":895,"misses":1407,"hit_rate":38.87923544743701},"code":{"hits":2,"misses":0,"hit_rate":100,"hit_bytes":0,"miss_bytes":0}}}
+INFO [03-08|00:13:23.566] Imported new potential chain segment     number=1547 hash=821fb8..32ecfe blocks=1 txs=1  mgas=1.769 elapsed=77.076ms    mgasps=22.956 triediffs=5.10MiB triedirty=0.00B
+INFO [03-08|00:13:23.567] Chain head was updated                   number=1547 hash=821fb8..32ecfe root=84b4c6..1187ce elapsed="126.32µs"
+WARN [03-08|00:13:23.638] Snapshot generation is not permitted
+INFO [03-08|00:13:24.473] Submitted transaction                    hash=0xbd1d94a758e663e2891213f5d7fc5ccb58effcdb0ecbbc501af1f3d60af61c13 from=0xD88Ea2Ba37265df416077423B8f5fb6ED2Ef09e6 nonce=0    recipient=0x229475fe3eFf2B811A015A11a06bFeF24caC79c4 value=0
+INFO [03-08|00:13:33.582] Starting work on payload                 id=0x03b1ee3aca71ed20
+INFO [03-08|00:13:33.731] Updated payload                          id=0x03b1ee3aca71ed20 number=1548 hash=244433..4d5ad7 txs=1  withdrawals=0 gas=1,769,398 fees=2.654097 root=877c2c..88d2f2 elapsed=149.087ms
+INFO [03-08|00:13:33.731] Stopping work on payload                 id=0x03b1ee3aca71ed20 reason=delivery
+INFO [03-08|00:13:33.837] Paused snapshot generation
+WARN [03-08|00:13:33.837] {"level":"warn","msg":"Slow block","block":{"number":1548,"hash":"0x244433e3e4a2c7256b428185c3bd5bf4d8c65d20c4c95bfe453150ed794d5ad7","gas_used":1769398,"tx_count":1},"timing":{"execution_ms":25.344612,"state_read_ms":51.80291,"state_hash_ms":12.626205,"commit_ms":15.24051,"total_ms":105.215999},"throughput":{"mgas_per_sec":16.816815092921374},"state_reads":{"accounts":8,"storage_slots":2302,"code":2,"code_bytes":0},"state_writes":{"accounts":3,"accounts_deleted":0,"storage_slots":2302,"storage_slots_deleted":0,"code":0,"code_bytes":0},"cache":{"account":{"hits":4,"misses":4,"hit_rate":50},"storage":{"hits":1177,"misses":1125,"hit_rate":51.12945264986968},"code":{"hits":2,"misses":0,"hit_rate":100,"hit_bytes":0,"miss_bytes":0}}}
+INFO [03-08|00:13:33.837] Imported new potential chain segment     number=1548 hash=244433..4d5ad7 blocks=1 txs=1  mgas=1.769 elapsed=105.505ms   mgasps=16.771 triediffs=5.39MiB triedirty=0.00B
+INFO [03-08|00:13:33.838] Chain head was updated                   number=1548 hash=244433..4d5ad7 root=877c2c..88d2f2 elapsed="121.917µs"
+WARN [03-08|00:13:33.902] Snapshot generation is not permitted
+INFO [03-08|00:13:34.592] Submitted transaction                    hash=0xec740cf9705e44f7596ea48682aacf0ee6e273292ac5a35e997898199805526c from=0x5c166b26Aa22aCf400e1b6D4637cE57b2F70039c nonce=0    recipient=0x229475fe3eFf2B811A015A11a06bFeF24caC79c4 value=0
+INFO [03-08|00:13:43.854] Starting work on payload                 id=0x03bdc2ab434e7905
+INFO [03-08|00:13:43.980] Updated payload                          id=0x03bdc2ab434e7905 number=1549 hash=114f4f..f4b236 txs=1  withdrawals=0 gas=1,769,398 fees=2.654097 root=eaf534..d43e96 elapsed=125.784ms
+INFO [03-08|00:13:43.980] Stopping work on payload                 id=0x03bdc2ab434e7905 reason=delivery
+INFO [03-08|00:13:44.109] Paused snapshot generation
+WARN [03-08|00:13:44.109] {"level":"warn","msg":"Slow block","block":{"number":1549,"hash":"0x114f4f298908394e7911c8a491984bcec20aa08cd0326b75e979890b73f4b236","gas_used":1769398,"tx_count":1},"timing":{"execution_ms":24.993219,"state_read_ms":54.635877,"state_hash_ms":31.393041,"commit_ms":16.944485,"total_ms":128.151517},"throughput":{"mgas_per_sec":13.807078069938102},"state_reads":{"accounts":8,"storage_slots":2302,"code":2,"code_bytes":0},"state_writes":{"accounts":3,"accounts_deleted":0,"storage_slots":2302,"storage_slots_deleted":0,"code":0,"code_bytes":0},"cache":{"account":{"hits":3,"misses":5,"hit_rate":37.5},"storage":{"hits":1001,"misses":1301,"hit_rate":43.48392701998262},"code":{"hits":2,"misses":0,"hit_rate":100,"hit_bytes":0,"miss_bytes":0}}}
+INFO [03-08|00:13:44.109] Imported new potential chain segment     number=1549 hash=114f4f..f4b236 blocks=1 txs=1  mgas=1.769 elapsed=128.482ms   mgasps=13.772 triediffs=5.62MiB triedirty=0.00B
+INFO [03-08|00:13:44.110] Chain head was updated                   number=1549 hash=114f4f..f4b236 root=eaf534..d43e96 elapsed="160.778µs"
+WARN [03-08|00:13:44.182] Snapshot generation is not permitted
+INFO [03-08|00:13:44.700] Submitted transaction                    hash=0x416af9bb54da0271b3033139a978bc182085358a277e48a395114236cc957438 from=0x18AddF5Ef2D4C2F50aFD87588157E0954f388C08 nonce=0    recipient=0x229475fe3eFf2B811A015A11a06bFeF24caC79c4 value=0
+INFO [03-08|00:13:54.121] Starting work on payload                 id=0x033fcdea4f9a48d8
+INFO [03-08|00:13:54.303] Updated payload                          id=0x033fcdea4f9a48d8 number=1550 hash=9e886b..b73972 txs=1  withdrawals=0 gas=1,769,398 fees=2.654097 root=9a5402..7b6d1c elapsed=181.858ms
+INFO [03-08|00:13:54.303] Stopping work on payload                 id=0x033fcdea4f9a48d8 reason=delivery
+INFO [03-08|00:13:54.437] Paused snapshot generation
+WARN [03-08|00:13:54.448] {"level":"warn","msg":"Slow block","block":{"number":1550,"hash":"0x9e886bf6edf8d4affb43f5ce9fce3cfb1e64f8bc749588c4240490afe6b73972","gas_used":1769398,"tx_count":1},"timing":{"execution_ms":19.109265,"state_read_ms":46.994588,"state_hash_ms":50.313127,"commit_ms":27.354892,"total_ms":143.987197},"throughput":{"mgas_per_sec":12.28857868522852},"state_reads":{"accounts":8,"storage_slots":2302,"code":2,"code_bytes":0},"state_writes":{"accounts":3,"accounts_deleted":0,"storage_slots":2302,"storage_slots_deleted":0,"code":0,"code_bytes":0},"cache":{"account":{"hits":3,"misses":5,"hit_rate":37.5},"storage":{"hits":792,"misses":1510,"hit_rate":34.404865334491745},"code":{"hits":2,"misses":0,"hit_rate":100,"hit_bytes":0,"miss_bytes":0}}}
+INFO [03-08|00:13:54.448] Imported new potential chain segment     number=1550 hash=9e886b..b73972 blocks=1 txs=1  mgas=1.769 elapsed=144.384ms   mgasps=12.255 triediffs=5.91MiB triedirty=0.00B
+INFO [03-08|00:13:54.449] Chain head was updated                   number=1550 hash=9e886b..b73972 root=9a5402..7b6d1c elapsed="259.468µs"
+WARN [03-08|00:13:54.499] Snapshot generation is not permitted
+INFO [03-08|00:13:54.827] Submitted transaction                    hash=0x670145cdaddb386212c1efb798e747141630e497831d61e7265b7eb981bfee1e from=0xdF146472c8B89d2aAEA229DaB140D88757e5cA29 nonce=0    recipient=0x229475fe3eFf2B811A015A11a06bFeF24caC79c4 value=0
+INFO [03-08|00:14:04.458] Starting work on payload                 id=0x038bc23b3eb793a4
+INFO [03-08|00:14:04.596] Updated payload                          id=0x038bc23b3eb793a4 number=1551 hash=b5037e..dba72b txs=1  withdrawals=0 gas=1,769,398 fees=2.654097 root=eb8f21..3bb0e9 elapsed=137.656ms
+INFO [03-08|00:14:04.597] Stopping work on payload                 id=0x038bc23b3eb793a4 reason=delivery
+INFO [03-08|00:14:04.697] Paused snapshot generation
+WARN [03-08|00:14:04.699] {"level":"warn","msg":"Slow block","block":{"number":1551,"hash":"0xb5037e423007742f641f9f2e187135c40f0e07ea93f475d3036f1ba069dba72b","gas_used":1769398,"tx_count":1},"timing":{"execution_ms":20.506703,"state_read_ms":53.030113,"state_hash_ms":9.654837,"commit_ms":18.466518,"total_ms":101.870952},"throughput":{"mgas_per_sec":17.36901408362219},"state_reads":{"accounts":8,"storage_slots":2302,"code":2,"code_bytes":0},"state_writes":{"accounts":3,"accounts_deleted":0,"storage_slots":2302,"storage_slots_deleted":0,"code":0,"code_bytes":0},"cache":{"account":{"hits":3,"misses":5,"hit_rate":37.5},"storage":{"hits":1000,"misses":1302,"hit_rate":43.440486533449175},"code":{"hits":2,"misses":0,"hit_rate":100,"hit_bytes":0,"miss_bytes":0}}}
+INFO [03-08|00:14:04.699] Imported new potential chain segment     number=1551 hash=b5037e..dba72b blocks=1 txs=1  mgas=1.769 elapsed=102.199ms   mgasps=17.313 triediffs=6.20MiB triedirty=0.00B
+INFO [03-08|00:14:04.700] Chain head was updated                   number=1551 hash=b5037e..dba72b root=eb8f21..3bb0e9 elapsed="141.333µs"
+WARN [03-08|00:14:04.765] Snapshot generation is not permitted
+INFO [03-08|00:14:04.957] Submitted transaction                    hash=0x9d3a0ac16ab70257623583dbe4521a5a84032f962679091031197c1c5212c032 from=0x8A47c96730545ddF44f37654294d02718Ef4E944 nonce=0    recipient=0x229475fe3eFf2B811A015A11a06bFeF24caC79c4 value=0
+INFO [03-08|00:14:14.717] Starting work on payload                 id=0x03d3b4f726c1efc0
+INFO [03-08|00:14:14.855] Updated payload                          id=0x03d3b4f726c1efc0 number=1552 hash=0ae0c4..c0c6b2 txs=1  withdrawals=0 gas=1,769,398 fees=2.654097 root=a824be..219e3a elapsed=137.257ms
+INFO [03-08|00:14:14.855] Stopping work on payload                 id=0x03d3b4f726c1efc0 reason=delivery
+INFO [03-08|00:14:14.944] Paused snapshot generation
+WARN [03-08|00:14:14.946] {"level":"warn","msg":"Slow block","block":{"number":1552,"hash":"0x0ae0c4ddef2aeaf56703c24b34b4fd5768ef17737b21a414d09feb1e6cc0c6b2","gas_used":1769398,"tx_count":1},"timing":{"execution_ms":19.512044,"state_read_ms":48.408853,"state_hash_ms":9.668006,"commit_ms":12.992654,"total_ms":90.757203},"throughput":{"mgas_per_sec":19.495951191885013},"state_reads":{"accounts":8,"storage_slots":2302,"code":2,"code_bytes":0},"state_writes":{"accounts":3,"accounts_deleted":0,"storage_slots":2302,"storage_slots_deleted":0,"code":0,"code_bytes":0},"cache":{"account":{"hits":3,"misses":5,"hit_rate":37.5},"storage":{"hits":1058,"misses":1244,"hit_rate":45.96003475238923},"code":{"hits":2,"misses":0,"hit_rate":100,"hit_bytes":0,"miss_bytes":0}}}
+INFO [03-08|00:14:14.946] Imported new potential chain segment     number=1552 hash=0ae0c4..c0c6b2 blocks=1 txs=1  mgas=1.769 elapsed=91.115ms    mgasps=19.419 triediffs=6.48MiB triedirty=0.00B
+INFO [03-08|00:14:14.947] Chain head was updated                   number=1552 hash=0ae0c4..c0c6b2 root=a824be..219e3a elapsed="116.879µs"
+WARN [03-08|00:14:15.023] Snapshot generation is not permitted
+INFO [03-08|00:14:15.078] Submitted transaction                    hash=0xc161ada50883bcca26f055ad2c95b51f4bd80ab3bfc1b1c75b0940687c034f66 from=0xe9503953e0529758AD0b4ff7d30113FAFE78821c nonce=0    recipient=0x229475fe3eFf2B811A015A11a06bFeF24caC79c4 value=0
+INFO [03-08|00:14:24.957] Starting work on payload                 id=0x0381de5c07e29d1a
+INFO [03-08|00:14:25.120] Updated payload                          id=0x0381de5c07e29d1a number=1553 hash=70b7a2..e4daf7 txs=1  withdrawals=0 gas=1,769,398 fees=2.654097 root=c8b415..c66598 elapsed=163.209ms
+INFO [03-08|00:14:25.120] Stopping work on payload                 id=0x0381de5c07e29d1a reason=delivery
+INFO [03-08|00:14:25.219] Paused snapshot generation
+WARN [03-08|00:14:25.222] {"level":"warn","msg":"Slow block","block":{"number":1553,"hash":"0x70b7a242e6427faa4b10710eed094a3841c89986f430c110e6adb88607e4daf7","gas_used":1769398,"tx_count":1},"timing":{"execution_ms":21.258568,"state_read_ms":51.85634,"state_hash_ms":9.860985,"commit_ms":17.751241,"total_ms":100.91276},"throughput":{"mgas_per_sec":17.533937234498392},"state_reads":{"accounts":8,"storage_slots":2302,"code":2,"code_bytes":0},"state_writes":{"accounts":3,"accounts_deleted":0,"storage_slots":2302,"storage_slots_deleted":0,"code":0,"code_bytes":0},"cache":{"account":{"hits":3,"misses":5,"hit_rate":37.5},"storage":{"hits":1112,"misses":1190,"hit_rate":48.305821025195485},"code":{"hits":2,"misses":0,"hit_rate":100,"hit_bytes":0,"miss_bytes":0}}}
+INFO [03-08|00:14:25.222] Imported new potential chain segment     number=1553 hash=70b7a2..e4daf7 blocks=1 txs=1  mgas=1.769 elapsed=101.196ms   mgasps=17.485 triediffs=6.76MiB triedirty=0.00B
+INFO [03-08|00:14:25.222] Chain head was updated                   number=1553 hash=70b7a2..e4daf7 root=c8b415..c66598 elapsed="111.078µs"
+WARN [03-08|00:14:25.292] Snapshot generation is not permitted
+INFO [03-08|00:14:26.188] Submitted transaction                    hash=0xbb89b810812625ba48674a16c87d3c6709b3190d006377a998d6d511cb86939f from=0xfF1F9AF69e40a0413Ccb1B0B4f519BA7433B57df nonce=0    recipient=0x229475fe3eFf2B811A015A11a06bFeF24caC79c4 value=0
+INFO [03-08|00:14:35.244] Starting work on payload                 id=0x03f7354b467576be
+INFO [03-08|00:14:35.420] Updated payload                          id=0x03f7354b467576be number=1554 hash=e2bd5c..c66c1f txs=1  withdrawals=0 gas=1,769,398 fees=2.654097 root=58a607..137967 elapsed=175.641ms
+INFO [03-08|00:14:35.420] Stopping work on payload                 id=0x03f7354b467576be reason=delivery
+INFO [03-08|00:14:35.524] Paused snapshot generation
+WARN [03-08|00:14:35.526] {"level":"warn","msg":"Slow block","block":{"number":1554,"hash":"0xe2bd5c66448a34d13bed3cb69b397ba090224332011365d0825533d397c66c1f","gas_used":1769398,"tx_count":1},"timing":{"execution_ms":24.493304,"state_read_ms":52.765264,"state_hash_ms":13.455996,"commit_ms":14.533256,"total_ms":105.484552},"throughput":{"mgas_per_sec":16.774001182656583},"state_reads":{"accounts":8,"storage_slots":2302,"code":2,"code_bytes":0},"state_writes":{"accounts":3,"accounts_deleted":0,"storage_slots":2302,"storage_slots_deleted":0,"code":0,"code_bytes":0},"cache":{"account":{"hits":3,"misses":5,"hit_rate":37.5},"storage":{"hits":946,"misses":1356,"hit_rate":41.09470026064292},"code":{"hits":2,"misses":0,"hit_rate":100,"hit_bytes":0,"miss_bytes":0}}}
+INFO [03-08|00:14:35.526] Imported new potential chain segment     number=1554 hash=e2bd5c..c66c1f blocks=1 txs=1  mgas=1.769 elapsed=105.844ms   mgasps=16.717 triediffs=7.05MiB triedirty=0.00B
+INFO [03-08|00:14:35.527] Chain head was updated                   number=1554 hash=e2bd5c..c66c1f root=58a607..137967 elapsed="93.281µs"
+WARN [03-08|00:14:35.627] Snapshot generation is not permitted
+INFO [03-08|00:14:36.293] Submitted transaction                    hash=0x04d6a6334e933ab7bb6bf5b5aca38d02b05ab54f6c964738f081607a354667c6 from=0x81CcDb8CeB9283A04E993d6Cc85e2AF402b600C4 nonce=0    recipient=0x229475fe3eFf2B811A015A11a06bFeF24caC79c4 value=0
+INFO [03-08|00:14:45.541] Starting work on payload                 id=0x03f7c500d6c8aa9f
+INFO [03-08|00:14:45.712] Updated payload                          id=0x03f7c500d6c8aa9f number=1555 hash=d643a1..92519c txs=1  withdrawals=0 gas=1,769,398 fees=2.654097 root=0b6383..e96dfd elapsed=171.099ms
+INFO [03-08|00:14:45.712] Stopping work on payload                 id=0x03f7c500d6c8aa9f reason=delivery
+INFO [03-08|00:14:45.848] Paused snapshot generation
+WARN [03-08|00:14:45.850] {"level":"warn","msg":"Slow block","block":{"number":1555,"hash":"0xd643a11ca073f9b7398fefc6068b1dccfb96eb95c7b3ac320d76232e7292519c","gas_used":1769398,"tx_count":1},"timing":{"execution_ms":25.019449,"state_read_ms":66.646875,"state_hash_ms":30.074147,"commit_ms":14.660611,"total_ms":136.597325},"throughput":{"mgas_per_sec":12.953386898315907},"state_reads":{"accounts":8,"storage_slots":2302,"code":2,"code_bytes":0},"state_writes":{"accounts":3,"accounts_deleted":0,"storage_slots":2302,"storage_slots_deleted":0,"code":0,"code_bytes":0},"cache":{"account":{"hits":4,"misses":4,"hit_rate":50},"storage":{"hits":966,"misses":1336,"hit_rate":41.9635099913119},"code":{"hits":2,"misses":0,"hit_rate":100,"hit_bytes":0,"miss_bytes":0}}}
+INFO [03-08|00:14:45.850] Imported new potential chain segment     number=1555 hash=d643a1..92519c blocks=1 txs=1  mgas=1.769 elapsed=136.914ms   mgasps=12.923 triediffs=7.33MiB triedirty=0.00B
+INFO [03-08|00:14:45.850] Chain head was updated                   number=1555 hash=d643a1..92519c root=0b6383..e96dfd elapsed="104.696µs"
+WARN [03-08|00:14:45.922] Snapshot generation is not permitted
+INFO [03-08|00:14:46.392] Submitted transaction                    hash=0x435818659a65e3329fb589c9b5b1304abbbf9cf52d03d91b5d6b55cfcc033fc6 from=0x9D306B27C621be43daD82f492E53585d4E6e7454 nonce=0    recipient=0x229475fe3eFf2B811A015A11a06bFeF24caC79c4 value=0
+INFO [03-08|00:14:55.866] Starting work on payload                 id=0x03cd494d7784f585
+INFO [03-08|00:14:56.036] Updated payload                          id=0x03cd494d7784f585 number=1556 hash=90c319..10406f txs=1  withdrawals=0 gas=1,769,398 fees=2.654097 root=054ba8..a2fd87 elapsed=168.906ms
+INFO [03-08|00:14:56.036] Stopping work on payload                 id=0x03cd494d7784f585 reason=delivery
+INFO [03-08|00:14:56.179] Paused snapshot generation
+WARN [03-08|00:14:56.181] {"level":"warn","msg":"Slow block","block":{"number":1556,"hash":"0x90c3197ececa33a0286525043e96a207946181e19700cb4a1d8b0a5f9810406f","gas_used":1769398,"tx_count":1},"timing":{"execution_ms":24.472012,"state_read_ms":65.33001,"state_hash_ms":29.400024,"commit_ms":25.640439,"total_ms":145.052681},"throughput":{"mgas_per_sec":12.198312970168404},"state_reads":{"accounts":8,"storage_slots":2302,"code":2,"code_bytes":0},"state_writes":{"accounts":3,"accounts_deleted":0,"storage_slots":2302,"storage_slots_deleted":0,"code":0,"code_bytes":0},"cache":{"account":{"hits":3,"misses":5,"hit_rate":37.5},"storage":{"hits":940,"misses":1362,"hit_rate":40.834057341442225},"code":{"hits":2,"misses":0,"hit_rate":100,"hit_bytes":0,"miss_bytes":0}}}
+INFO [03-08|00:14:56.182] Imported new potential chain segment     number=1556 hash=90c319..10406f blocks=1 txs=1  mgas=1.769 elapsed=145.395ms   mgasps=12.170 triediffs=7.61MiB triedirty=0.00B
+INFO [03-08|00:14:56.182] Chain head was updated                   number=1556 hash=90c319..10406f root=054ba8..a2fd87 elapsed="133.575µs"
+WARN [03-08|00:14:56.251] Snapshot generation is not permitted
+INFO [03-08|00:14:56.502] Submitted transaction                    hash=0x0cc41698ce94f6b4a7134cd43532d8bc3ac82a2d271b6c5f7e01c2cd17f597d6 from=0x5E79677786640E130E65E6fA084CEA55CfA3337d nonce=0    recipient=0x229475fe3eFf2B811A015A11a06bFeF24caC79c4 value=0
+INFO [03-08|00:15:06.191] Starting work on payload                 id=0x039d618c823c8588
+INFO [03-08|00:15:06.399] Updated payload                          id=0x039d618c823c8588 number=1557 hash=c48c32..d0b051 txs=1  withdrawals=0 gas=1,769,398 fees=2.654097 root=29367c..3fc9cd elapsed=207.944ms
+INFO [03-08|00:15:06.407] Stopping work on payload                 id=0x039d618c823c8588 reason=delivery
+INFO [03-08|00:15:06.500] Paused snapshot generation
+WARN [03-08|00:15:06.503] {"level":"warn","msg":"Slow block","block":{"number":1557,"hash":"0xc48c3297ac67fa11716bdd217b748f0ed2539519b76fab93f21459fd00d0b051","gas_used":1769398,"tx_count":1},"timing":{"execution_ms":17.337652,"state_read_ms":52.478135,"state_hash_ms":14.509242,"commit_ms":18.057626,"total_ms":102.638187},"throughput":{"mgas_per_sec":17.239178240745815},"state_reads":{"accounts":8,"storage_slots":2302,"code":2,"code_bytes":0},"state_writes":{"accounts":3,"accounts_deleted":0,"storage_slots":2302,"storage_slots_deleted":0,"code":0,"code_bytes":0},"cache":{"account":{"hits":1,"misses":7,"hit_rate":12.5},"storage":{"hits":708,"misses":1594,"hit_rate":30.755864465682016},"code":{"hits":2,"misses":0,"hit_rate":100,"hit_bytes":0,"miss_bytes":0}}}
+INFO [03-08|00:15:06.503] Imported new potential chain segment     number=1557 hash=c48c32..d0b051 blocks=1 txs=1  mgas=1.769 elapsed=103.086ms   mgasps=17.164 triediffs=7.90MiB triedirty=0.00B
+INFO [03-08|00:15:06.507] Chain head was updated                   number=1557 hash=c48c32..d0b051 root=29367c..3fc9cd elapsed="123.512µs"
+WARN [03-08|00:15:06.572] Snapshot generation is not permitted
+INFO [03-08|00:15:06.626] Submitted transaction                    hash=0x1fc6d602ea20aceae1041401347e47f0bf841352ac9e15398ef56d2a0912ca92 from=0x580ceD62C8D3662c9cFa22c07b0932934A251145 nonce=0    recipient=0x229475fe3eFf2B811A015A11a06bFeF24caC79c4 value=0
+INFO [03-08|00:15:06.636] Submitted transaction                    hash=0xc99cde4b570feec5c5e11f0d701d082287ba1c099179980e71803be349fb3761 from=0xE1685de0b1066a7c8EaB58DB359bF5a3bdFDaF88 nonce=0    recipient=0x229475fe3eFf2B811A015A11a06bFeF24caC79c4 value=0
+INFO [03-08|00:15:16.520] Starting work on payload                 id=0x03f550f44165027d
+INFO [03-08|00:15:16.740] Updated payload                          id=0x03f550f44165027d number=1558 hash=95f511..968df1 txs=2  withdrawals=0 gas=2,413,200 fees=3.6198   root=1e35ba..44b19b elapsed=219.465ms
+INFO [03-08|00:15:16.740] Stopping work on payload                 id=0x03f550f44165027d reason=delivery
+INFO [03-08|00:15:16.877] Paused snapshot generation
+WARN [03-08|00:15:16.879] {"level":"warn","msg":"Slow block","block":{"number":1558,"hash":"0x95f511dd6a179db32a64df6c3567fee2cbe7d6432dc3aee3aa3558dffa968df1","gas_used":2413200,"tx_count":2},"timing":{"execution_ms":29.839394,"state_read_ms":71.4224,"state_hash_ms":12.279073,"commit_ms":24.453126,"total_ms":138.234698},"throughput":{"mgas_per_sec":17.457266771038917},"state_reads":{"accounts":9,"storage_slots":3112,"code":2,"code_bytes":0},"state_writes":{"accounts":4,"accounts_deleted":0,"storage_slots":3112,"storage_slots_deleted":0,"code":0,"code_bytes":0},"cache":{"account":{"hits":5,"misses":4,"hit_rate":55.55555555555556},"storage":{"hits":1594,"misses":1518,"hit_rate":51.221079691516714},"code":{"hits":2,"misses":0,"hit_rate":100,"hit_bytes":0,"miss_bytes":0}}}
+INFO [03-08|00:15:16.879] Imported new potential chain segment     number=1558 hash=95f511..968df1 blocks=1 txs=2  mgas=2.413 elapsed=138.582ms   mgasps=17.413 triediffs=8.28MiB triedirty=0.00B
+INFO [03-08|00:15:16.879] Chain head was updated                   number=1558 hash=95f511..968df1 root=1e35ba..44b19b elapsed="161.63µs"
+WARN [03-08|00:15:16.962] Snapshot generation is not permitted
+INFO [03-08|00:15:17.843] Submitted transaction                    hash=0x0e956b52d3f6cd695fd1ca3fff4f717cb712e7b308d59fa7bad52f5b199fafc6 from=0xD9fc3eC9446FD9cE1F9560b4af7aA4a73F116B86 nonce=1    recipient=0xD9fc3eC9446FD9cE1F9560b4af7aA4a73F116B86 value=0
+INFO [03-08|00:15:26.891] Starting work on payload                 id=0x03ee137f980838ff
+INFO [03-08|00:15:26.895] Updated payload                          id=0x03ee137f980838ff number=1559 hash=9c4c0a..358140 txs=1  withdrawals=0 gas=36800     fees=0.0276   root=dbd0f7..88b120 elapsed=3.594ms
+INFO [03-08|00:15:26.895] Stopping work on payload                 id=0x03ee137f980838ff reason=delivery
+INFO [03-08|00:15:26.900] Paused snapshot generation
+WARN [03-08|00:15:26.903] {"level":"warn","msg":"Slow block","block":{"number":1559,"hash":"0x9c4c0a8a1988688f0491b104d5963274238d6e087d5830b64fca152913358140","gas_used":36800,"tx_count":1},"timing":{"execution_ms":0.186553,"state_read_ms":2.13847,"state_hash_ms":0.322559,"commit_ms":4.339564,"total_ms":7.179146},"throughput":{"mgas_per_sec":5.125957878555472},"state_reads":{"accounts":7,"storage_slots":0,"code":1,"code_bytes":0},"state_writes":{"accounts":3,"accounts_deleted":0,"storage_slots":0,"storage_slots_deleted":0,"code":1,"code_bytes":23},"cache":{"account":{"hits":3,"misses":4,"hit_rate":42.857142857142854},"storage":{"hits":0,"misses":0,"hit_rate":0},"code":{"hits":1,"misses":0,"hit_rate":100,"hit_bytes":0,"miss_bytes":0}}}
+INFO [03-08|00:15:26.903] Imported new potential chain segment     number=1559 hash=9c4c0a..358140 blocks=1 txs=1  mgas=0.037 elapsed=7.433ms     mgasps=4.950  triediffs=8.28MiB triedirty=0.00B
+INFO [03-08|00:15:26.903] Chain head was updated                   number=1559 hash=9c4c0a..358140 root=dbd0f7..88b120 elapsed="122.675µs"
+INFO [03-08|00:15:26.956] Submitted transaction                    hash=0xe285779bb5cca81d6c743cc3fbd0c4a645b504cca4f7cf2de40f80aa43343093 from=0xE4F5b86ef4F267b41fDe13182AEB2e498379D5a5 nonce=0    recipient=0x229475fe3eFf2B811A015A11a06bFeF24caC79c4 value=0
+WARN [03-08|00:15:26.969] Snapshot generation is not permitted
+INFO [03-08|00:15:36.919] Starting work on payload                 id=0x03cea7ef7dc25439
+INFO [03-08|00:15:37.255] Updated payload                          id=0x03cea7ef7dc25439 number=1560 hash=f2bbb5..08a285 txs=1  withdrawals=0 gas=11,334,004 fees=17.001006 root=167d4b..bf185d elapsed=335.954ms
+INFO [03-08|00:15:37.255] Stopping work on payload                 id=0x03cea7ef7dc25439 reason=delivery
+INFO [03-08|00:15:37.986] Paused snapshot generation
+WARN [03-08|00:15:37.988] {"level":"warn","msg":"Slow block","block":{"number":1560,"hash":"0xf2bbb577e816876d33ea67dd850410837b603b4c07ebe341584ad4316108a285","gas_used":11334004,"tx_count":1},"timing":{"execution_ms":255.957235,"state_read_ms":471.480796,"state_hash_ms":0.158893,"commit_ms":4.805348,"total_ms":732.614984},"throughput":{"mgas_per_sec":15.470614507660684},"state_reads":{"accounts":8,"storage_slots":46850,"code":2,"code_bytes":0},"state_writes":{"accounts":2,"accounts_deleted":0,"storage_slots":0,"storage_slots_deleted":0,"code":0,"code_bytes":0},"cache":{"account":{"hits":3,"misses":5,"hit_rate":37.5},"storage":{"hits":21360,"misses":25490,"hit_rate":45.5923159018143},"code":{"hits":2,"misses":0,"hit_rate":100,"hit_bytes":0,"miss_bytes":0}}}
+INFO [03-08|00:15:37.988] Imported new potential chain segment     number=1560 hash=f2bbb5..08a285 blocks=1 txs=1  mgas=11.334 elapsed=732.872ms   mgasps=15.465 triediffs=8.26MiB triedirty=0.00B
+INFO [03-08|00:15:37.989] Chain head was updated                   number=1560 hash=f2bbb5..08a285 root=167d4b..bf185d elapsed="136.586µs"
+WARN [03-08|00:15:38.061] Snapshot generation is not permitted
+INFO [03-08|00:15:38.100] Submitted transaction                    hash=0x298e7e7a45eada9ecdca927002d154b19f10b4a6184110375f8e9697ee39170d from=0xD9fc3eC9446FD9cE1F9560b4af7aA4a73F116B86 nonce=2    recipient=0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266 value=149,922,150,001,999,210,400
+INFO [03-08|00:15:38.113] Submitted transaction                    hash=0xf95c3f615fbdbc217422cba7ecb7a78402344374c3381ef4d1c16396b460a8f7 from=0x3c909a454e1ea35B975D8e9E9E0b878ddC6d23cD nonce=1    recipient=0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266 value=73,807,500,000,491,945,000
+INFO [03-08|00:15:38.126] Submitted transaction                    hash=0xf8f38e51fad360781e7a93da3f5d34b9dc11ec2968bcd1415cbec5497cd5fe8b from=0xb5A4bb308Cb7E0E4bFafcaC40C60Db9ef569D7CF nonce=1    recipient=0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266 value=73,804,650,000,491,926,000
+INFO [03-08|00:15:38.140] Submitted transaction                    hash=0x2b30fda5b7d2db9e30c198f7567850f5d68a384306e806ece794bfc2f9e20025 from=0xe8fA3338211ADB29B257BEe8b2c3364ec03C4825 nonce=1    recipient=0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266 value=73,804,650,000,491,926,000
+INFO [03-08|00:15:38.152] Submitted transaction                    hash=0x91663355b1acc829a775c8eb3bf829509eddd282a09ad544f65a9c15e82d2e47 from=0xe8830D74Ae8DE8f25f1190b0FbD5d99dbD41CCA9 nonce=1    recipient=0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266 value=73,804,650,000,491,926,000
+INFO [03-08|00:15:38.174] Submitted transaction                    hash=0x7e40cf6863db941dde5747d22be0ad677c715673a745179cd8affa8086f2e9a0 from=0x299FBf059618860411a4724F792efbBdB1e7d342 nonce=1    recipient=0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266 value=73,804,650,000,491,926,000
+INFO [03-08|00:15:38.188] Submitted transaction                    hash=0xaef6c42e2aebb4702fca8d7233c89f91eb77de1bae729093153bbfe19799ad10 from=0x5FF1fa64857EbC13BeD1e6899fDE2EcDA5bbAc7c nonce=1    recipient=0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266 value=73,804,650,000,491,926,000
+INFO [03-08|00:15:38.201] Submitted transaction                    hash=0x75607e85d97b558636c556e1baa61b14046565fab794e43dda750502bf17ec72 from=0xa18F7b5F188C5DC358CCcDa092bC4a1341884Ae2 nonce=1    recipient=0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266 value=73,804,650,000,491,926,000
+INFO [03-08|00:15:38.218] Submitted transaction                    hash=0xd87afb0f83013f15e020d5ed0dcd5f446a205cb42620b2efc492320c6e95cbc2 from=0x73E735dFF8019CB8c0aF21Afc3AF10C37232E856 nonce=1    recipient=0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266 value=73,804,650,000,491,926,000
+INFO [03-08|00:15:38.232] Submitted transaction                    hash=0xa2a6eeb548e8e7a8a8da531185d375cf5adf876d7714cdbb156a12c1ec7175e3 from=0xc158fb1122C7b46aDca4A165d56E11c3e95d27f4 nonce=1    recipient=0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266 value=73,804,650,000,491,926,000
+INFO [03-08|00:15:38.254] Submitted transaction                    hash=0x4149202e83d80fe4cf2b8dad9dbed8fa5f73ad127f8c43396e6e2e205c4ec56b from=0xD88Ea2Ba37265df416077423B8f5fb6ED2Ef09e6 nonce=1    recipient=0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266 value=73,804,650,000,491,926,000
+INFO [03-08|00:15:38.269] Submitted transaction                    hash=0x66462939c73323dc2ba1cd896e04de1d0733f6300de08c390df6d9ed7c16ba13 from=0x5c166b26Aa22aCf400e1b6D4637cE57b2F70039c nonce=1    recipient=0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266 value=73,804,650,000,491,926,000
+INFO [03-08|00:15:38.292] Submitted transaction                    hash=0x219ee4f9a08b9317ed7c1abeb28289959bd12f2edfd6993a7337b57a40c19178 from=0x18AddF5Ef2D4C2F50aFD87588157E0954f388C08 nonce=1    recipient=0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266 value=73,804,650,000,491,926,000
+INFO [03-08|00:15:38.315] Submitted transaction                    hash=0xb73ad349cc7fe461d988801df1ab327f84b32e0c4cd3aa2bad7eb66e49cf2265 from=0xdF146472c8B89d2aAEA229DaB140D88757e5cA29 nonce=1    recipient=0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266 value=73,804,650,000,491,926,000
+INFO [03-08|00:15:38.331] Submitted transaction                    hash=0xdc1de02a04202fb1f909ef5eccd170dc81daf49c246d3f00c97d820294c278b7 from=0x8A47c96730545ddF44f37654294d02718Ef4E944 nonce=1    recipient=0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266 value=73,804,650,000,491,926,000
+INFO [03-08|00:15:38.346] Submitted transaction                    hash=0xda370cf117356a533af38c945b60adf91a432917d9d4a4422681c891f0916d27 from=0xe9503953e0529758AD0b4ff7d30113FAFE78821c nonce=1    recipient=0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266 value=73,804,650,000,491,926,000
+INFO [03-08|00:15:38.371] Submitted transaction                    hash=0xac6d7e49c325c16ca5a28bf39376e79668e6d002cc2728dae696c9d77fde4be1 from=0xfF1F9AF69e40a0413Ccb1B0B4f519BA7433B57df nonce=1    recipient=0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266 value=73,804,650,000,491,926,000
+INFO [03-08|00:15:38.387] Submitted transaction                    hash=0xed1a44ce41196655ac0a74ae40daeaaeb36b1c83ae40a4b14e9a4aa26883458e from=0x81CcDb8CeB9283A04E993d6Cc85e2AF402b600C4 nonce=1    recipient=0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266 value=73,804,650,000,491,926,000
+INFO [03-08|00:15:38.401] Submitted transaction                    hash=0x93fd3ef347c7616f953880e1d18941a979275978bbc43f1c0a0fa6554c419281 from=0x9D306B27C621be43daD82f492E53585d4E6e7454 nonce=1    recipient=0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266 value=73,804,650,000,491,926,000
+INFO [03-08|00:15:38.415] Submitted transaction                    hash=0xbc945d2b9b0f16ae7d76c67016487fbd319234a64936e48a9ffdebfae3f32226 from=0x5E79677786640E130E65E6fA084CEA55CfA3337d nonce=1    recipient=0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266 value=73,804,650,000,491,926,000
+INFO [03-08|00:15:38.428] Submitted transaction                    hash=0x992cf1570081ddff813bf84cc5b5ff1b7e6ba4bd02a15c44bf2d8f57b24a0332 from=0x580ceD62C8D3662c9cFa22c07b0932934A251145 nonce=1    recipient=0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266 value=73,804,650,000,491,926,000
+INFO [03-08|00:15:38.442] Submitted transaction                    hash=0x90df38b41559aafd65cfc358cbfe162ceee0b812312cb0ebb6bacb1f7dadf4d7 from=0xE1685de0b1066a7c8EaB58DB359bF5a3bdFDaF88 nonce=1    recipient=0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266 value=25,948,200,000,172,883,000
+INFO [03-08|00:15:38.456] Submitted transaction                    hash=0x71d0a5955cb9a66f5105c6de1d9d6183c07eacf3a2aa0867259a0e1cce42a47c from=0xE4F5b86ef4F267b41fDe13182AEB2e498379D5a5 nonce=1    recipient=0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266 value=132,982,050,000,886,442,000
+INFO [03-08|00:15:48.002] Starting work on payload                 id=0x037dbc1797f4f499
+INFO [03-08|00:15:48.011] Updated payload                          id=0x037dbc1797f4f499 number=1561 hash=10b248..bf66fb txs=23 withdrawals=0 gas=483,000    fees=0.36225   root=53cc80..66c58c elapsed=9.597ms
+INFO [03-08|00:15:48.012] Stopping work on payload                 id=0x037dbc1797f4f499 reason=delivery
+INFO [03-08|00:15:48.027] Paused snapshot generation
+WARN [03-08|00:15:48.030] {"level":"warn","msg":"Slow block","block":{"number":1561,"hash":"0x10b248732cc55a62faf1140593c9537c8699469081a0ad0551cfe16f0ebf66fb","gas_used":483000,"tx_count":23},"timing":{"execution_ms":0.598544,"state_read_ms":3.702452,"state_hash_ms":3.449998,"commit_ms":9.313208,"total_ms":17.332795},"throughput":{"mgas_per_sec":27.86625007680527},"state_reads":{"accounts":29,"storage_slots":0,"code":0,"code_bytes":0},"state_writes":{"accounts":25,"accounts_deleted":0,"storage_slots":0,"storage_slots_deleted":0,"code":0,"code_bytes":0},"cache":{"account":{"hits":25,"misses":4,"hit_rate":86.20689655172413},"storage":{"hits":0,"misses":0,"hit_rate":0},"code":{"hits":0,"misses":0,"hit_rate":0,"hit_bytes":0,"miss_bytes":0}}}
+INFO [03-08|00:15:48.034] Imported new potential chain segment     number=1561 hash=10b248..bf66fb blocks=1 txs=23 mgas=0.483  elapsed=21.738ms    mgasps=22.218 triediffs=8.30MiB triedirty=0.00B
+INFO [03-08|00:15:48.035] Chain head was updated                   number=1561 hash=10b248..bf66fb root=53cc80..66c58c elapsed="466.483µs"
+WARN [03-08|00:15:48.103] Snapshot generation is not permitted
+INFO [03-08|00:15:48.813] Submitted contract creation              hash=0x8f4c1267a8c6bec6f1911970b0e3331630bb50a9eaa184af5927ee73a0becf32 from=0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266 nonce=2553 contract=0xbC67A8B75bb8b1Eb1a3756DDb0954b7f031A5Cab value=0
+INFO [03-08|00:15:48.819] Submitted contract creation              hash=0xbe7a1e21425ba50aa0ccb4bdc7415feb2c7ff2c030344c52d5e7db172864909b from=0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266 nonce=2554 contract=0x5F9dc06607e947742EF1b837B952eA0728B1748f value=0
+INFO [03-08|00:15:48.824] Submitted transaction                    hash=0x2fd3d58d84589ee37197627c7901b9f9f3f665ac676bccd467380fae7f3ee81c from=0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266 nonce=2555 recipient=0xB8eCB832E233f727e481f2798E65E5FdeD413318 value=75,000,000,001,000,000,000
+INFO [03-08|00:15:48.829] Submitted transaction                    hash=0x127cf8a90a3071800a159f03b84d0b0559d055a9970bd9ef1d78537f5fcd4d4c from=0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266 nonce=2556 recipient=0xC3c5A2867e491D12c80Aed5432CBB74950Cb2651 value=149,998,806,000,999,992,040
+INFO [03-08|00:15:58.043] Starting work on payload                 id=0x03b530cedaaed127
+INFO [03-08|00:15:58.135] Updated payload                          id=0x03b530cedaaed127 number=1562 hash=222ee6..a66719 txs=4  withdrawals=0 gas=163,010    fees=0.244515  root=9ee978..c3d5a1 elapsed=92.081ms
+INFO [03-08|00:15:58.135] Stopping work on payload                 id=0x03b530cedaaed127 reason=delivery
+INFO [03-08|00:15:58.152] Paused snapshot generation
+WARN [03-08|00:15:58.154] {"level":"warn","msg":"Slow block","block":{"number":1562,"hash":"0x222ee68faadb6a62fe84f3ba534a72f73117fc660972c856294c0285fea66719","gas_used":163010,"tx_count":4},"timing":{"execution_ms":0.48686,"state_read_ms":9.322727,"state_hash_ms":3.170231,"commit_ms":4.899523,"total_ms":18.126349},"throughput":{"mgas_per_sec":8.99298584618447},"state_reads":{"accounts":20,"storage_slots":0,"code":0,"code_bytes":0},"state_writes":{"accounts":6,"accounts_deleted":0,"storage_slots":0,"storage_slots_deleted":0,"code":2,"code_bytes":43},"cache":{"account":{"hits":14,"misses":6,"hit_rate":70},"storage":{"hits":0,"misses":0,"hit_rate":0},"code":{"hits":0,"misses":0,"hit_rate":0,"hit_bytes":0,"miss_bytes":0}}}
+INFO [03-08|00:15:58.154] Imported new potential chain segment     number=1562 hash=222ee6..a66719 blocks=1 txs=4  mgas=0.163  elapsed=18.516ms    mgasps=8.804  triediffs=8.30MiB triedirty=0.00B
+INFO [03-08|00:15:58.155] Chain head was updated                   number=1562 hash=222ee6..a66719 root=9ee978..c3d5a1 elapsed="258.203µs"
+WARN [03-08|00:15:58.225] Snapshot generation is not permitted
+INFO [03-08|00:15:59.155] Submitted transaction                    hash=0x9aa04326a979d4fc57b09937037df4b7b9684c7a095425f8ed9dac9e5a2a2029 from=0xB8eCB832E233f727e481f2798E65E5FdeD413318 nonce=0    recipient=0xB8eCB832E233f727e481f2798E65E5FdeD413318 value=0
+INFO [03-08|00:16:08.171] Starting work on payload                 id=0x03173cb662299b4c
+INFO [03-08|00:16:08.193] Updated payload                          id=0x03173cb662299b4c number=1563 hash=7cde2c..78589e txs=1  withdrawals=0 gas=46000      fees=0.0345    root=dc9fbb..570fce elapsed=22.168ms
+INFO [03-08|00:16:08.193] Stopping work on payload                 id=0x03173cb662299b4c reason=delivery
+INFO [03-08|00:16:08.207] Paused snapshot generation
+WARN [03-08|00:16:08.211] {"level":"warn","msg":"Slow block","block":{"number":1563,"hash":"0x7cde2c8f3af95db40dc64fb60159fea51cac505257a750c81f1cf1c38078589e","gas_used":46000,"tx_count":1},"timing":{"execution_ms":0.234792,"state_read_ms":5.834166,"state_hash_ms":2.047966,"commit_ms":8.934169,"total_ms":17.229507},"throughput":{"mgas_per_sec":2.6698384347271227},"state_reads":{"accounts":10,"storage_slots":0,"code":0,"code_bytes":0},"state_writes":{"accounts":3,"accounts_deleted":0,"storage_slots":0,"storage_slots_deleted":0,"code":1,"code_bytes":23},"cache":{"account":{"hits":5,"misses":5,"hit_rate":50},"storage":{"hits":0,"misses":0,"hit_rate":0},"code":{"hits":0,"misses":0,"hit_rate":0,"hit_bytes":0,"miss_bytes":0}}}
+INFO [03-08|00:16:08.213] Imported new potential chain segment     number=1563 hash=7cde2c..78589e blocks=1 txs=1  mgas=0.046  elapsed=19.941ms    mgasps=2.307  triediffs=8.29MiB triedirty=0.00B
+INFO [03-08|00:16:08.214] Chain head was updated                   number=1563 hash=7cde2c..78589e root=dc9fbb..570fce elapsed="119.816µs"
+INFO [03-08|00:16:08.264] Submitted transaction                    hash=0xf46a3e404bfa6eeb80deacfe89b389e44118cafa0a5c3ec8a86a3a7c64fdf5e2 from=0xC3c5A2867e491D12c80Aed5432CBB74950Cb2651 nonce=0    recipient=0xB3e8540dC28dC95f00986807aB338c71701A590d value=0
+WARN [03-08|00:16:08.273] Snapshot generation is not permitted
+INFO [03-08|00:16:18.226] Starting work on payload                 id=0x03caa596750a8825
+WARN [03-08|00:16:20.748] Block building is interrupted            allowance=2s
+INFO [03-08|00:16:20.750] Updated payload                          id=0x03caa596750a8825 number=1564 hash=d1fbca..3c80e5 txs=1  withdrawals=0 gas=11,334,004 fees=17.001006 root=d4a649..55e32d elapsed=2.523s
+INFO [03-08|00:16:20.750] Stopping work on payload                 id=0x03caa596750a8825 reason=delivery
+INFO [03-08|00:16:21.939] Paused snapshot generation
+WARN [03-08|00:16:21.941] {"level":"warn","msg":"Slow block","block":{"number":1564,"hash":"0xd1fbcaec18ae015d8f732e60e49f92867ecaa892d94cadb917bc2801bd3c80e5","gas_used":11334004,"tx_count":1},"timing":{"execution_ms":292.899331,"state_read_ms":892.428485,"state_hash_ms":0.115288,"commit_ms":4.659824,"total_ms":1190.380949},"throughput":{"mgas_per_sec":9.521325093048008},"state_reads":{"accounts":8,"storage_slots":46850,"code":2,"code_bytes":0},"state_writes":{"accounts":2,"accounts_deleted":0,"storage_slots":0,"storage_slots_deleted":0,"code":0,"code_bytes":0},"cache":{"account":{"hits":3,"misses":5,"hit_rate":37.5},"storage":{"hits":18578,"misses":28272,"hit_rate":39.65421558164354},"code":{"hits":2,"misses":0,"hit_rate":100,"hit_bytes":0,"miss_bytes":0}}}
+INFO [03-08|00:16:21.941] Imported new potential chain segment     number=1564 hash=d1fbca..3c80e5 blocks=1 txs=1  mgas=11.334 elapsed=1.190s      mgasps=9.519  triediffs=8.28MiB triedirty=0.00B
+INFO [03-08|00:16:21.942] Chain head was updated                   number=1564 hash=d1fbca..3c80e5 root=d4a649..55e32d elapsed="144.435µs"
+WARN [03-08|00:16:22.010] Snapshot generation is not permitted
+INFO [03-08|00:16:22.444] Submitted transaction                    hash=0x639a7288de45fcd587de81bf70a1870264680a003274e2e583aaab1d88dba0e6 from=0xB8eCB832E233f727e481f2798E65E5FdeD413318 nonce=1    recipient=0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266 value=74,949,750,000,999,468,000
+INFO [03-08|00:16:22.457] Submitted transaction                    hash=0x438a01cc45a288a198bbb18e138e795659b74667542995aafe634fa9aaad0ce6 from=0xC3c5A2867e491D12c80Aed5432CBB74950Cb2651 nonce=1    recipient=0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266 value=132,982,050,000,886,442,000
+INFO [03-08|00:16:31.957] Starting work on payload                 id=0x0343e78accbcbac1
+INFO [03-08|00:16:31.961] Updated payload                          id=0x0343e78accbcbac1 number=1565 hash=2b5f03..19db12 txs=2  withdrawals=0 gas=42000      fees=0.0315    root=7e619b..e12c1f elapsed=4.464ms
+INFO [03-08|00:16:31.962] Stopping work on payload                 id=0x0343e78accbcbac1 reason=delivery
+INFO [03-08|00:16:31.969] Paused snapshot generation
+WARN [03-08|00:16:31.972] {"level":"warn","msg":"Slow block","block":{"number":1565,"hash":"0x2b5f0325cf60a4a8717e16b85b3eedccce27ca66302bbca595fd13817619db12","gas_used":42000,"tx_count":2},"timing":{"execution_ms":0.14619,"state_read_ms":3.473127,"state_hash_ms":0.234552,"commit_ms":6.106634,"total_ms":10.124395},"throughput":{"mgas_per_sec":4.148396027614489},"state_reads":{"accounts":8,"storage_slots":0,"code":0,"code_bytes":0},"state_writes":{"accounts":4,"accounts_deleted":0,"storage_slots":0,"storage_slots_deleted":0,"code":0,"code_bytes":0},"cache":{"account":{"hits":4,"misses":4,"hit_rate":50},"storage":{"hits":0,"misses":0,"hit_rate":0},"code":{"hits":0,"misses":0,"hit_rate":0,"hit_bytes":0,"miss_bytes":0}}}
+INFO [03-08|00:16:31.976] Imported new potential chain segment     number=1565 hash=2b5f03..19db12 blocks=1 txs=2  mgas=0.042  elapsed=14.123ms    mgasps=2.974  triediffs=8.27MiB triedirty=0.00B
+INFO [03-08|00:16:31.977] Chain head was updated                   number=1565 hash=2b5f03..19db12 root=7e619b..e12c1f elapsed="141.91µs"
+WARN [03-08|00:16:32.041] Snapshot generation is not permitted
