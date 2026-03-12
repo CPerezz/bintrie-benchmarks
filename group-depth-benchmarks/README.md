@@ -1,6 +1,6 @@
 # Group Depth Benchmarks
 
-Performance comparison of four binary trie group-depth configurations (GD-1, GD-2, GD-4, GD-8) on the geth implementation.
+Performance comparison of binary trie group-depth configurations on the geth implementation.
 
 ## Campaign
 
@@ -55,3 +55,50 @@ The mechanism: each trie node at group depth *g* contains an internal binary sub
 - [`graphs/`](graphs/) -- Data visualizations
 - [`diagrams/`](diagrams/) -- Explanatory diagrams
 - [`logs/`](logs/) -- Raw geth and test runner logs per configuration
+- [`scripts/`](scripts/) -- Automation scripts for the benchmark campaign:
+  - `generate_dbs.sh` -- Generate state DBs with state-actor + deploy ERC20 via spamoor
+  - `run_erc20_benchmarks.sh` -- Run ERC20 benchmarks with cold-cache protocol via execution-specs
+  - `extract_csv.py` -- Parse geth slow-block JSON logs into per-benchmark and consolidated CSVs
+
+## Reproducing
+
+Both shell scripts are parameterized via the `GROUP_DEPTHS` environment variable and accept any space-separated list of group depth values. All tool paths at the top of each script must be edited for your environment.
+
+### Prerequisites
+
+| Tool | Purpose |
+|:-----|:--------|
+| [state-actor](https://github.com/ethpandaops/state-actor) | Generates the 400GB binary-trie databases |
+| [geth (bintrie branch)](https://github.com/gballet/go-ethereum) | Binary trie-enabled geth fork |
+| [spamoor](https://github.com/ethpandaops/spamoor) | Deploys ERC20 contracts onto the generated DBs |
+| [execution-specs](https://github.com/ethereum/execution-specs) | Benchmark test harness (pytest-based) |
+| [uv](https://github.com/astral-sh/uv) | Python package runner used by execution-specs |
+
+### Step 1: Generate DBs + deploy ERC20
+
+```bash
+GROUP_DEPTHS="1 2 4 8" bash scripts/generate_dbs.sh
+```
+
+This runs two phases:
+1. **state-actor** generates a ~400GB binary-trie DB per group depth (`-seed 25519` for determinism)
+2. **spamoor** deploys a small ERC20 contract on each DB, writing `stubs.json` with the contract address
+
+### Step 2: Run benchmarks
+
+```bash
+GROUP_DEPTHS="1 2 4 8" bash scripts/run_erc20_benchmarks.sh
+```
+
+Runs 3 ERC20 benchmarks x 10 runs per config, cold-cache between every run. Produces per-benchmark geth logs and consolidated CSVs.
+
+Override the number of runs with `NUM_RUNS`:
+```bash
+GROUP_DEPTHS="4" NUM_RUNS=5 bash scripts/run_erc20_benchmarks.sh
+```
+
+### Important warnings
+
+**Group depth must match between state-actor and geth.** When geth opens a database, `--bintrie.groupdepth` must be set to the same value used by state-actor when generating that DB. Using a different value **will corrupt the database irreversibly** -- the on-disk trie layout won't match what geth expects.
+
+**Spamoor's private key must match state-actor's injected account.** The `--privkey` passed to spamoor must correspond to the account given to state-actor's `-inject-accounts` flag. The scripts default to Anvil's well-known key (`0xac09...ff80`) because state-actor pre-funds that account during generation.
