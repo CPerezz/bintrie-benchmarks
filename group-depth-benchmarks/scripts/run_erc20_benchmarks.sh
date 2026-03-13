@@ -90,7 +90,7 @@ kill_geth() {
   done
   # Drop OS page cache for truly cold benchmarks
   sync
-  echo 3 > /proc/sys/vm/drop_caches 2>/dev/null || true
+  echo 3 | sudo tee /proc/sys/vm/drop_caches > /dev/null 2>&1 || true
 }
 
 # =============================================================================
@@ -117,7 +117,7 @@ start_geth() {
   log "  [geth] Starting ($config_id, gd=$group_depth, cache=0, dev.period=10)..."
   "$GETH_BIN" \
     --datadir "$datadir" \
-    --dev --dev.period 10 --dev.gaslimit 100000000 \
+    --dev --dev.period 10 --dev.gaslimit 110000000 \
     --miner.etherbase "$SEED_ACCOUNT" \
     --cache 0 \
     --debug.logslowblock=0 \
@@ -289,7 +289,8 @@ for config_line in "${CONFIGS[@]}"; do
       set +e
       if [ -n "$bench_filter" ]; then
         "$UV" run execute remote \
-          --fork Prague \
+          --fork Osaka \
+          --tx-wait-timeout 600 \
           --gas-benchmark-values 100 \
           --address-stubs "$EXEC_SPECS/tests/benchmark/stateful/bloatnet/stubs_bloatnet.json" \
           -m stateful \
@@ -299,7 +300,8 @@ for config_line in "${CONFIGS[@]}"; do
         test_exit=$?
       else
         "$UV" run execute remote \
-          --fork Prague \
+          --fork Osaka \
+          --tx-wait-timeout 600 \
           --gas-benchmark-values 100 \
           --address-stubs "$EXEC_SPECS/tests/benchmark/stateful/bloatnet/stubs_bloatnet.json" \
           -m stateful \

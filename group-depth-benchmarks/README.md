@@ -8,7 +8,7 @@ Performance comparison of binary trie group-depth configurations on the geth imp
 |:----------|:------|
 | Machine | QEMU VM -- 8 vCPUs, 30 GB RAM, 3.9 TB SSD, Ubuntu 24.04 LTS |
 | Database | ~360 GB, ~400M accounts + storage slots per configuration |
-| Configurations | GD-1, GD-2, GD-4, GD-8 (Pebble, 4KB block size) |
+| Configurations | GD-1, GD-2, GD-3, GD-4, GD-5, GD-6, GD-8 (Pebble, 4KB block size) |
 | Protocol | Cold cache (OS page cache dropped + Pebble cache=0 between runs) |
 | Runs | 10 per benchmark per config; run 1 excluded (residual warmth) |
 | Gas target | 100M gas per block |
@@ -25,27 +25,29 @@ Performance comparison of binary trie group-depth configurations on the geth imp
 
 ### Data completeness
 
-| Benchmark | GD-1 | GD-2 | GD-4 | GD-8 |
-|:----------|:-----|:-----|:-----|:-----|
-| sload_benchmark | 9 runs | 9 runs | 9 runs | -- |
-| sstore_variants | 9 runs | 9 runs | 9 runs | 4 runs |
-| erc20_balanceof | 9 runs | 9 runs | 9 runs | 9 runs |
-| erc20_approve | 9 runs | 9 runs | 9 runs | 9 runs |
-| mixed_sload_sstore | 9 runs | 9 runs | 9 runs | 9 runs |
+| Benchmark | GD-1 | GD-2 | GD-3 | GD-4 | GD-5 | GD-6 | GD-8 |
+|:----------|:-----|:-----|:-----|:-----|:-----|:-----|:-----|
+| sload_benchmark | 9 runs | 9 runs | -- | 9 runs | -- | -- | -- |
+| sstore_variants | 9 runs | 9 runs | -- | 9 runs | -- | -- | 4 runs |
+| erc20_balanceof | 9 runs | 9 runs | 9 runs | 9 runs | 9 runs | 9 runs | 9 runs |
+| erc20_approve | 9 runs | 9 runs | 9 runs | 9 runs | 9 runs | 9 runs | 9 runs |
+| mixed_sload_sstore | 9 runs | 9 runs | 9 runs | 9 runs | 9 runs | 9 runs | 9 runs |
 
-GD-8 synthetic benchmarks were not completed -- each configuration requires a full 360 GB database rebuild and multi-day benchmark run. ERC20 benchmarks have complete data for all four group depths.
+Synthetic benchmarks are only available for GD-1, 2, 4 (and partially GD-8). The GD-3/5/6 campaign focused on ERC20 benchmarks. All seven group depths have complete ERC20 data.
+
+GD-6 ERC20 data was re-run with proper cold-cache protocol (OS page cache drops via `sudo tee /proc/sys/vm/drop_caches`). The original campaign's GD-6 data had CV=87% on approve due to missing page cache drops between runs; the re-run achieved CV=24%.
 
 ## Results
 
-**GD-4 is optimal.** Statistically identical read performance to GD-8 (3% difference, p=0.045 borderline) but **45% faster writes** (p < 1e-9).
+**GD-5 is optimal.** 11% faster writes than GD-4 (p < 1e-9), 16% faster mixed workloads (p < 1e-3), and the highest read throughput (7.08 Mgas/s). The write optimum lies at 5 bits per node.
 
-The mechanism: each trie node at group depth *g* contains an internal binary subtree with 2^g - 1 nodes that must be rehashed on every write. GD-8 nodes have 255 internal nodes vs 15 for GD-4 -- a 17x per-node cost that overwhelms the 2x shorter traversal path.
+The mechanism: each trie node at group depth *g* contains an internal binary subtree with 2^g - 1 nodes that must be rehashed on every write. GD-5 (31 internal nodes) finds the sweet spot between path length (~52 nodes) and per-node rehashing cost. At GD-6 (63 internal nodes), rehashing costs jump sharply (575 ms vs 220 ms for GD-5 on ERC20 writes).
 
-| Criterion | GD-4 | GD-8 | Winner |
-|:----------|:-----|:-----|:-------|
-| Reads (ERC20) | 3,067 ms | 2,977 ms | GD-8 by 3% (p=0.045, borderline) |
-| Writes (ERC20) | 678 ms | 982 ms | **GD-4 by 45%** (p < 1e-9) |
-| Mixed | 2,302 ms | 2,145 ms | Indistinguishable (p=0.37) |
+| Criterion | GD-4 | GD-5 | GD-8 | Winner |
+|:----------|:-----|:-----|:-----|:-------|
+| Reads (Mgas/s) | 5.46 | **7.08** | 5.59 | **GD-5 by 30%** vs GD-4 |
+| Writes (ERC20) | 678 ms | **601 ms** | 982 ms | **GD-5 by 11%** (p < 1e-9) |
+| Mixed | 2,302 ms | **1,931 ms** | 2,145 ms | **GD-5 by 16%** (p < 1e-3) |
 
 ## Contents
 
@@ -59,6 +61,8 @@ The mechanism: each trie node at group depth *g* contains an internal binary sub
   - `generate_dbs.sh` -- Generate state DBs with state-actor + deploy ERC20 via spamoor
   - `run_erc20_benchmarks.sh` -- Run ERC20 benchmarks with cold-cache protocol via execution-specs
   - `extract_csv.py` -- Parse geth slow-block JSON logs into per-benchmark and consolidated CSVs
+  - `analyze_data.py` -- Statistical analysis (medians, Mann-Whitney U, CV%, percentage diffs)
+  - `generate_graphs.py` -- Generate all benchmark visualization PNGs (dark/light themes)
 
 ## Reproducing
 
