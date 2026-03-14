@@ -61,7 +61,7 @@ kill_geth() {
   fi
   # Drop OS page cache
   sync
-  echo 3 | sudo tee /proc/sys/vm/drop_caches > /dev/null 2>&1 || true
+  sudo -n sh -c 'echo 3 > /proc/sys/vm/drop_caches' 2>/dev/null || true
 }
 
 # =============================================================================
