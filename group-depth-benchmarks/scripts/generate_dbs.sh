@@ -177,7 +177,7 @@ for gd in "${GROUP_DEPTHS[@]}"; do
   log "================================================================"
 
   # Skip if DB already exists and looks complete
-  if [ -f "$gen_log" ] && grep -q "Generation complete" "$gen_log" 2>/dev/null; then
+  if [ -f "$gen_log" ] && grep -qi "generation complete" "$gen_log" 2>/dev/null; then
     log "  DB already generated (found completion marker in log). Skipping."
   else
     # Clean up partial previous run
