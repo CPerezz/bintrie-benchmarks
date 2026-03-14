@@ -95,7 +95,9 @@ The trade-off is straightforward in theory: reads benefit from shallow trees (fe
 
 ### Block Composition Note
 
-Faster configs naturally process more transactions per 10-second block window (`dev.period=10`), resulting in higher gas per block for GD-5 and GD-6. This is correct behavior -- faster tree traversal means higher throughput. However, it means raw millisecond values cannot be compared directly across configs with different block compositions. **Mgas/s (throughput) is the correct comparison metric** as it normalizes for gas differences. Where raw ms is shown, it reflects the actual block processing time for that config's natural block size.
+The execution-specs harness sends all benchmark transactions to geth's mempool at once (within <1 second). Geth's dev mode miner (`dev.period=10`) then processes transactions sequentially from this pool during a 10-second block-building window -- when the timer expires, it mines whatever it managed to process. The bottleneck is trie operation time, not gas capacity: each ERC20 approve tx uses only ~4.4M gas (the 100M block gas limit could fit ~22), but trie operations (traverse, update, hash, commit) consume nearly the entire window for just 1 tx on slower configs. Geth log evidence (`Updated payload` entries): GD-3 approve blocks contain txs=1 at elapsed=8--10s, while GD-6 approve blocks contain txs=2 at elapsed=7--8s. Setup transactions (simple ETH transfers) process 7 txs in 77ms, confirming that trie cost -- not transaction overhead -- is the limiting factor.
+
+Faster configs therefore process more transactions per block, resulting in higher gas per block for GD-5 and GD-6. This is correct behavior -- it directly measures block-building throughput. However, it means raw millisecond values cannot be compared directly across configs with different block compositions. **Mgas/s (throughput) is the correct comparison metric** as it normalizes for gas differences. Where raw ms is shown, it reflects the actual block processing time for that config's natural block size.
 
 </details>
 
@@ -166,7 +168,7 @@ Per-slot cost: synthetic reads cost ~0.02 ms/slot. ERC20 reads cost ~0.4--1.0 ms
 
 `balanceOf` is a read-only ERC20 function (returns a token balance). `approve` is a write operation (sets a spending allowance, modifying storage). ERC20 is the most common contract type on Ethereum mainnet, making it a representative benchmark target. The ERC20 used here is a minimal implementation -- results indicate clear trends in how group depth affects read vs write performance, though production contracts with more complex storage layouts may show variation.
 
-Two distinct patterns emerge. Synthetic benchmarks: cache rates are flat at ~43--44% regardless of group depth -- sequential access is inherently cache-friendly. ERC20 benchmarks: cache rates **increase by 17 percentage points** from GD-1 (21--28%) to GD-4/8 (35--39%). In shallower trees, upper-level nodes are shared by many keys -- the "shared prefix" effect. But rates plateau at ~39%, as the 256-bit keyspace is too sparse for deeper cache reuse. GD-5 balanceof (64.8%) and GD-6 approve (63.7%) both show elevated cache rates. These are block-composition artifacts: both configs process approximately 2x the transactions per block for their respective benchmarks, causing stronger intra-block cache warming. GD-6's balanceof and mixed cache rates normalized after re-running with proper cold-cache protocol (65.5%→39.4%, 63.2%→39.6%).
+Two distinct patterns emerge. Synthetic benchmarks: cache rates are flat at ~43--44% regardless of group depth -- sequential access is inherently cache-friendly. ERC20 benchmarks: cache rates **increase by 17 percentage points** from GD-1 (21--28%) to GD-4/8 (35--39%). In shallower trees, upper-level nodes are shared by many keys -- the "shared prefix" effect. But rates plateau at ~39%, as the 256-bit keyspace is too sparse for deeper cache reuse. GD-5 balanceof (64.8%) and GD-6 approve (63.7%) both show elevated cache rates. These are block-composition artifacts: because trie operations are faster on these configs, geth processes ~2x the transactions within the 10-second block-building window (see Block Composition Note above), causing stronger intra-block cache warming. GD-6's balanceof and mixed cache rates normalized after re-running with proper cold-cache protocol (65.5%→39.4%, 63.2%→39.6%).
 
 *So far, wider is better. GD-8 leads on reads. Then we tested writes.*
 
@@ -191,7 +193,7 @@ Two distinct patterns emerge. Synthetic benchmarks: cache rates are flat at ~43-
 
 *`trie_updates` = `state_hash_ms` (AccountHashes + AccountUpdates + StorageUpdates) — covers the full trie mutation and rehash phase, not just hashing. Write Cost is the median of per-block (trie_updates + commit); this may differ slightly from the sum of the component medians due to properties of the median function. GD-6 was re-run with proper cold-cache protocol (OS page cache drops). CV improved from 87% to 24%, confirming reliable measurements.*
 
-> **GD-5 is the write champion.** 601 ms total -- 11% faster than GD-4 (678 ms, p < 1e-9) and 39% faster than GD-8 (982 ms). By throughput, GD-6 (6.27 Mgas/s) ranks 3rd, outperforming GD-8 (4.47 Mgas/s) -- GD-6's elevated raw ms reflects processing ~2x gas per block.
+> **GD-5 is the write champion.** 601 ms total -- 11% faster than GD-4 (678 ms, p < 1e-9) and 39% faster than GD-8 (982 ms). By throughput, GD-6 (6.27 Mgas/s) ranks 3rd, outperforming GD-8 (4.47 Mgas/s) -- GD-6's elevated raw ms reflects processing ~2x gas per block (faster trie ops allow geth to fit 2 txs in the 10-second block window vs 1 for slower configs).
 
 The component breakdown tells the story:
 
@@ -214,7 +216,7 @@ Each trie node at group depth $g$ contains an internal binary subtree with $2^g 
 - **GD-5 node:** 31 internal hash operations x ~52 nodes on path = **~1,612 total ops**
 - **GD-8 node:** 255 internal hash operations x 32 nodes on path = **8,160 total ops**
 
-GD-5 finds the sweet spot: its path is 19% shorter than GD-4 (~52 vs 64 nodes), and each node's 31 internal operations remain manageable. At GD-6 (63 internal nodes per node), rehashing costs jump sharply -- 575 ms vs 220 ms for GD-5 (GD-6 processes ~2x gas per block, so the per-gas-unit hash cost is comparable). The inflection point lies between GD-5 and GD-6.
+GD-5 finds the sweet spot: its path is 19% shorter than GD-4 (~52 vs 64 nodes), and each node's 31 internal operations remain manageable. At GD-6 (63 internal nodes per node), rehashing costs jump sharply -- 575 ms vs 220 ms for GD-5 (GD-6 fits 2 txs per 10-second block window vs 1 for GD-5, so the per-gas-unit hash cost is comparable). The inflection point lies between GD-5 and GD-6.
 
 > **Note:** The 17× ratio (255 vs 15 internal hash operations) is the theoretical upper bound from the data structure. Our benchmarks support the mechanism: GD-8 trie update costs are 1.71× more than GD-4 (433ms vs 254ms), consistent with random writes modifying a fraction of each node's internal subtree. The geth implementation is the authoritative source for the exact rehashing algorithm.
 
