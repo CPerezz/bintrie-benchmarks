@@ -34,7 +34,7 @@ import matplotlib.ticker as mticker
 # Constants
 # ---------------------------------------------------------------------------
 
-GD_ORDER: list[int] = [1, 2, 3, 4, 5, 6, 8]
+GD_ORDER: list[int] = [1, 2, 3, 4, 5, 6, 7, 8]
 
 COLORS: dict[int, str] = {
     1: '#1f77b4',  # blue
