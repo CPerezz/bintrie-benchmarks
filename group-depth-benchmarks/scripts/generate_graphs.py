@@ -43,6 +43,7 @@ COLORS: dict[int, str] = {
     4: '#2ca02c',  # green
     5: '#17becf',  # cyan
     6: '#e377c2',  # pink
+    7: '#8c564b',  # brown
     8: '#d62728',  # red
 }
 

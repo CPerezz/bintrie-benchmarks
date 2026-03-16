@@ -2,29 +2,30 @@
 
 *Full interactive report with SVG diagrams: [GitHub Pages link pending]*
 
-> **GD-5 is optimal.** We benchmarked seven binary trie group-depth configurations (GD-1 through GD-6, plus GD-8) on 360 GB databases with 400 million state entries. GD-5 delivers **11% faster writes** than GD-4 (p < 1e-9), **16% faster mixed workloads** (p < 1e-3), and competitive read throughput. The write optimum lies at 5 bits per node.
+> **The sweet spot is GD-5 or GD-6.** We benchmarked eight binary trie group-depth configurations (GD-1 through GD-8) on 360 GB databases with 400 million state entries. GD-5 delivers **7% faster writes** than GD-4 (6.94 vs 6.47 Mgas/s, p < 1e-9), while GD-6 leads reads (6.39 Mgas/s) and mixed workloads are **19% faster** than GD-4 (p < 1e-3). GD-7 confirms the inflection: performance degrades past GD-6 on all benchmarks. The write-read optimum lies at 5--6 bits per node.
 
 ---
 
 ## S1 -- Executive Summary
 
-The binary trie is on the [Ethereum protocol strawman](https://strawmap.org/) as a future state tree replacement. No binary trie implementation has been benchmarked at scale -- not group depth, not anything else. With this transition on the roadmap, assessing performance characteristics is a prerequisite for informed prototyping. The geth implementation ([EIP-7864](https://eips.ethereum.org/EIPS/eip-7864)) exposes a `--bintrie.groupdepth` parameter that controls how binary levels are packed into on-disk nodes; this study benchmarks seven configurations to determine the optimal setting.
+The binary trie is on the [Ethereum protocol strawman](https://strawmap.org/) as a future state tree replacement. No binary trie implementation has been benchmarked at scale -- not group depth, not anything else. With this transition on the roadmap, assessing performance characteristics is a prerequisite for informed prototyping. The geth implementation ([EIP-7864](https://eips.ethereum.org/EIPS/eip-7864)) exposes a `--bintrie.groupdepth` parameter that controls how binary levels are packed into on-disk nodes; this study benchmarks eight configurations to determine the optimal setting.
 
-> **Bottom line:** GD-5 is optimal -- 11% faster writes than GD-4 (p < 1e-9), 16% faster mixed workloads (p < 1e-3), and competitive read throughput. The write optimum lies at 5 bits per node.
+> **Bottom line:** The sweet spot is GD-5 or GD-6, depending on workload. GD-5 wins writes by 7% over GD-4 (6.94 vs 6.47 Mgas/s, p < 1e-9). GD-6 leads reads (6.39 Mgas/s) and mixed workloads (+19% over GD-4, p < 1e-3). GD-7 confirms performance degrades past GD-6.
 
 ### What we tested
 
-Seven group-depth configurations (GD-1 through GD-6, plus GD-8) on identical 360 GB databases with ~400 million state entries. Five benchmark types -- two synthetic (raw SLOAD/SSTORE) and three ERC20 contract workloads -- each run 9 times under a cold-cache protocol. All results use medians with [Mann-Whitney U](https://en.wikipedia.org/wiki/Mann%E2%80%93Whitney_U_test) significance tests.
+Eight group-depth configurations (GD-1 through GD-8) on identical 360 GB databases with ~400 million state entries. Five benchmark types -- two synthetic (raw SLOAD/SSTORE) and three ERC20 contract workloads -- each run 9 times under a cold-cache protocol. All results use medians with [Mann-Whitney U](https://en.wikipedia.org/wiki/Mann%E2%80%93Whitney_U_test) significance tests.
 
 ### What we found
 
-- **Reads confirm the intuition** (S4): Wider trees read faster. GD-8 achieves more than double the read throughput of GD-1 (5.59 vs 2.65 Mgas/s). GD-3 through GD-8 range from 5.5 to 6.1 Mgas/s by throughput, excluding GD-5 whose elevated block size confounds the comparison.
-- **Writes reveal a sharper optimum** (S5): GD-5 is the write champion at 601 ms -- 11% faster than GD-4 (678 ms) and 39% faster than GD-8 (982 ms). By throughput, GD-6 (6.27 Mgas/s) outperforms GD-8 (4.47 Mgas/s) despite higher raw ms from processing more gas per block.
-- **The sweet spot is GD-5** (S6): GD-5 wins writes by 11% and mixed workloads by 16% over GD-4, with competitive read throughput (7.08 vs 5.46 Mgas/s).
+- **Reads confirm the intuition** (S4): Wider trees read faster. GD-8 achieves more than double the read throughput of GD-1 (5.59 vs 2.65 Mgas/s). GD-6 achieves the highest read throughput (6.39 Mgas/s), followed by GD-5 (6.11) and GD-7 (6.04). GD-3 through GD-8 range from 5.2 to 6.4 Mgas/s by throughput.
+- **Writes reveal a sharper optimum** (S5): GD-5 is the write champion at 629 ms (6.94 Mgas/s) -- 7% faster than GD-4 (678 ms, 6.47 Mgas/s) and 55% faster than GD-8 (982 ms, 4.47 Mgas/s). The write inflection lies between GD-5 and GD-6 (hash/read ratio crosses 1.0).
+- **Node size hits the Pebble block boundary at GD-7** (S5): Each GD-7 node serializes to ~4 KB (128 × 32 bytes) -- exactly the Pebble block size. Below this boundary (GD-6: ~2 KB), each node fits within one block. Above it, reads may require two blocks per node. [Gary Rong's NVMe benchmarks](https://github.com/rjl493456442/bench/blob/main/disk/pageread/results.md) show random 8 KB reads cost 54% more latency than 4 KB at QD=1 (77.8 vs 50.6 µs). This per-node I/O penalty compounds across ~37 path nodes, explaining why GD-7 reads slower than GD-6 despite a shorter path.
+- **The sweet spot is GD-5 or GD-6** (S6): GD-5 wins writes by 7% over GD-4, while GD-6 leads reads (+5% over GD-5) and mixed workloads (+19% over GD-4). GD-7 confirms the inflection -- worse than GD-6 on all benchmarks. Since Ethereum is read-heavy, GD-6 may be the preferred default.
 
 ### How to read this post
 
-S2 Background covers the binary trie and group depth concept. S3 Methodology details the benchmark setup (collapsible). S4--S6 present the results in a narrative arc: reads, writes, then the trade-off. S7 Patterns examines cross-cutting observations, and S8 Conclusions gives the recommendation and open questions.
+S2 Background covers the binary trie and group depth concept. S3 Methodology details the benchmark setup (collapsible). S4--S6 present the results in a narrative arc: reads, writes, then the trade-off. S7 Patterns examines cross-cutting observations, and S8 Conclusions gives the dual recommendation and open questions. **Short on time? Start with S4's "ERC20 Reads: Where Depth Matters"** -- it's the section where group depth differences become most visible and sets up the rest of the analysis.
 
 ---
 
@@ -46,6 +47,7 @@ The trie is **always binary** at the fundamental level -- every internal node ha
 - **GD-4:** 4 binary levels per node --> 16 child pointers, 64 nodes on path
 - **GD-5:** 5 binary levels per node --> 32 child pointers, ~52 nodes on path
 - **GD-6:** 6 binary levels per node --> 64 child pointers, ~43 nodes on path
+- **GD-7:** 7 binary levels per node --> 128 child pointers, ~37 nodes on path
 - **GD-8:** 8 binary levels per node --> 256 child pointers, 32 nodes on path
 
 Think of it like a zip code: GD-1 reads your address one digit at a time (256 steps), while GD-8 reads 8 digits at once (32 steps). Fewer steps means fewer disk reads -- but each "bundled node" is larger and more expensive to update, because the binary subtree inside it must be rehashed.
@@ -70,7 +72,7 @@ The trade-off is straightforward in theory: reads benefit from shallow trees (fe
 |:----------|:------|
 | Machine | QEMU VM -- 8 vCPUs, 30 GB RAM, 3.9 TB SSD, Ubuntu 24.04 LTS |
 | Database | ~360 GB, ~400M accounts + storage slots |
-| Configurations | GD-1, GD-2, GD-3, GD-4, GD-5, GD-6, GD-8 (Pebble, the LSM-tree storage engine used by geth, 4KB block size) |
+| Configurations | GD-1, GD-2, GD-3, GD-4, GD-5, GD-6, GD-7, GD-8 (Pebble, the LSM-tree storage engine used by geth, 4KB block size) |
 | Protocol | Cold cache (OS page cache dropped + Pebble cache=0 between runs) |
 | Runs | 10 per benchmark per config; run 1 excluded (residual warmth) |
 | Gas target | 100M gas per block |
@@ -95,9 +97,9 @@ The trade-off is straightforward in theory: reads benefit from shallow trees (fe
 
 ### Block Composition Note
 
-The execution-specs harness sends all benchmark transactions to geth's mempool at once (within <1 second). Geth's dev mode miner (`dev.period=10`) then processes transactions sequentially from this pool during a 10-second block-building window -- when the timer expires, it mines whatever it managed to process. The bottleneck is trie operation time, not gas capacity: each ERC20 approve tx uses only ~4.4M gas (the 100M block gas limit could fit ~22), but trie operations (traverse, update, hash, commit) consume nearly the entire window for just 1 tx on slower configs. Geth log evidence (`Updated payload` entries): GD-3 approve blocks contain txs=1 at elapsed=8--10s, while GD-6 approve blocks contain txs=2 at elapsed=7--8s. Setup transactions (simple ETH transfers) process 7 txs in 77ms, confirming that trie cost -- not transaction overhead -- is the limiting factor.
+The execution-specs harness sends all benchmark transactions to geth's mempool at once (within <1 second). Geth's dev mode miner (`dev.period=10`) then processes transactions sequentially from this pool during a 10-second block-building window -- when the timer expires, it mines whatever it managed to process. The bottleneck is trie operation time, not gas capacity: each ERC20 approve tx uses only ~4.4M gas (the 100M block gas limit could fit ~22), but trie operations (traverse, update, hash, commit) consume nearly the entire window for just 1 tx on slower configs. Setup transactions (simple ETH transfers) process 7 txs in 77ms, confirming that trie cost -- not transaction overhead -- is the limiting factor.
 
-Faster configs therefore process more transactions per block, resulting in higher gas per block for GD-5 and GD-6. This is correct behavior -- it directly measures block-building throughput. However, it means raw millisecond values cannot be compared directly across configs with different block compositions. **Mgas/s (throughput) is the correct comparison metric** as it normalizes for gas differences. Where raw ms is shown, it reflects the actual block processing time for that config's natural block size.
+With verified cold-cache drops (Phase 3), all configs now process 1 tx/block (median tx_count=1). The mechanistic explanation remains valid -- the 10-second `dev.period` acts as a time budget, and trie operation cost determines how many transactions fit. **Mgas/s (throughput) is the correct comparison metric** as it normalizes for any gas differences across configs. Where raw ms is shown, it reflects the actual block processing time for that config's block composition.
 
 </details>
 
@@ -119,12 +121,14 @@ Wider trees should mean faster reads. And they do.
 
 | Group Depth | Median Read (ms) | vs GD-1 |
 |:------------|:-----------------|:--------|
-| GD-1 | 53.0 | baseline |
-| GD-2 | **48.0** | -9% |
-| GD-4 | **47.6** | -10% |
+| GD-1 | 53 | baseline |
+| GD-2 | **48** | -9% |
+| GD-4 | **48** | -10% |
 | GD-8 | -- | no data |
 
 Only ~10% improvement from GD-1 to GD-4. Sequential access doesn't differentiate group depths because shared prefixes keep the working set small and cache-friendly regardless of tree shape.
+
+*Sequential reads and writes show near-identical performance across all configs. Since group depth primarily affects random-access patterns (keccak-hashed storage slots), only ERC20 benchmarks were collected for all eight configurations.*
 
 ### ERC20 Reads: Where Depth Matters
 
@@ -134,18 +138,19 @@ Only ~10% improvement from GD-1 to GD-4. Sequential access doesn't differentiate
 | GD | state_read (ms) | total (ms) | Mgas/s | vs GD-1 (Mgas/s) |
 |:---|:----------------|:-----------|:-------|:--------|
 | 1 | 5,878 | 6,284 | 2.65 | baseline |
-| 2 | 3,840 | 4,230 | 3.95 | +49% |
-| 3 | 2,416 | 2,768 | 6.14 | +132% |
+| 2 | 3,840 | 4,231 | 3.95 | +49% |
+| 3 | 2,866 | 3,213 | 5.20 | +96% |
 | 4 | 2,677 | 3,067 | 5.46 | +106% |
-| 5 | 4,036 | 4,742 | **7.08** | +167% |
-| 6 | 2,149 | 2,581 | 5.89 | +122% |
+| 5 | 2,370 | 2,733 | 6.11 | +131% |
+| **6** | **2,248** | **2,623** | **6.39** | **+141%** |
+| 7 | 2,339 | 2,693 | 6.04 | +128% |
 | 8 | 2,598 | 2,977 | 5.59 | +111% |
 
-> **~2.7x read throughput from GD-1 to GD-5.** Throughput (Mgas/s) is the correct comparison here because GD-5 and GD-6 produced blocks with different gas amounts. By throughput, GD-5 achieves the highest read throughput (7.08 Mgas/s), followed by GD-3 (6.14 Mgas/s) and GD-6 (5.89 Mgas/s). For configs with matching block sizes (GD-1/2/3/4/8), total block time confirms the pattern: GD-3 (2,768 ms) is 10% faster than GD-4 (3,067 ms).
+> **~2.4x read throughput from GD-1 to GD-6.** GD-6 achieves the highest read throughput (6.39 Mgas/s), followed by GD-5 (6.11) and GD-7 (6.04). Read performance increases monotonically from GD-1 through GD-6 before tapering off -- GD-4 (5.46) beats GD-3 (5.20) as expected from shorter paths. GD-7 and GD-8 show diminishing returns as nodes become large enough to offset the shorter paths.
 
 Why the dramatic difference from synthetic? Keccak scatters keys uniformly, forcing a full traversal from root to leaf. GD-1 must descend 256 levels; GD-8 only 32. Every level is a potential disk seek. Random access exposes the full depth penalty.
 
-*GD-3 (2,768 ms, 6.14 Mgas/s) outperforms GD-4 (3,067 ms, 5.46 Mgas/s) on reads despite a longer path (~86 vs 64 nodes). GD-3's smaller node serialization (~256 bytes vs ~512 bytes for GD-4) may interact more favorably with Pebble's 4KB block size. This non-monotonic result strengthens the case for exploring the GD x block-size matrix (Open Question #3).*
+*GD-3 (3,213 ms, 5.20 Mgas/s) and GD-4 (3,067 ms, 5.46 Mgas/s) perform closely on reads, with GD-4 slightly ahead as expected from its shorter path (64 vs ~86 nodes). GD-3's smaller node serialization (~256 bytes vs ~512 bytes for GD-4) interacts favorably with Pebble's 4KB block size, keeping the two within 5% despite very different tree shapes. The Pebble block-size interaction remains worth exploring (Open Question #3).*
 
 Per-slot cost: synthetic reads cost ~0.02 ms/slot. ERC20 reads cost ~0.4--1.0 ms/slot (computed as state_read_ms / storage_slots_read per block) -- a **40x penalty** from random access patterns.
 
@@ -153,24 +158,8 @@ Per-slot cost: synthetic reads cost ~0.02 ms/slot. ERC20 reads cost ~0.4--1.0 ms
 
 > **Why random access is the baseline, not the exception.** The binary trie unifies all accounts and storage into a single tree. Every key -- whether an account balance, a storage slot, or a code chunk -- is SHA256-hashed into the 256-bit keyspace. A single contract's storage slots scatter across completely different tree paths. This makes random access the *fundamental* access pattern of the binary trie, not a pathological case. The synthetic sequential benchmarks represent an unrealistic best case that cannot occur in a unified trie deployment.
 
-### The Cache Mechanism
 
-![Storage Cache Hit Rate by Group Depth and Benchmark](graphs-light/q7_storage_cache_hit_rates.png)
-<!-- Upload: graphs-light/q7_storage_cache_hit_rates.png -->
-
-| Benchmark | GD-1 | GD-2 | GD-3 | GD-4 | GD-5 | GD-6 | GD-8 |
-|:----------|:-----|:-----|:-----|:-----|:-----|:-----|:-----|
-| sstore | 43.5% | 42.5% | -- | 42.7% | -- | -- | 42.6% |
-| sload | 42.4% | 42.0% | -- | 42.8% | -- | -- | -- |
-| balanceOf (ERC20) | 28.0% | 32.8% | **39.7%** | 36.5% | 64.8% ⚠ | 39.4% | 36.9% |
-| approve (ERC20) | 24.8% | 30.4% | 32.7% | 33.6% | 36.4% | 63.7% ⚠ | 34.5% |
-| mixed (ERC20) | 21.8% | 31.4% | 34.2% | 35.2% | **38.8%** | 39.6% | 36.5% |
-
-`balanceOf` is a read-only ERC20 function (returns a token balance). `approve` is a write operation (sets a spending allowance, modifying storage). ERC20 is the most common contract type on Ethereum mainnet, making it a representative benchmark target. The ERC20 used here is a minimal implementation -- results indicate clear trends in how group depth affects read vs write performance, though production contracts with more complex storage layouts may show variation.
-
-Two distinct patterns emerge. Synthetic benchmarks: cache rates are flat at ~43--44% regardless of group depth -- sequential access is inherently cache-friendly. ERC20 benchmarks: cache rates **increase by 17 percentage points** from GD-1 (21--28%) to GD-4/8 (35--39%). In shallower trees, upper-level nodes are shared by many keys -- the "shared prefix" effect. But rates plateau at ~39%, as the 256-bit keyspace is too sparse for deeper cache reuse. GD-5 balanceof (64.8%) and GD-6 approve (63.7%) both show elevated cache rates. These are block-composition artifacts: because trie operations are faster on these configs, geth processes ~2x the transactions within the 10-second block-building window (see Block Composition Note above), causing stronger intra-block cache warming. GD-6's balanceof and mixed cache rates normalized after re-running with proper cold-cache protocol (65.5%→39.4%, 63.2%→39.6%).
-
-*So far, wider is better. GD-8 leads on reads. Then we tested writes.*
+*So far, wider is better -- up to a point. GD-6 leads on reads, with GD-7 and GD-8 showing diminishing returns. Then we tested writes.*
 
 ---
 
@@ -181,27 +170,28 @@ Two distinct patterns emerge. Synthetic benchmarks: cache rates are flat at ~43-
 ![ERC20 approve Write Cost by Group Depth](graphs-light/q5_erc20_write_boxplot.png)
 <!-- Upload: graphs-light/q5_erc20_write_boxplot.png -->
 
-| GD | state_read | trie_updates | commit | Write Cost | Total | Mgas/s |
-|:---|:-----------|:-------------|:-------|:-----------|:------|:-------|
-| 1 | 812 | 690 | 76 | 762 | 1,645 | 2.67 |
-| 2 | 483 | 393 | 61 | 457 | 993 | 4.42 |
-| 3 | 391 | 308 | 65 | 373 | 811 | 5.39 |
-| 4 | 313 | 254 | 53 | 308 | 678 | 6.47 |
-| **5** | **263** | **220** | 63 | **283** | **601** | **7.30** |
-| 6 | 495 | 575 | 138 | 713 | 1,312 | 6.27 |
-| 8 | 313 | 433 | 158 | 603 | 982 | 4.47 |
+| GD | state_read | trie_updates | commit | Total | Mgas/s |
+|:---|:-----------|:-------------|:-------|:------|:-------|
+| 1 | 812 | 691 | 77 | 1,645 | 2.67 |
+| 2 | 483 | 393 | 61 | 993 | 4.42 |
+| 3 | 349 | 287 | 44 | 732 | 5.95 |
+| 4 | 313 | 254 | 53 | 678 | 6.47 |
+| **5** | **271** | **242** | **57** | **629** | **6.94** |
+| 6 | 272 | 283 | 76 | 679 | 6.41 |
+| 7 | 264 | 328 | 103 | 745 | 5.81 |
+| 8 | 313 | 433 | 158 | 982 | 4.47 |
 
-*`trie_updates` = `state_hash_ms` (AccountHashes + AccountUpdates + StorageUpdates) — covers the full trie mutation and rehash phase, not just hashing. Write Cost is the median of per-block (trie_updates + commit); this may differ slightly from the sum of the component medians due to properties of the median function. GD-6 was re-run with proper cold-cache protocol (OS page cache drops). CV improved from 87% to 24%, confirming reliable measurements.*
+*`trie_updates` = `state_hash_ms` (AccountHashes + AccountUpdates + StorageUpdates) — covers the full trie mutation and rehash phase, not just hashing. All configs run with verified cold-cache protocol (OS page cache drops between runs). Phase 3 CVs are mostly <10% on Mgas/s, confirming reliable measurements.*
 
-> **GD-5 is the write champion.** 601 ms total -- 11% faster than GD-4 (678 ms, p < 1e-9) and 39% faster than GD-8 (982 ms). By throughput, GD-6 (6.27 Mgas/s) ranks 3rd, outperforming GD-8 (4.47 Mgas/s) -- GD-6's elevated raw ms reflects processing ~2x gas per block (faster trie ops allow geth to fit 2 txs in the 10-second block window vs 1 for slower configs).
+> **GD-5 is the write champion.** 6.94 Mgas/s -- 7% faster than GD-4 (6.47 Mgas/s, p < 1e-9) and 55% faster than GD-8 (4.47 Mgas/s). GD-6 (6.41 Mgas/s) ranks 3rd, closely trailing GD-4. GD-7 (5.81 Mgas/s) confirms the inflection continues past GD-6.
 
 The component breakdown tells the story:
 
-- **Reads:** GD-5 (263 ms) is the fastest -- 16% less than GD-4 (313 ms)
-- **Trie updates:** GD-5 (220 ms) is **13% less** than GD-4 (254 ms), but GD-6 jumps to 575 ms
-- **Commit:** GD-5 (63 ms) is slightly higher than GD-4 (53 ms). GD-6's apparent commit cliff (138 ms) is a block-size artifact: normalized for 2x gas, GD-6 commit is ~69 ms, in line with GD-4/5. The real commit cliff is at GD-8 (158 ms for same gas as GD-4's 53 ms) due to ~8 KB nodes x 32 path nodes = ~256 KB serialization per write
+- **Reads:** GD-5 (271 ms) is 13% faster than GD-4 (313 ms). GD-6 (272 ms) is comparable to GD-5, and GD-7 (264 ms) is the fastest reader -- but raw ms must be paired with Mgas/s for fair comparison since gas per block can vary.
+- **Trie updates:** GD-5 (242 ms) is **5% less** than GD-4 (254 ms). GD-6 rises moderately to 283 ms (+17% over GD-5), not the dramatic cliff older data suggested. GD-7 (328 ms) and GD-8 (433 ms) confirm the inflection continues.
+- **Commit:** GD-5 (57 ms) is slightly higher than GD-4 (53 ms). GD-6 (76 ms, +33% over GD-5) and GD-7 (103 ms) show moderate increases. The real commit cliff is at GD-8 (158 ms) due to ~8 KB nodes x 32 path nodes = ~256 KB serialization per write.
 
-The total write cost for GD-5 (283 ms) beats GD-4 (308 ms) by 8%.
+The write inflection lies between GD-5 and GD-6: the hash/read cost ratio crosses 1.0 at GD-6 (283/272 = 1.04), meaning trie updates begin to exceed read costs. By Mgas/s, GD-5 (6.94) leads GD-4 (6.47) by 7% and GD-6 (6.41) by 8%.
 
 ### Why? The Internal Subtree
 
@@ -216,14 +206,15 @@ Each trie node at group depth $g$ contains an internal binary subtree with $2^g 
 - **GD-5 node:** 31 internal hash operations x ~52 nodes on path = **~1,612 total ops**
 - **GD-8 node:** 255 internal hash operations x 32 nodes on path = **8,160 total ops**
 
-GD-5 finds the sweet spot: its path is 19% shorter than GD-4 (~52 vs 64 nodes), and each node's 31 internal operations remain manageable. At GD-6 (63 internal nodes per node), rehashing costs jump sharply -- 575 ms vs 220 ms for GD-5 (GD-6 fits 2 txs per 10-second block window vs 1 for GD-5, so the per-gas-unit hash cost is comparable). The inflection point lies between GD-5 and GD-6.
+GD-5 finds the write sweet spot: its path is 19% shorter than GD-4 (~52 vs 64 nodes), and each node's 31 internal operations remain manageable. At GD-6 (63 internal nodes per node), rehashing costs rise moderately -- 283 ms vs 242 ms for GD-5 (+17%). GD-7 (328 ms hash, 103 ms commit) confirms the inflection continues past GD-6. The write inflection point lies between GD-5 and GD-6, where the hash/read ratio crosses 1.0.
 
 > **Note:** The 17× ratio (255 vs 15 internal hash operations) is the theoretical upper bound from the data structure. Our benchmarks support the mechanism: GD-8 trie update costs are 1.71× more than GD-4 (433ms vs 254ms), consistent with random writes modifying a fraction of each node's internal subtree. The geth implementation is the authoritative source for the exact rehashing algorithm.
 
 ### Node Serialization Size
 
-Each trie node stores up to 2^N child pointers (32 bytes each). A GD-8 node holds up to 256 × 32 = **~8 KB**. A GD-4 node: 16 × 32 = **~512 bytes**. The 16× size difference has cascading effects:
+Each trie node stores up to 2^N child pointers (32 bytes each). A GD-4 node: 16 × 32 = **~512 bytes**. A GD-7 node: 128 × 32 = **~4 KB** -- exactly the Pebble block size. A GD-8 node: 256 × 32 = **~8 KB**. The size differences have cascading effects:
 
+- **Pebble block boundary:** GD-6 nodes (~2 KB) fit within a single 4 KB Pebble block. GD-7 nodes (~4 KB) saturate the block -- with key overhead, they likely span two blocks, potentially doubling I/O per node fetch. This partly explains GD-7's read reversal: despite 14% fewer path nodes than GD-6 (37 vs 43), GD-7 reads ~148 KB total per lookup (37 × 4 KB) vs GD-6's ~86 KB (43 × 2 KB).
 - **Pebble cache efficiency:** Fewer GD-8 nodes fit in a given cache budget
 - **Write amplification:** Larger serialized nodes increase LSM compaction overhead
 - **Commit cost:** The 198% commit penalty (158ms vs 53ms) partly reflects serializing 16× more data per modified node
@@ -253,14 +244,14 @@ Even with sequential access, GD-8 showed a slight elevation in write cost -- a h
 
 ### The Verdict
 
-| Criterion | GD-4 | GD-5 | GD-8 | Winner |
-|:----------|:-----|:-----|:-----|:-------|
-| Reads (Mgas/s) | 5.46 | **7.08** | 5.59 | **GD-5 by 30%** vs GD-4 (⚠ higher cache warmth from 2x block size) |
-| Writes (approve, ms) | 678 | **601** | 982 | **GD-5 by 11%** (p < 1e-9) |
-| Mixed (ms) | 2,302 | **1,931** | 2,145 | **GD-5 by 16%** (p < 1e-3) |
-| Synthetic writes | **91.6ms** | -- | 101.5ms ⚠️ | GD-4 by 10% (no GD-5 data) |
+| Criterion | GD-4 | GD-5 | GD-6 | GD-7 | GD-8 |
+|:----------|:-----|:-----|:-----|:-----|:-----|
+| Reads (Mgas/s) | 5.46 | 6.11 | **6.39** | 6.04 | 5.59 |
+| Writes (Mgas/s) | 6.47 | **6.94** | 6.41 | 5.81 | 4.47 |
+| Mixed (Mgas/s) | 5.13 | 6.09 | **6.27** | 5.87 | 5.43 |
+| Category wins | 0/3 | **1/3** | **2/3** | 0/3 | 0/3 |
 
-> **GD-5 wins writes and mixed workloads.** 11% faster writes than GD-4 (p < 1e-9), 16% faster mixed workloads (p < 1e-3). The write optimum lies at 5 bits per node. GD-5 also leads reads (7.08 Mgas/s), though its 2x block size produces elevated cache warming (64.8% vs ~37%) that inflates the throughput advantage. The write and mixed results (same block size) are unambiguous.
+> **GD-6 wins reads and mixed; GD-5 wins writes.** GD-5 leads writes by 7% over GD-4 (p < 1e-9). GD-6 leads reads by 5% over GD-5 and mixed by 19% over GD-4 (p < 1e-3). GD-7 is past the inflection -- worse than GD-6 on all three benchmarks. Since Ethereum workloads are read-heavy, GD-6 may be the preferred default, with GD-5 optimal for write-heavy scenarios.
 
 ### Mixed Workloads
 
@@ -274,21 +265,24 @@ Even with sequential access, GD-8 showed a slight elevation in write cost -- a h
 |:---|:-----------|:-------------|:-------|:---------|:-------|
 | 1 | 4,711 | 345 | 53 | 5,363 | 2.18 |
 | 2 | 3,003 | 217 | 44 | 3,518 | 3.35 |
-| 3 | 2,017 | 142 | 42 | 2,419 | 4.84 |
+| 3 | 1,981 | 145 | 39 | 2,375 | 4.90 |
 | 4 | 1,893 | 138 | 43 | 2,302 | 5.13 |
-| **5** | **1,524** | **133** | 48 | **1,931** | **6.23** |
-| 6 | 1,893 | 146 | 56 | 2,371 | 6.06 |
+| 5 | 1,512 | 124 | 48 | 1,910 | 6.09 |
+| **6** | **1,440** | **141** | **54** | **1,851** | **6.27** |
+| 7 | 1,055 | 218 | 73 | 1,529 | 5.87 |
 | 8 | 1,612 | 221 | 87 | 2,145 | 5.43 |
 
-GD-5 wins mixed workloads decisively: 1,931 ms vs 2,302 ms for GD-4 (-16%, p < 1e-3). Its read advantage (1,524 ms state_read vs 1,893 ms for GD-4) combines with the lowest trie update cost (133 ms) to dominate. GD-6 shows moderate trie updates (146 ms) and commit (56 ms) -- the rehashing penalty is diluted in mixed workloads. GD-6's mixed penalty is driven by state_read (1,893 ms vs 1,524 ms for GD-5).
+*GD-7's mixed benchmark processed fewer transactions per block (8.84M vs ~11.80M gas). Mgas/s normalizes for this difference, so throughput comparisons remain valid. Raw ms values for GD-7 mixed are not directly comparable to other configs.*
+
+GD-6 leads mixed workloads at 6.27 Mgas/s, followed closely by GD-5 (6.09 Mgas/s, +3%). Both outperform GD-4 (5.13 Mgas/s) by 19--22%. GD-6's read advantage (1,440 ms state_read vs 1,512 ms for GD-5) outweighs its slightly higher trie updates (141 ms vs 124 ms) and commit (54 ms vs 48 ms). GD-7 (5.87 Mgas/s) trails GD-6 by 6%, confirming the inflection. Note: GD-7 mixed uses 8.84M gas/block vs 11.80M for all others; Mgas/s is the valid comparison, not raw ms.
 
 > **Open question:** The optimal group depth ultimately depends on the read/write ratio of real Ethereum blocks. While state reads clearly dominate block processing time in our benchmarks, the exact mainnet split has not been systematically measured. A historical analysis of mainnet read vs write access patterns would further inform this recommendation.
 
 The component breakdown reveals the familiar pattern:
 
-- **Reads:** GD-5 wins (1,524 ms), followed by GD-8 (1,612 ms) and GD-4 (1,893 ms) -- shallower trees, fewer I/Os
-- **Trie updates:** GD-5 wins (133 ms), followed by GD-4 (138 ms); GD-8 trails at 221 ms -- smaller internal subtrees
-- **Commit:** GD-4 wins (43 ms vs 48 ms for GD-5 vs 87 ms for GD-8) -- less data to serialize
+- **Reads:** GD-7 has the lowest raw read time (1,055 ms), but at lower gas/block. By Mgas/s, GD-6 (6.27) leads. GD-5 (1,512 ms) and GD-6 (1,440 ms) outperform GD-4 (1,893 ms) on reads.
+- **Trie updates:** GD-5 leads (124 ms), followed by GD-4 (138 ms) and GD-6 (141 ms). GD-7 (218 ms) and GD-8 (221 ms) trail due to larger internal subtrees.
+- **Commit:** GD-3 wins (39 ms), with GD-4 (43 ms) and GD-5 (48 ms) close behind. GD-7 (73 ms) and GD-8 (87 ms) show the serialization penalty of wider nodes.
 
 ---
 
@@ -324,9 +318,13 @@ State reads dominate ERC20 block processing time across all group-depth configur
 
 ## S8 -- Conclusions
 
-### Recommendation: GD-5
+### Recommendation: GD-5 or GD-6 (Workload-Dependent)
 
-**GD-5 is the recommended configuration**, with high confidence for ERC20 write and mixed benchmarks. GD-5 wins writes by 11% over GD-4 (p < 1e-9) and mixed by 16% (p < 1e-3).
+**The optimal depth is GD-5 or GD-6**, depending on the workload profile:
+
+- **Read-heavy / mixed workloads (default recommendation): GD-6.** Wins reads by 5% over GD-5 (6.39 vs 6.11 Mgas/s) and mixed by 3% (6.27 vs 6.09 Mgas/s). Since Ethereum is read-heavy, GD-6 is the preferred default.
+- **Write-heavy workloads: GD-5.** Wins writes by 7% over GD-4 (6.94 vs 6.47 Mgas/s) and 8% over GD-6 (6.94 vs 6.41 Mgas/s).
+- **GD-7 confirms the inflection.** Worse than GD-6 on all three benchmarks (reads -5%, writes -9%, mixed -6%), validating that the sweet spot is GD-5 or GD-6.
 
 The recommendation rests on a three-step mechanism that governs every state access in the binary trie:
 
@@ -334,13 +332,13 @@ The recommendation rests on a three-step mechanism that governs every state acce
 2. **Rehash** -- recompute the internal subtree of every node on the path back to root. Cost proportional to $2^g - 1$ per node. Favors narrower trees (GD-4: 15 ops/node, GD-5: 31 ops/node, GD-8: 255 ops/node).
 3. **Commit** -- serialize and write modified nodes to disk. Cost proportional to node size. Favors narrower trees.
 
-GD-5 finds the minimum of the traversal × rehashing trade-off. Its path is 19% shorter than GD-4 (~52 vs 64 nodes), and each node's 31 internal operations remain manageable. At GD-6, the 63 internal nodes per node cause rehashing costs to jump sharply (575 ms vs 220 ms for GD-5), producing a clear inflection point.
+GD-5 finds the minimum of the traversal x rehashing trade-off for writes. Its path is 19% shorter than GD-4 (~52 vs 64 nodes), and each node's 31 internal operations remain manageable. At GD-6, rehashing costs rise moderately -- 283 ms vs 242 ms for GD-5 (+17%) -- but reads and mixed workloads still improve. The write-specific inflection point lies between GD-5 and GD-6 (hash/read ratio crosses 1.0), while reads peak at GD-6.
 
-> **GD-8 should be considered** only if the workload is overwhelmingly read-dominated (>90% reads) and writes are rare. For typical Ethereum block processing, GD-5 is the better choice.
+> **GD-8 is suboptimal on all workloads**, demonstrating diminishing returns past the sweet spot. GD-6 beats GD-8 on reads (6.39 vs 5.59 Mgas/s), writes (6.41 vs 4.47 Mgas/s), and mixed (6.27 vs 5.43 Mgas/s). The optimal depth is narrower than the initial GD-8 assumption.
 
 ### On the Snapshot Layer
 
-These benchmarks ran without a flat snapshot layer. Binary trie path-based reads via Pebble's BTree index are already efficient, so snapshots may offer limited additional benefit for narrow group depths. However, wider group depths (GD-6, GD-8) could benefit more from snapshots, as their larger nodes incur higher per-read I/O cost that a flat key-value lookup would bypass (see Open Question #2).
+These benchmarks ran without a flat snapshot layer. Binary trie path-based reads via Pebble's BTree index are already efficient, so snapshots may offer limited additional benefit for narrow group depths. However, wider group depths (GD-6, GD-7, GD-8) could benefit more from snapshots, as their larger nodes incur higher per-read I/O cost that a flat key-value lookup would bypass (see Open Question #2).
 
 ### Five Patterns That Hold Across All Group Depths
 
@@ -352,23 +350,23 @@ Independent NVMe page-read benchmarks confirm that random vs sequential I/O expl
 
 > **Pattern 3: Cache hit rates plateau at ~37--39%.** Despite increasing group depth, the storage cache hit rate never exceeds ~39% for keccak-hashed workloads. The 256-bit keyspace is too sparse for meaningful cache reuse beyond shared upper-level trie nodes.
 
-> **Pattern 4: Trie updates are negligible for reads, dominant for writes.** balanceOf (pure reads): trie_updates < 1.3 ms. approve (reads + writes): trie_updates up to 690 ms. This asymmetry means the node-width trade-off only matters for write workloads. (GD-6 and GD-8 have different block compositions; see Block Composition Note in S3.)
+> **Pattern 4: Trie updates are negligible for reads, dominant for writes.** balanceOf (pure reads): trie_updates < 1.3 ms. approve (reads + writes): trie_updates up to 691 ms (GD-1). This asymmetry means the node-width trade-off only matters for write workloads.
 
-> **Pattern 5: Run-to-run CV < 9% for original configs.** Cold-cache protocol and dedicated hardware produce reproducible results. GD-3/5 show higher variance on some benchmarks due to different block gas amounts. GD-6 was re-run with proper cold-cache protocol, reducing approve CV from 87% to 24%.
+> **Pattern 5: Run-to-run CV mostly < 10% on Mgas/s.** Phase 3 verified cold-cache drops (120+ successful, 0 failures) produce reproducible results across all eight configurations. The improvement from earlier phases validates the cold-cache methodology.
 
 ### Open Questions
 
-1. **~~Non-power-of-2 group depths.~~ RESOLVED.** Testing GD-3, 5, 6 confirmed that **GD-5 is the new optimum** -- 11% faster writes and 16% faster mixed workloads than GD-4.
+1. **~~Non-power-of-2 group depths.~~ RESOLVED.** Testing GD-3, 5, 6, 7 confirmed that **GD-5 and GD-6 are optimal** -- GD-5 wins writes by 7% over GD-4, GD-6 leads reads and mixed. GD-7 validates the inflection point.
 
-2. **Snapshot layer validation.** Empirically confirm that snapshots further favor GD-5 as our analysis predicts.
+2. **Snapshot layer validation.** Empirically confirm whether snapshots further favor GD-5/6 as our analysis predicts.
 
 3. **Pebble block size interaction.** All tests used 4KB blocks. NVMe page-read benchmarks show that random 16KB reads achieve 2.3x the throughput of 4KB reads (174 vs 77 MB/s) with only 1.8x the latency (89.7 vs 50.6 µs). Larger Pebble blocks could significantly benefit wider group depths whose serialized nodes exceed 4KB.
 
-4. **Mainnet state distribution.** Our benchmarks use uniformly distributed random addresses. Real Ethereum state has hot spots (popular DEX contracts, bridges) that might favor different caching behavior.
+4. **~~Mainnet state distribution.~~ Largely resolved.** The binary trie SHA256-hashes all keys into the 256-bit keyspace, making trie access patterns inherently random regardless of real-world state distribution. Hot contracts (DEXes, bridges) don't cluster in the trie. The only caveat is stem-influenced access patterns, where keys sharing a stem may share upper path nodes -- but this affects caching, not the group depth trade-off.
 
 5. **Concurrent block processing.** These benchmarks process blocks sequentially. Parallel execution engines might amortize trie updates across cores, reducing the per-node rehashing penalty of wider group depths. NVMe queue depth benchmarks show that QD=8 improves random 4KB throughput 8.7x over QD=1 (673 vs 77 MB/s). If parallel execution increases effective I/O queue depth, read latency differences between group depths may compress significantly.
 
-6. **~~GD-6 data quality.~~ RESOLVED.** Re-run with proper cold-cache protocol confirmed GD-6 measurements. CV dropped from 87% to 24%. GD-6's raw write time (1,312 ms) reflects processing ~2x gas per block; by throughput (6.27 Mgas/s), GD-6 outperforms GD-8 (4.47 Mgas/s).
+6. **~~GD-6 data quality.~~ RESOLVED.** Phase 3 re-run with verified cold-cache drops confirmed all measurements. GD-6 approve: 679 ms total, 6.41 Mgas/s. GD-6 outperforms GD-8 (4.47 Mgas/s) on writes and leads reads (6.39 Mgas/s) and mixed (6.27 Mgas/s).
 
 ---
 

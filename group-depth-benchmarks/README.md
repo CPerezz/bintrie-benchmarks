@@ -8,7 +8,7 @@ Performance comparison of binary trie group-depth configurations on the geth imp
 |:----------|:------|
 | Machine | QEMU VM -- 8 vCPUs, 30 GB RAM, 3.9 TB SSD, Ubuntu 24.04 LTS |
 | Database | ~360 GB, ~400M accounts + storage slots per configuration |
-| Configurations | GD-1, GD-2, GD-3, GD-4, GD-5, GD-6, GD-8 (Pebble, 4KB block size) |
+| Configurations | GD-1 through GD-8 (Pebble, 4KB block size) |
 | Protocol | Cold cache (OS page cache dropped + Pebble cache=0 between runs) |
 | Runs | 10 per benchmark per config; run 1 excluded (residual warmth) |
 | Gas target | 100M gas per block |
@@ -25,29 +25,29 @@ Performance comparison of binary trie group-depth configurations on the geth imp
 
 ### Data completeness
 
-| Benchmark | GD-1 | GD-2 | GD-3 | GD-4 | GD-5 | GD-6 | GD-8 |
-|:----------|:-----|:-----|:-----|:-----|:-----|:-----|:-----|
-| sload_benchmark | 9 runs | 9 runs | -- | 9 runs | -- | -- | -- |
-| sstore_variants | 9 runs | 9 runs | -- | 9 runs | -- | -- | 4 runs |
-| erc20_balanceof | 9 runs | 9 runs | 9 runs | 9 runs | 9 runs | 9 runs | 9 runs |
-| erc20_approve | 9 runs | 9 runs | 9 runs | 9 runs | 9 runs | 9 runs | 9 runs |
-| mixed_sload_sstore | 9 runs | 9 runs | 9 runs | 9 runs | 9 runs | 9 runs | 9 runs |
+| Benchmark | GD-1 | GD-2 | GD-3 | GD-4 | GD-5 | GD-6 | GD-7 | GD-8 |
+|:----------|:-----|:-----|:-----|:-----|:-----|:-----|:-----|:-----|
+| sload_benchmark | 9 runs | 9 runs | -- | 9 runs | -- | -- | -- | -- |
+| sstore_variants | 9 runs | 9 runs | -- | 9 runs | -- | -- | -- | 4 runs |
+| erc20_balanceof | 9 runs | 9 runs | 9 runs | 9 runs | 9 runs | 9 runs | 9 runs | 9 runs |
+| erc20_approve | 9 runs | 9 runs | 9 runs | 9 runs | 9 runs | 9 runs | 9 runs | 9 runs |
+| mixed_sload_sstore | 9 runs | 9 runs | 9 runs | 9 runs | 9 runs | 9 runs | 5 runs | 9 runs |
 
-Synthetic benchmarks are only available for GD-1, 2, 4 (and partially GD-8). The GD-3/5/6 campaign focused on ERC20 benchmarks. All seven group depths have complete ERC20 data.
+Synthetic benchmarks are only available for GD-1, 2, 4 (and partially GD-8). All eight group depths have complete ERC20 data.
 
-GD-6 ERC20 data was re-run with proper cold-cache protocol (OS page cache drops via `sudo tee /proc/sys/vm/drop_caches`). The original campaign's GD-6 data had CV=87% on approve due to missing page cache drops between runs; the re-run achieved CV=24%.
+GD-3/5/6/7 ERC20 data was re-run (Phase 3) with verified cold-cache protocol — `sudo sh -c 'echo 3 > /proc/sys/vm/drop_caches'` confirmed successful on every run (120+ drops, 0 failures). The original Phase 2 campaign's cold-cache drops silently failed due to `sudo -n` credential expiry, producing unreliable data.
 
 ## Results
 
-**GD-5 is optimal.** 11% faster writes than GD-4 (p < 1e-9), 16% faster mixed workloads (p < 1e-3), and the highest read throughput (7.08 Mgas/s). The write optimum lies at 5 bits per node.
+**The sweet spot is GD-5 or GD-6**, depending on workload. GD-5 is the write champion (6.94 Mgas/s, +7% over GD-4). GD-6 leads reads (6.39 Mgas/s) and mixed workloads (6.27 Mgas/s). GD-7 confirms the inflection — performance degrades past GD-6 on all benchmarks.
 
-The mechanism: each trie node at group depth *g* contains an internal binary subtree with 2^g - 1 nodes that must be rehashed on every write. GD-5 (31 internal nodes) finds the sweet spot between path length (~52 nodes) and per-node rehashing cost. At GD-6 (63 internal nodes), rehashing costs jump sharply (575 ms vs 220 ms for GD-5 on ERC20 writes).
+The mechanism: each trie node at group depth *g* contains an internal binary subtree with 2^g - 1 nodes that must be rehashed on every write. GD-5 (31 internal nodes) finds the write sweet spot between path length (~52 nodes) and per-node rehashing cost. At GD-6 (63 internal nodes), rehashing costs rise moderately (283 ms vs 242 ms for GD-5), but read improvements at GD-6 still outpace the write penalty for read-heavy and mixed workloads.
 
-| Criterion | GD-4 | GD-5 | GD-8 | Winner |
-|:----------|:-----|:-----|:-----|:-------|
-| Reads (Mgas/s) | 5.46 | **7.08** | 5.59 | **GD-5 by 30%** vs GD-4 |
-| Writes (ERC20) | 678 ms | **601 ms** | 982 ms | **GD-5 by 11%** (p < 1e-9) |
-| Mixed | 2,302 ms | **1,931 ms** | 2,145 ms | **GD-5 by 16%** (p < 1e-3) |
+| Criterion | GD-4 | GD-5 | GD-6 | GD-7 | GD-8 |
+|:----------|:-----|:-----|:-----|:-----|:-----|
+| Reads (Mgas/s) | 5.46 | 6.11 | **6.39** | 6.04 | 5.59 |
+| Writes (Mgas/s) | 6.47 | **6.94** | 6.41 | 5.81 | 4.47 |
+| Mixed (Mgas/s) | 5.13 | 6.09 | **6.27** | 5.87 | 5.43 |
 
 ## Contents
 

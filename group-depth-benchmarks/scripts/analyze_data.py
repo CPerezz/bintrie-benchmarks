@@ -28,7 +28,7 @@ except ImportError:
 
 ERC20_BENCHMARKS = ["erc20_balanceof", "erc20_approve", "mixed_sload_sstore"]
 TIMING_COLS = ["state_read_ms", "state_hash_ms", "commit_ms", "total_ms", "mgas_per_sec"]
-GROUP_DEPTHS = [1, 2, 3, 4, 5, 6, 8]
+GROUP_DEPTHS = [1, 2, 3, 4, 5, 6, 7, 8]
 
 
 def load_data(data_dir):

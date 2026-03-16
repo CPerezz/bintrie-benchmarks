@@ -90,7 +90,16 @@ kill_geth() {
   done
   # Drop OS page cache for truly cold benchmarks
   sync
-  sudo -n sh -c 'echo 3 > /proc/sys/vm/drop_caches' 2>/dev/null || true
+  log "  [cache] Dropping OS page cache..."
+  if sudo sh -c 'echo 3 > /proc/sys/vm/drop_caches'; then
+    log "  [cache] Page cache dropped successfully"
+  else
+    log "  [cache] ERROR: Failed to drop page cache (sudo). Aborting."
+    log "  [cache] Fix: run 'sudo -v' before starting, or add NOPASSWD for drop_caches"
+    exit 1
+  fi
+  # Log memory state to verify cache was actually dropped
+  free -m | head -2 | tail -1 | awk '{print "  [cache] Mem: total=" $2 "M used=" $3 "M free=" $4 "M buffers/cache=" $6 "M"}'
 }
 
 # =============================================================================
@@ -218,6 +227,14 @@ done
 # Check execution-specs
 if [ ! -d "$EXEC_SPECS/tests/benchmark/stateful/bloatnet" ]; then
   log "  FAIL: execution-specs benchmark dir not found"
+  ALL_OK=false
+fi
+
+# Check sudo access for cache drops
+log "  Checking sudo access for cache drops..."
+if ! sudo -v 2>/dev/null; then
+  log "  FAIL: sudo access required for dropping page cache"
+  log "  Fix: run 'sudo -v' and enter password before starting campaign"
   ALL_OK=false
 fi
 

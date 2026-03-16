@@ -61,7 +61,14 @@ kill_geth() {
   fi
   # Drop OS page cache
   sync
-  sudo -n sh -c 'echo 3 > /proc/sys/vm/drop_caches' 2>/dev/null || true
+  log "  [cache] Dropping OS page cache..."
+  if sudo sh -c 'echo 3 > /proc/sys/vm/drop_caches'; then
+    log "  [cache] Page cache dropped successfully"
+  else
+    log "  [cache] ERROR: Failed to drop page cache (sudo). Aborting."
+    log "  [cache] Fix: run 'sudo -v' before starting, or add NOPASSWD for drop_caches"
+    exit 1
+  fi
 }
 
 # =============================================================================
