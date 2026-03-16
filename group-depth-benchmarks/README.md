@@ -28,12 +28,12 @@ Performance comparison of binary trie group-depth configurations on the geth imp
 | Benchmark | GD-1 | GD-2 | GD-3 | GD-4 | GD-5 | GD-6 | GD-7 | GD-8 |
 |:----------|:-----|:-----|:-----|:-----|:-----|:-----|:-----|:-----|
 | sload_benchmark | 9 runs | 9 runs | -- | 9 runs | -- | -- | -- | -- |
-| sstore_variants | 9 runs | 9 runs | -- | 9 runs | -- | -- | -- | 4 runs |
+| sstore_variants | 9 runs | 9 runs | -- | 9 runs | -- | -- | -- | 9 runs |
 | erc20_balanceof | 9 runs | 9 runs | 9 runs | 9 runs | 9 runs | 9 runs | 9 runs | 9 runs |
 | erc20_approve | 9 runs | 9 runs | 9 runs | 9 runs | 9 runs | 9 runs | 9 runs | 9 runs |
-| mixed_sload_sstore | 9 runs | 9 runs | 9 runs | 9 runs | 9 runs | 9 runs | 5 runs | 9 runs |
+| mixed_sload_sstore | 9 runs | 9 runs | 9 runs | 9 runs | 9 runs | 9 runs | 9 runs | 9 runs |
 
-Synthetic benchmarks are only available for GD-1, 2, 4 (and partially GD-8). All eight group depths have complete ERC20 data.
+Synthetic benchmarks are available for GD-1, 2, 4 (sload + sstore) and GD-8 (sstore only). All eight group depths have complete ERC20 data.
 
 GD-3/5/6/7 ERC20 data was re-run (Phase 3) with verified cold-cache protocol — `sudo sh -c 'echo 3 > /proc/sys/vm/drop_caches'` confirmed successful on every run (120+ drops, 0 failures). The original Phase 2 campaign's cold-cache drops silently failed due to `sudo -n` credential expiry, producing unreliable data.
 

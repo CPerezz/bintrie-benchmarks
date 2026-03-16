@@ -48,7 +48,7 @@ COLORS: dict[int, str] = {
 }
 
 # Configs that only have synthetic benchmark data (no ERC20)
-READ_ONLY_GDS: list[int] = [1, 2, 4]       # q1: no GD-8 data for sload
+READ_ONLY_GDS: list[int] = [1, 2, 4]        # q1: synthetic sload (GD-8 has data but gas_used=0)
 WRITE_GDS: list[int] = [1, 2, 4, 8]        # q2: synthetic write configs
 
 FIGSIZE = (10, 6)
