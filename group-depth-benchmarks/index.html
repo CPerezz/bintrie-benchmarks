@@ -1215,13 +1215,6 @@
     <li><strong>Commit cost:</strong> Commit costs scale with total bytes serialized per write path. GD-8 nodes (~8&nbsp;KB each &times; 32 path nodes &asymp; 256&nbsp;KB per write) cost 158&nbsp;ms vs GD-4&rsquo;s 53&nbsp;ms (~512 bytes &times; 64 nodes &asymp; 32&nbsp;KB). GD-6 commit (76&nbsp;ms) and GD-7 commit (103&nbsp;ms) show moderate increases over GD-5 (57&nbsp;ms), consistent with larger serialized nodes.</li>
   </ul>
 
-  <h3>Why Synthetic SSTORE Didn't Show This</h3>
-  <p>Sequential slot access clusters writes into the same trie branch, enabling Pebble's write batch to amortize commit costs. The trie update penalty is also reduced because adjacent keys modify the same internal subtrees. The ERC20 benchmark's random access pattern defeated both amortization mechanisms.</p>
-
-  <img src="graphs/q2_write_cost_boxplot.png" alt="Q2: Synthetic write cost boxplot" class="graph-img"/>
-  <img src="graphs/q2_write_scaling_scatter.png" alt="Q2: Trie update cost vs slots written scatter plot" class="graph-img"/>
-  <div class="diagram-caption">Trie update cost scales linearly with slots written. The distinct horizontal bands correspond to different sub-variants. GD-8 points (red) sit slightly above the others at each band.</div>
-  <p class="muted">Even with sequential access, GD-8 showed a slight elevation in write cost &mdash; a hint of the penalty that ERC20 workloads would expose fully.</p>
 </section>
 
 <!-- ============================================================ -->

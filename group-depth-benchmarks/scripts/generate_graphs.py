@@ -56,7 +56,7 @@ FIGSIZE = (10, 6)
 ERC20_BENCHMARKS = ["erc20_balanceof", "erc20_approve", "mixed_sload_sstore"]
 
 STACKED_COMPONENTS = ["state_read_ms", "execution_ms", "state_hash_ms", "commit_ms"]
-STACKED_LABELS = ["State Read", "Execution", "State Hash", "Commit"]
+STACKED_LABELS = ["State Read", "Execution", "Trie Updates", "Commit"]
 STACKED_COLORS_DARK = ["#1f77b4", "#888888", "#ff7f0e", "#d62728"]
 
 
@@ -430,7 +430,7 @@ def q3_erc20_hash_vs_commit_ratio(all_data: dict, theme: Theme,
     x_hash = [xi - width / 2 for xi in x]
     x_commit = [xi + width / 2 for xi in x]
 
-    bars_h = ax.bar(x_hash, hash_vals, width, label="state_hash_ms",
+    bars_h = ax.bar(x_hash, hash_vals, width, label="Trie Updates",
                     color="#ff7f0e", alpha=0.85, edgecolor=theme.axes, linewidth=0.5)
     bars_c = ax.bar(x_commit, commit_vals, width, label="commit_ms",
                     color="#d62728", alpha=0.85, edgecolor=theme.axes, linewidth=0.5)
