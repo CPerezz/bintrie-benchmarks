@@ -347,6 +347,174 @@
     border-radius: 4px;
     color: #F59E0B;
   }
+
+  /* ============================================================
+     INTERACTIVE WIDGET: Group Depth Explorer (§2)
+     ============================================================ */
+  .gde-wrap {
+    margin: 28px 0;
+    border: 1px solid #1E293B;
+    border-radius: 12px;
+    padding: 24px;
+    background: #0F172A;
+  }
+  .gde-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: #64748B;
+    margin-bottom: 16px;
+  }
+  .gde-slider-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 20px;
+  }
+  .gde-slider-row label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    font-weight: 600;
+    color: #94A3B8;
+    white-space: nowrap;
+  }
+  .gde-slider-row input[type=range] {
+    -webkit-appearance: none;
+    appearance: none;
+    flex: 1;
+    height: 6px;
+    background: #1E293B;
+    border-radius: 3px;
+    outline: none;
+    cursor: pointer;
+  }
+  .gde-slider-row input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    background: #F59E0B;
+    border: 2px solid #0F172A;
+    cursor: pointer;
+  }
+  .gde-slider-row input[type=range]::-moz-range-thumb {
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    background: #F59E0B;
+    border: 2px solid #0F172A;
+    cursor: pointer;
+  }
+  .gde-val {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 22px;
+    font-weight: 700;
+    color: #F59E0B;
+    min-width: 32px;
+    text-align: center;
+  }
+  .gde-metrics {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  .gde-metric {
+    background: #0A0E17;
+    border: 1px solid #1E293B;
+    border-radius: 8px;
+    padding: 12px 10px;
+    text-align: center;
+  }
+  .gde-metric-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px; font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: #64748B;
+    margin-bottom: 4px;
+  }
+  .gde-metric-num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 20px; font-weight: 700;
+    color: #E2E8F0;
+  }
+  .gde-metric-unit {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    color: #475569;
+    margin-top: 2px;
+  }
+  .gde-canvas-wrap { position: relative; width: 100%; margin-bottom: 10px; }
+  .gde-canvas-wrap canvas { width: 100%; height: auto; display: block; }
+  .gde-note {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: #475569;
+    text-align: center;
+  }
+
+  /* ============================================================
+     INTERACTIVE WIDGET: Traverse × Rehash Trade-off (§5)
+     ============================================================ */
+  .tro-wrap {
+    margin: 28px 0;
+    border: 1px solid #1E293B;
+    border-radius: 12px;
+    padding: 24px;
+    background: #0F172A;
+  }
+  .tro-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px; font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: #64748B;
+    margin-bottom: 16px;
+  }
+  .tro-tabs { display: flex; gap: 8px; margin-bottom: 16px; }
+  .tro-tab {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px; font-weight: 600;
+    padding: 6px 14px;
+    border-radius: 20px;
+    border: 1px solid #1E293B;
+    background: transparent;
+    color: #94A3B8;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+  .tro-tab:hover { border-color: #F59E0B; color: #F59E0B; }
+  .tro-tab.active {
+    border-color: #F59E0B;
+    background: rgba(245, 158, 11, 0.1);
+    color: #F59E0B;
+  }
+  .tro-legend { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 16px; }
+  .tro-leg-item {
+    display: flex; align-items: center; gap: 6px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px; color: #64748B;
+  }
+  .tro-leg-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .tro-canvas-wrap { position: relative; width: 100%; margin-bottom: 12px; }
+  .tro-canvas-wrap canvas { width: 100%; height: auto; display: block; }
+  .tro-insight {
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 14px;
+    color: #94A3B8;
+    text-align: center;
+    line-height: 1.5;
+    min-height: 24px;
+  }
+  .tro-insight strong { color: #2ca02c; font-weight: 600; }
+
+  /* Responsive addition for widgets */
+  @media (max-width: 640px) {
+    .gde-metrics { grid-template-columns: 1fr 1fr; }
+    .tro-tabs { flex-wrap: wrap; }
+  }
 </style>
 </head>
 <body>
@@ -449,210 +617,38 @@
   </ul>
   <p style="font-size: 14px; color: #94A3B8;">Think of it like a zip code: GD-1 reads your address one digit at a time (256 steps), while GD-8 reads 8 digits at once (32 steps). Fewer steps means fewer disk reads — but each "bundled node" is larger and more expensive to update, because the binary subtree inside it must be rehashed.</p>
 
-  <!-- SVG DIAGRAM 1: Tree Shape Comparison -->
-  <div class="diagram-wrap">
-    <svg viewBox="0 0 720 300" xmlns="http://www.w3.org/2000/svg" style="background: #0A0E17;">
-      <!-- GD-1 Tree (deep/narrow) -->
-      <text x="120" y="28" fill="#1f77b4" font-family="IBM Plex Mono" font-size="14" font-weight="700" text-anchor="middle">GD-1</text>
-      <!-- Level 0 -->
-      <circle cx="120" cy="52" r="6" fill="#1f77b4"/>
-      <!-- Level 1 -->
-      <line x1="120" y1="58" x2="100" y2="82" stroke="#1f77b4" stroke-width="1.5" opacity="0.6"/>
-      <line x1="120" y1="58" x2="140" y2="82" stroke="#1f77b4" stroke-width="1.5" opacity="0.6"/>
-      <circle cx="100" cy="86" r="5" fill="#1f77b4"/>
-      <circle cx="140" cy="86" r="5" fill="#1f77b4"/>
-      <!-- Level 2 -->
-      <line x1="100" y1="91" x2="86" y2="115" stroke="#1f77b4" stroke-width="1.2" opacity="0.5"/>
-      <line x1="100" y1="91" x2="114" y2="115" stroke="#1f77b4" stroke-width="1.2" opacity="0.5"/>
-      <line x1="140" y1="91" x2="126" y2="115" stroke="#1f77b4" stroke-width="1.2" opacity="0.5"/>
-      <line x1="140" y1="91" x2="154" y2="115" stroke="#1f77b4" stroke-width="1.2" opacity="0.5"/>
-      <circle cx="86" cy="119" r="4" fill="#1f77b4"/>
-      <circle cx="114" cy="119" r="4" fill="#1f77b4"/>
-      <circle cx="126" cy="119" r="4" fill="#1f77b4"/>
-      <circle cx="154" cy="119" r="4" fill="#1f77b4"/>
-      <!-- Level 3 -->
-      <line x1="86" y1="123" x2="78" y2="147" stroke="#1f77b4" stroke-width="1" opacity="0.4"/>
-      <line x1="86" y1="123" x2="94" y2="147" stroke="#1f77b4" stroke-width="1" opacity="0.4"/>
-      <line x1="114" y1="123" x2="106" y2="147" stroke="#1f77b4" stroke-width="1" opacity="0.4"/>
-      <line x1="114" y1="123" x2="122" y2="147" stroke="#1f77b4" stroke-width="1" opacity="0.4"/>
-      <line x1="126" y1="123" x2="118" y2="147" stroke="#1f77b4" stroke-width="1" opacity="0.4"/>
-      <line x1="126" y1="123" x2="134" y2="147" stroke="#1f77b4" stroke-width="1" opacity="0.4"/>
-      <line x1="154" y1="123" x2="146" y2="147" stroke="#1f77b4" stroke-width="1" opacity="0.4"/>
-      <line x1="154" y1="123" x2="162" y2="147" stroke="#1f77b4" stroke-width="1" opacity="0.4"/>
-      <circle cx="78" cy="151" r="3.5" fill="#1f77b4" opacity="0.7"/>
-      <circle cx="94" cy="151" r="3.5" fill="#1f77b4" opacity="0.7"/>
-      <circle cx="106" cy="151" r="3.5" fill="#1f77b4" opacity="0.7"/>
-      <circle cx="122" cy="151" r="3.5" fill="#1f77b4" opacity="0.7"/>
-      <circle cx="118" cy="151" r="3.5" fill="#1f77b4" opacity="0.7"/>
-      <circle cx="134" cy="151" r="3.5" fill="#1f77b4" opacity="0.7"/>
-      <circle cx="146" cy="151" r="3.5" fill="#1f77b4" opacity="0.7"/>
-      <circle cx="162" cy="151" r="3.5" fill="#1f77b4" opacity="0.7"/>
-      <!-- Level 4-5 dots -->
-      <text x="120" y="185" fill="#1f77b4" font-family="IBM Plex Mono" font-size="16" text-anchor="middle" opacity="0.5">⋮</text>
-      <!-- Level 5 leaves -->
-      <circle cx="72" cy="210" r="3" fill="#1f77b4" opacity="0.5"/>
-      <circle cx="84" cy="210" r="3" fill="#1f77b4" opacity="0.5"/>
-      <circle cx="96" cy="210" r="3" fill="#1f77b4" opacity="0.5"/>
-      <circle cx="108" cy="210" r="3" fill="#1f77b4" opacity="0.5"/>
-      <circle cx="120" cy="210" r="3" fill="#1f77b4" opacity="0.5"/>
-      <circle cx="132" cy="210" r="3" fill="#1f77b4" opacity="0.5"/>
-      <circle cx="144" cy="210" r="3" fill="#1f77b4" opacity="0.5"/>
-      <circle cx="156" cy="210" r="3" fill="#1f77b4" opacity="0.5"/>
-      <circle cx="168" cy="210" r="3" fill="#1f77b4" opacity="0.5"/>
-      <text x="120" y="245" fill="#1f77b4" font-family="IBM Plex Mono" font-size="11" text-anchor="middle" opacity="0.8">256 nodes on path</text>
-      <text x="120" y="260" fill="#1f77b4" font-family="IBM Plex Mono" font-size="11" text-anchor="middle" opacity="0.6">1 binary level per node</text>
-
-      <!-- GD-4 Tree (balanced) -->
-      <text x="360" y="28" fill="#2ca02c" font-family="IBM Plex Mono" font-size="14" font-weight="700" text-anchor="middle">GD-4</text>
-      <!-- Dashed box showing one on-disk node bundles 4 binary levels -->
-      <rect x="295" y="38" width="130" height="80" rx="8" ry="8" fill="none" stroke="#2ca02c" stroke-width="1.2" stroke-dasharray="5,4" opacity="0.5"/>
-      <text x="430" y="55" fill="#2ca02c" font-family="IBM Plex Mono" font-size="9" opacity="0.6">← 1 on-disk node</text>
-      <text x="430" y="66" fill="#2ca02c" font-family="IBM Plex Mono" font-size="9" opacity="0.5">(4-level binary subtree)</text>
-      <!-- Level 0 -->
-      <circle cx="360" cy="52" r="7" fill="#2ca02c"/>
-      <!-- Level 1 - 4 visible children spread wider -->
-      <line x1="360" y1="59" x2="305" y2="98" stroke="#2ca02c" stroke-width="1.5" opacity="0.6"/>
-      <line x1="360" y1="59" x2="340" y2="98" stroke="#2ca02c" stroke-width="1.5" opacity="0.6"/>
-      <line x1="360" y1="59" x2="380" y2="98" stroke="#2ca02c" stroke-width="1.5" opacity="0.6"/>
-      <line x1="360" y1="59" x2="415" y2="98" stroke="#2ca02c" stroke-width="1.5" opacity="0.6"/>
-      <circle cx="305" cy="102" r="5.5" fill="#2ca02c"/>
-      <circle cx="340" cy="102" r="5.5" fill="#2ca02c"/>
-      <circle cx="380" cy="102" r="5.5" fill="#2ca02c"/>
-      <circle cx="415" cy="102" r="5.5" fill="#2ca02c"/>
-      <!-- Level 2 - sub-children -->
-      <line x1="305" y1="108" x2="290" y2="148" stroke="#2ca02c" stroke-width="1.2" opacity="0.45"/>
-      <line x1="305" y1="108" x2="300" y2="148" stroke="#2ca02c" stroke-width="1.2" opacity="0.45"/>
-      <line x1="305" y1="108" x2="310" y2="148" stroke="#2ca02c" stroke-width="1.2" opacity="0.45"/>
-      <line x1="305" y1="108" x2="320" y2="148" stroke="#2ca02c" stroke-width="1.2" opacity="0.45"/>
-      <line x1="340" y1="108" x2="330" y2="148" stroke="#2ca02c" stroke-width="1.2" opacity="0.45"/>
-      <line x1="340" y1="108" x2="340" y2="148" stroke="#2ca02c" stroke-width="1.2" opacity="0.45"/>
-      <line x1="340" y1="108" x2="350" y2="148" stroke="#2ca02c" stroke-width="1.2" opacity="0.45"/>
-      <line x1="380" y1="108" x2="370" y2="148" stroke="#2ca02c" stroke-width="1.2" opacity="0.45"/>
-      <line x1="380" y1="108" x2="380" y2="148" stroke="#2ca02c" stroke-width="1.2" opacity="0.45"/>
-      <line x1="380" y1="108" x2="390" y2="148" stroke="#2ca02c" stroke-width="1.2" opacity="0.45"/>
-      <line x1="415" y1="108" x2="400" y2="148" stroke="#2ca02c" stroke-width="1.2" opacity="0.45"/>
-      <line x1="415" y1="108" x2="410" y2="148" stroke="#2ca02c" stroke-width="1.2" opacity="0.45"/>
-      <line x1="415" y1="108" x2="420" y2="148" stroke="#2ca02c" stroke-width="1.2" opacity="0.45"/>
-      <line x1="415" y1="108" x2="430" y2="148" stroke="#2ca02c" stroke-width="1.2" opacity="0.45"/>
-      <!-- Level 2 nodes -->
-      <circle cx="290" cy="152" r="4" fill="#2ca02c" opacity="0.65"/>
-      <circle cx="300" cy="152" r="4" fill="#2ca02c" opacity="0.65"/>
-      <circle cx="310" cy="152" r="4" fill="#2ca02c" opacity="0.65"/>
-      <circle cx="320" cy="152" r="4" fill="#2ca02c" opacity="0.65"/>
-      <circle cx="330" cy="152" r="4" fill="#2ca02c" opacity="0.65"/>
-      <circle cx="340" cy="152" r="4" fill="#2ca02c" opacity="0.65"/>
-      <circle cx="350" cy="152" r="4" fill="#2ca02c" opacity="0.65"/>
-      <circle cx="370" cy="152" r="4" fill="#2ca02c" opacity="0.65"/>
-      <circle cx="380" cy="152" r="4" fill="#2ca02c" opacity="0.65"/>
-      <circle cx="390" cy="152" r="4" fill="#2ca02c" opacity="0.65"/>
-      <circle cx="400" cy="152" r="4" fill="#2ca02c" opacity="0.65"/>
-      <circle cx="410" cy="152" r="4" fill="#2ca02c" opacity="0.65"/>
-      <circle cx="420" cy="152" r="4" fill="#2ca02c" opacity="0.65"/>
-      <circle cx="430" cy="152" r="4" fill="#2ca02c" opacity="0.65"/>
-      <!-- dots -->
-      <text x="360" y="192" fill="#2ca02c" font-family="IBM Plex Mono" font-size="16" text-anchor="middle" opacity="0.5">⋮</text>
-      <!-- leaves -->
-      <circle cx="285" cy="218" r="3" fill="#2ca02c" opacity="0.4"/>
-      <circle cx="300" cy="218" r="3" fill="#2ca02c" opacity="0.4"/>
-      <circle cx="315" cy="218" r="3" fill="#2ca02c" opacity="0.4"/>
-      <circle cx="330" cy="218" r="3" fill="#2ca02c" opacity="0.4"/>
-      <circle cx="345" cy="218" r="3" fill="#2ca02c" opacity="0.4"/>
-      <circle cx="360" cy="218" r="3" fill="#2ca02c" opacity="0.4"/>
-      <circle cx="375" cy="218" r="3" fill="#2ca02c" opacity="0.4"/>
-      <circle cx="390" cy="218" r="3" fill="#2ca02c" opacity="0.4"/>
-      <circle cx="405" cy="218" r="3" fill="#2ca02c" opacity="0.4"/>
-      <circle cx="420" cy="218" r="3" fill="#2ca02c" opacity="0.4"/>
-      <circle cx="435" cy="218" r="3" fill="#2ca02c" opacity="0.4"/>
-      <text x="360" y="245" fill="#2ca02c" font-family="IBM Plex Mono" font-size="11" text-anchor="middle" opacity="0.8">64 nodes on path</text>
-      <text x="360" y="260" fill="#2ca02c" font-family="IBM Plex Mono" font-size="11" text-anchor="middle" opacity="0.6">4 binary levels per node</text>
-
-      <!-- GD-8 Tree (shallow/wide) -->
-      <text x="600" y="28" fill="#d62728" font-family="IBM Plex Mono" font-size="14" font-weight="700" text-anchor="middle">GD-8</text>
-      <!-- Dashed box showing one on-disk node bundles 8 binary levels -->
-      <rect x="510" y="38" width="180" height="82" rx="8" ry="8" fill="none" stroke="#d62728" stroke-width="1.2" stroke-dasharray="5,4" opacity="0.5"/>
-      <text x="600" y="130" fill="#d62728" font-family="IBM Plex Mono" font-size="9" text-anchor="middle" opacity="0.5">↑ 1 on-disk node (8-level binary subtree)</text>
-      <!-- Level 0 -->
-      <circle cx="600" cy="52" r="8" fill="#d62728"/>
-      <!-- Level 1 - 8 visible children very wide -->
-      <line x1="600" y1="60" x2="520" y2="105" stroke="#d62728" stroke-width="1.5" opacity="0.6"/>
-      <line x1="600" y1="60" x2="543" y2="105" stroke="#d62728" stroke-width="1.5" opacity="0.6"/>
-      <line x1="600" y1="60" x2="566" y2="105" stroke="#d62728" stroke-width="1.5" opacity="0.6"/>
-      <line x1="600" y1="60" x2="589" y2="105" stroke="#d62728" stroke-width="1.5" opacity="0.6"/>
-      <line x1="600" y1="60" x2="611" y2="105" stroke="#d62728" stroke-width="1.5" opacity="0.6"/>
-      <line x1="600" y1="60" x2="634" y2="105" stroke="#d62728" stroke-width="1.5" opacity="0.6"/>
-      <line x1="600" y1="60" x2="657" y2="105" stroke="#d62728" stroke-width="1.5" opacity="0.6"/>
-      <line x1="600" y1="60" x2="680" y2="105" stroke="#d62728" stroke-width="1.5" opacity="0.6"/>
-      <circle cx="520" cy="109" r="5" fill="#d62728"/>
-      <circle cx="543" cy="109" r="5" fill="#d62728"/>
-      <circle cx="566" cy="109" r="5" fill="#d62728"/>
-      <circle cx="589" cy="109" r="5" fill="#d62728"/>
-      <circle cx="611" cy="109" r="5" fill="#d62728"/>
-      <circle cx="634" cy="109" r="5" fill="#d62728"/>
-      <circle cx="657" cy="109" r="5" fill="#d62728"/>
-      <circle cx="680" cy="109" r="5" fill="#d62728"/>
-      <!-- Level 2 - lots of children, dense -->
-      <line x1="520" y1="114" x2="510" y2="155" stroke="#d62728" stroke-width="0.8" opacity="0.35"/>
-      <line x1="520" y1="114" x2="517" y2="155" stroke="#d62728" stroke-width="0.8" opacity="0.35"/>
-      <line x1="520" y1="114" x2="523" y2="155" stroke="#d62728" stroke-width="0.8" opacity="0.35"/>
-      <line x1="520" y1="114" x2="530" y2="155" stroke="#d62728" stroke-width="0.8" opacity="0.35"/>
-      <line x1="543" y1="114" x2="536" y2="155" stroke="#d62728" stroke-width="0.8" opacity="0.35"/>
-      <line x1="543" y1="114" x2="543" y2="155" stroke="#d62728" stroke-width="0.8" opacity="0.35"/>
-      <line x1="543" y1="114" x2="550" y2="155" stroke="#d62728" stroke-width="0.8" opacity="0.35"/>
-      <line x1="566" y1="114" x2="559" y2="155" stroke="#d62728" stroke-width="0.8" opacity="0.35"/>
-      <line x1="566" y1="114" x2="566" y2="155" stroke="#d62728" stroke-width="0.8" opacity="0.35"/>
-      <line x1="566" y1="114" x2="573" y2="155" stroke="#d62728" stroke-width="0.8" opacity="0.35"/>
-      <line x1="589" y1="114" x2="582" y2="155" stroke="#d62728" stroke-width="0.8" opacity="0.35"/>
-      <line x1="589" y1="114" x2="589" y2="155" stroke="#d62728" stroke-width="0.8" opacity="0.35"/>
-      <line x1="589" y1="114" x2="596" y2="155" stroke="#d62728" stroke-width="0.8" opacity="0.35"/>
-      <line x1="611" y1="114" x2="604" y2="155" stroke="#d62728" stroke-width="0.8" opacity="0.35"/>
-      <line x1="611" y1="114" x2="611" y2="155" stroke="#d62728" stroke-width="0.8" opacity="0.35"/>
-      <line x1="611" y1="114" x2="618" y2="155" stroke="#d62728" stroke-width="0.8" opacity="0.35"/>
-      <line x1="634" y1="114" x2="627" y2="155" stroke="#d62728" stroke-width="0.8" opacity="0.35"/>
-      <line x1="634" y1="114" x2="634" y2="155" stroke="#d62728" stroke-width="0.8" opacity="0.35"/>
-      <line x1="634" y1="114" x2="641" y2="155" stroke="#d62728" stroke-width="0.8" opacity="0.35"/>
-      <line x1="657" y1="114" x2="650" y2="155" stroke="#d62728" stroke-width="0.8" opacity="0.35"/>
-      <line x1="657" y1="114" x2="657" y2="155" stroke="#d62728" stroke-width="0.8" opacity="0.35"/>
-      <line x1="657" y1="114" x2="664" y2="155" stroke="#d62728" stroke-width="0.8" opacity="0.35"/>
-      <line x1="680" y1="114" x2="673" y2="155" stroke="#d62728" stroke-width="0.8" opacity="0.35"/>
-      <line x1="680" y1="114" x2="680" y2="155" stroke="#d62728" stroke-width="0.8" opacity="0.35"/>
-      <line x1="680" y1="114" x2="687" y2="155" stroke="#d62728" stroke-width="0.8" opacity="0.35"/>
-      <!-- Level 2 nodes -->
-      <circle cx="510" cy="159" r="3" fill="#d62728" opacity="0.5"/>
-      <circle cx="517" cy="159" r="3" fill="#d62728" opacity="0.5"/>
-      <circle cx="523" cy="159" r="3" fill="#d62728" opacity="0.5"/>
-      <circle cx="530" cy="159" r="3" fill="#d62728" opacity="0.5"/>
-      <circle cx="536" cy="159" r="3" fill="#d62728" opacity="0.5"/>
-      <circle cx="543" cy="159" r="3" fill="#d62728" opacity="0.5"/>
-      <circle cx="550" cy="159" r="3" fill="#d62728" opacity="0.5"/>
-      <circle cx="559" cy="159" r="3" fill="#d62728" opacity="0.5"/>
-      <circle cx="566" cy="159" r="3" fill="#d62728" opacity="0.5"/>
-      <circle cx="573" cy="159" r="3" fill="#d62728" opacity="0.5"/>
-      <circle cx="582" cy="159" r="3" fill="#d62728" opacity="0.5"/>
-      <circle cx="589" cy="159" r="3" fill="#d62728" opacity="0.5"/>
-      <circle cx="596" cy="159" r="3" fill="#d62728" opacity="0.5"/>
-      <circle cx="604" cy="159" r="3" fill="#d62728" opacity="0.5"/>
-      <circle cx="611" cy="159" r="3" fill="#d62728" opacity="0.5"/>
-      <circle cx="618" cy="159" r="3" fill="#d62728" opacity="0.5"/>
-      <circle cx="627" cy="159" r="3" fill="#d62728" opacity="0.5"/>
-      <circle cx="634" cy="159" r="3" fill="#d62728" opacity="0.5"/>
-      <circle cx="641" cy="159" r="3" fill="#d62728" opacity="0.5"/>
-      <circle cx="650" cy="159" r="3" fill="#d62728" opacity="0.5"/>
-      <circle cx="657" cy="159" r="3" fill="#d62728" opacity="0.5"/>
-      <circle cx="664" cy="159" r="3" fill="#d62728" opacity="0.5"/>
-      <circle cx="673" cy="159" r="3" fill="#d62728" opacity="0.5"/>
-      <circle cx="680" cy="159" r="3" fill="#d62728" opacity="0.5"/>
-      <circle cx="687" cy="159" r="3" fill="#d62728" opacity="0.5"/>
-      <!-- leaves indicator -->
-      <text x="600" y="195" fill="#d62728" font-family="IBM Plex Mono" font-size="10" text-anchor="middle" opacity="0.45">• • • • • • • • • • • • • • • • • • • • • • • •</text>
-      <text x="600" y="245" fill="#d62728" font-family="IBM Plex Mono" font-size="11" text-anchor="middle" opacity="0.8">32 nodes on path</text>
-      <text x="600" y="260" fill="#d62728" font-family="IBM Plex Mono" font-size="11" text-anchor="middle" opacity="0.6">8 binary levels per node</text>
-
-      <!-- Arrows/labels -->
-      <text x="120" y="286" fill="#475569" font-family="IBM Plex Mono" font-size="10" text-anchor="middle">Deep &amp; Narrow</text>
-      <text x="360" y="286" fill="#475569" font-family="IBM Plex Mono" font-size="10" text-anchor="middle">Balanced</text>
-      <text x="600" y="286" fill="#475569" font-family="IBM Plex Mono" font-size="10" text-anchor="middle">Shallow &amp; Wide</text>
-    </svg>
-    <div class="diagram-caption">Figure 1 — Tree shape at different group depths. Each node bundles N binary levels internally, reducing the number of on-disk nodes on the path to a leaf.</div>
+  <!-- INTERACTIVE: Group Depth Explorer -->
+  <div class="gde-wrap">
+    <div class="gde-label">Interactive — Group Depth Explorer</div>
+    <div class="gde-slider-row">
+      <label>Group depth</label>
+      <input type="range" min="1" max="8" value="4" step="1" id="gde-slider">
+      <span class="gde-val" id="gde-val">4</span>
+    </div>
+    <div class="gde-metrics">
+      <div class="gde-metric">
+        <div class="gde-metric-label">Path</div>
+        <div class="gde-metric-num" id="gde-m-path">64</div>
+        <div class="gde-metric-unit">nodes</div>
+      </div>
+      <div class="gde-metric">
+        <div class="gde-metric-label">Children</div>
+        <div class="gde-metric-num" id="gde-m-children">16</div>
+        <div class="gde-metric-unit">per node</div>
+      </div>
+      <div class="gde-metric">
+        <div class="gde-metric-label">Rehash</div>
+        <div class="gde-metric-num" id="gde-m-rehash">15</div>
+        <div class="gde-metric-unit">ops / node</div>
+      </div>
+      <div class="gde-metric">
+        <div class="gde-metric-label">Node size</div>
+        <div class="gde-metric-num" id="gde-m-size">512</div>
+        <div class="gde-metric-unit">bytes</div>
+      </div>
+    </div>
+    <div class="gde-canvas-wrap"><canvas id="gde-canvas"></canvas></div>
+    <div class="gde-note">Each dashed box = one on-disk node bundling <span id="gde-note-g">4</span> binary levels</div>
   </div>
 
   <p>The trade-off is straightforward in theory: reads benefit from shallow trees (fewer disk I/O operations to reach a leaf), while writes suffer from wide nodes (more internal hashing when a node is modified). The question is where the crossover point lies.</p>
@@ -1288,6 +1284,26 @@
     <strong>GD-6 wins reads and mixed; GD-5 wins writes.</strong> By Mgas/s, GD-6 leads reads (6.39) and mixed (6.27), while GD-5 leads writes (6.94, +7% over GD-4). GD-7 is past the inflection — worse than GD-6 on all three benchmarks — confirming the sweet spot is GD-5 or GD-6 depending on workload. Since Ethereum is read-heavy, GD-6 may be the preferred default.
   </div>
 
+  <!-- INTERACTIVE: Traverse × Rehash Trade-off -->
+  <div class="tro-wrap">
+    <div class="tro-label">Interactive — Cost Breakdown by Group Depth</div>
+    <div class="tro-tabs" id="tro-tabs">
+      <button class="tro-tab active" data-mode="write">Writes (ERC20 approve)</button>
+      <button class="tro-tab" data-mode="read">Reads (ERC20 balanceOf)</button>
+      <button class="tro-tab" data-mode="mixed">Mixed</button>
+    </div>
+    <div class="tro-legend">
+      <div class="tro-leg-item"><div class="tro-leg-dot" style="background:#1f77b4"></div>State reads (traversal)</div>
+      <div class="tro-leg-item"><div class="tro-leg-dot" style="background:#d62728"></div>Trie updates (rehash)</div>
+      <div class="tro-leg-item"><div class="tro-leg-dot" style="background:#9467bd"></div>Commit</div>
+      <div class="tro-leg-item"><div class="tro-leg-dot" style="background:#E2E8F0"></div>Total</div>
+    </div>
+    <div class="tro-canvas-wrap"><canvas id="tro-canvas"></canvas></div>
+    <div class="tro-insight" id="tro-insight">
+      <strong>GD-5</strong> is the write champion at 629 ms — shortest path with manageable rehash cost
+    </div>
+  </div>
+
   <h3>Mixed Workloads</h3>
   <img src="graphs/q6_mixed_boxplot.png" alt="Q6: Mixed workload boxplot" class="graph-img"/>
   <img src="graphs/q6_mixed_mgas.png" alt="Q6: Mixed workload Mgas/s" class="graph-img"/>
@@ -1459,6 +1475,369 @@
 <!-- ============================================================ -->
 <!-- JAVASCRIPT                                                    -->
 <!-- ============================================================ -->
+
+<!-- WIDGET 1 SCRIPT: Group Depth Explorer -->
+<script>
+(function() {
+  var CW = 730, CH = 310;
+  var GD_COLORS = ['#1f77b4','#ff7f0e','#9467bd','#2ca02c','#17becf','#e377c2','#8c564b','#d62728'];
+  var canvas = document.getElementById('gde-canvas');
+  var ctx = canvas.getContext('2d');
+  var dpr = window.devicePixelRatio || 1;
+  canvas.width = CW * dpr;
+  canvas.height = CH * dpr;
+  canvas.style.width = '100%';
+  canvas.style.height = 'auto';
+  ctx.scale(dpr, dpr);
+
+  var animGD = 4, animTarget = 4, animFrame = null;
+
+  function drawTree(g) {
+    ctx.clearRect(0, 0, CW, CH);
+    var col = GD_COLORS[Math.round(g) - 1];
+    var topY = 38, levelH = 68, rootX = CW / 2;
+    var levelsToShow = Math.min(3, Math.ceil(4 / g) + 1);
+    var childrenPerNode = Math.pow(2, g);
+
+    // Build node positions level by level
+    var allNodes = [[{x: rootX, y: topY}]];
+    for (var lvl = 1; lvl <= levelsToShow; lvl++) {
+      var prev = allNodes[lvl - 1];
+      var maxSpread = Math.min(childrenPerNode, 8);
+      var totalC = prev.length * maxSpread;
+      if (totalC > 40) maxSpread = Math.max(2, Math.floor(40 / prev.length));
+      totalC = prev.length * maxSpread;
+      var spacing = Math.min(56, (CW - 100) / (totalC + 1));
+      var startX = rootX - (totalC - 1) * spacing / 2;
+      var next = [], idx = 0;
+
+      for (var p = 0; p < prev.length; p++) {
+        var children = [];
+        for (var c = 0; c < maxSpread; c++) {
+          children.push({x: startX + idx * spacing, y: topY + lvl * levelH});
+          idx++;
+        }
+        next = next.concat(children);
+
+        // Dashed box around first-level grouping (shows one on-disk node)
+        if (lvl === 1) {
+          var xs = [prev[p].x].concat(children.map(function(ch){return ch.x;}));
+          var minX = Math.min.apply(null, xs) - 14;
+          var maxX = Math.max.apply(null, xs) + 14;
+          var minY = prev[p].y - 14;
+          var maxY = children[0].y + 14;
+          ctx.setLineDash([5, 4]);
+          ctx.strokeStyle = col;
+          ctx.globalAlpha = 0.3;
+          ctx.lineWidth = 1.2;
+          ctx.beginPath();
+          if (ctx.roundRect) ctx.roundRect(minX, minY, maxX - minX, maxY - minY, 8);
+          else ctx.rect(minX, minY, maxX - minX, maxY - minY);
+          ctx.stroke();
+          ctx.setLineDash([]);
+          ctx.globalAlpha = 1;
+        }
+
+        // Edges
+        for (var ci = 0; ci < children.length; ci++) {
+          ctx.beginPath();
+          ctx.moveTo(prev[p].x, prev[p].y);
+          ctx.lineTo(children[ci].x, children[ci].y);
+          ctx.strokeStyle = col;
+          ctx.globalAlpha = 0.2 + 0.15 * (1 - lvl / levelsToShow);
+          ctx.lineWidth = Math.max(0.7, 1.6 - lvl * 0.3);
+          ctx.stroke();
+          ctx.globalAlpha = 1;
+        }
+      }
+      allNodes.push(next);
+    }
+
+    // Draw node circles
+    for (var li = 0; li < allNodes.length; li++) {
+      var r = Math.max(2.5, 5.5 - li * 0.8);
+      var opacity = 1 - li * 0.15;
+      for (var ni = 0; ni < allNodes[li].length; ni++) {
+        ctx.beginPath();
+        ctx.arc(allNodes[li][ni].x, allNodes[li][ni].y, r, 0, Math.PI * 2);
+        ctx.fillStyle = col;
+        ctx.globalAlpha = opacity;
+        ctx.fill();
+        ctx.globalAlpha = 1;
+      }
+    }
+
+    // Ellipsis, leaf row, labels
+    var lastY = topY + levelsToShow * levelH;
+    ctx.fillStyle = col; ctx.globalAlpha = 0.4;
+    ctx.font = "700 18px 'IBM Plex Mono', monospace";
+    ctx.textAlign = 'center';
+    ctx.fillText('\u22EE', rootX, lastY + 30);
+    ctx.globalAlpha = 1;
+
+    var leafY = lastY + 52;
+    var leafCount = Math.min(Math.pow(2, Math.round(g)), 18);
+    var leafSpacing = Math.min(18, (CW - 200) / (leafCount + 1));
+    var leafStart = rootX - (leafCount - 1) * leafSpacing / 2;
+    for (var li2 = 0; li2 < leafCount; li2++) {
+      ctx.beginPath();
+      ctx.arc(leafStart + li2 * leafSpacing, leafY, 2.5, 0, Math.PI * 2);
+      ctx.fillStyle = col; ctx.globalAlpha = 0.3; ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+
+    var gInt = Math.round(g);
+    ctx.font = "600 13px 'IBM Plex Mono', monospace";
+    ctx.fillStyle = col; ctx.globalAlpha = 0.85; ctx.textAlign = 'center';
+    ctx.fillText(Math.ceil(256 / gInt) + ' nodes on path', rootX, leafY + 22);
+    ctx.globalAlpha = 0.5;
+    ctx.font = "400 11px 'IBM Plex Mono', monospace";
+    ctx.fillText(Math.pow(2, gInt) + ' children per node', rootX, leafY + 38);
+    ctx.globalAlpha = 1;
+  }
+
+  function updateMetrics(g) {
+    var gInt = Math.round(g);
+    document.getElementById('gde-m-path').textContent = Math.ceil(256 / gInt);
+    document.getElementById('gde-m-children').textContent = Math.pow(2, gInt);
+    document.getElementById('gde-m-rehash').textContent = Math.pow(2, gInt) - 1;
+    document.getElementById('gde-m-size').textContent = (Math.pow(2, gInt) * 32).toLocaleString();
+    document.getElementById('gde-val').textContent = gInt;
+    document.getElementById('gde-note-g').textContent = gInt;
+  }
+
+  function animate() {
+    var diff = animTarget - animGD;
+    if (Math.abs(diff) < 0.05) {
+      animGD = animTarget; drawTree(animGD); updateMetrics(animGD); animFrame = null; return;
+    }
+    animGD += diff * 0.16;
+    drawTree(animGD); updateMetrics(animGD);
+    animFrame = requestAnimationFrame(animate);
+  }
+
+  document.getElementById('gde-slider').addEventListener('input', function() {
+    animTarget = +this.value;
+    if (!animFrame) animFrame = requestAnimationFrame(animate);
+  });
+
+  drawTree(4); updateMetrics(4);
+})();
+</script>
+
+<!-- WIDGET 2 SCRIPT: Traverse × Rehash Trade-off -->
+<script>
+(function() {
+  var CW = 730, CH = 360;
+  var PAD = {l: 60, r: 28, t: 20, b: 44};
+  var canvas = document.getElementById('tro-canvas');
+  var ctxT = canvas.getContext('2d');
+  var dpr = window.devicePixelRatio || 1;
+  canvas.width = CW * dpr; canvas.height = CH * dpr;
+  canvas.style.width = '100%'; canvas.style.height = 'auto';
+  ctxT.scale(dpr, dpr);
+
+  // Benchmark data from the post tables (all values in ms)
+  var DATA = {
+    write: {
+      gd: [1,2,3,4,5,6,7,8],
+      read:   [812, 483, 349, 313, 271, 272, 264, 313],
+      hash:   [690, 393, 287, 254, 242, 283, 328, 433],
+      commit: [76,  61,  44,  53,  57,  76,  103, 158],
+      total:  [1645,993, 732, 678, 629, 679, 745, 982],
+      winner: 4,
+      insight: '<strong>GD-5</strong> is the write champion at 629 ms \u2014 shortest path with manageable rehash cost'
+    },
+    read: {
+      gd: [1,2,3,4,5,6,7,8],
+      read:   [5878, 3840, 2866, 2677, 2370, 2248, 2339, 2598],
+      hash:   [0,0,0,0,0,0,0,0],
+      commit: [0,0,0,0,0,0,0,0],
+      total:  [6284, 4230, 3213, 3067, 2733, 2623, 2693, 2977],
+      winner: 5,
+      insight: '<strong>GD-6</strong> leads reads at 2,623 ms \u2014 optimal path before node size hits the Pebble block boundary'
+    },
+    mixed: {
+      gd: [1,2,3,4,5,6,7,8],
+      read:   [4711, 3003, 1981, 1893, 1512, 1440, 1055, 1612],
+      hash:   [345,  217,  145,  138,  124,  141,  218,  221],
+      commit: [53,   44,   39,   43,   48,   54,   73,   87],
+      total:  [5363, 3518, 2375, 2302, 1910, 1851, 1529, 2145],
+      winner: 5,
+      insight: '<strong>GD-6</strong> leads mixed at 6.27 Mgas/s \u2014 read advantage outweighs moderate rehash increase'
+    }
+  };
+
+  var COLORS = {read: '#1f77b4', hash: '#d62728', commit: '#9467bd', total: '#E2E8F0'};
+  var currentMode = 'write';
+  var animProgress = 1, animFrom = null, animTo = null, animFrameId = null;
+
+  function lerp(a, b, t) { return a + (b - a) * t; }
+  function lerpArr(a, b, t) {
+    var out = [];
+    for (var i = 0; i < a.length; i++) out.push(lerp(a[i], b[i], t));
+    return out;
+  }
+
+  function drawChart(d) {
+    ctxT.clearRect(0, 0, CW, CH);
+    var chartW = CW - PAD.l - PAD.r;
+    var chartH = CH - PAD.t - PAD.b;
+    var maxVal = Math.max.apply(null, d.total) * 1.12;
+    var xStep = chartW / (d.gd.length - 1);
+    function toX(i) { return PAD.l + i * xStep; }
+    function toY(v) { return PAD.t + chartH * (1 - v / maxVal); }
+
+    // Grid
+    var gridSteps = 5;
+    ctxT.strokeStyle = 'rgba(148, 163, 184, 0.1)';
+    ctxT.lineWidth = 0.5;
+    for (var gi = 0; gi <= gridSteps; gi++) {
+      var gy = PAD.t + (chartH / gridSteps) * gi;
+      ctxT.beginPath(); ctxT.moveTo(PAD.l, gy); ctxT.lineTo(CW - PAD.r, gy); ctxT.stroke();
+      ctxT.fillStyle = '#475569';
+      ctxT.font = "400 11px 'IBM Plex Mono', monospace";
+      ctxT.textAlign = 'right';
+      ctxT.fillText(Math.round(maxVal * (1 - gi / gridSteps)).toLocaleString(), PAD.l - 10, gy + 4);
+    }
+
+    // X-axis
+    ctxT.textAlign = 'center';
+    ctxT.font = "600 12px 'IBM Plex Mono', monospace";
+    ctxT.fillStyle = '#94A3B8';
+    for (var xi = 0; xi < d.gd.length; xi++) {
+      ctxT.fillText('GD-' + d.gd[xi], toX(xi), CH - PAD.b + 22);
+    }
+
+    // Y-axis label
+    ctxT.save();
+    ctxT.translate(14, PAD.t + chartH / 2);
+    ctxT.rotate(-Math.PI / 2);
+    ctxT.fillStyle = '#475569';
+    ctxT.font = "400 11px 'IBM Plex Mono', monospace";
+    ctxT.textAlign = 'center';
+    ctxT.fillText('milliseconds', 0, 0);
+    ctxT.restore();
+
+    // Stacked areas (only when hash/commit non-zero)
+    var hasWrite = d.hash.some(function(v) { return v > 0; });
+    if (hasWrite) {
+      // Read area
+      ctxT.beginPath();
+      ctxT.moveTo(toX(0), toY(0));
+      for (var i = 0; i < d.gd.length; i++) ctxT.lineTo(toX(i), toY(d.read[i]));
+      ctxT.lineTo(toX(d.gd.length - 1), toY(0));
+      ctxT.closePath();
+      ctxT.fillStyle = COLORS.read; ctxT.globalAlpha = 0.1; ctxT.fill(); ctxT.globalAlpha = 1;
+
+      // Hash area (stacked on read)
+      ctxT.beginPath();
+      ctxT.moveTo(toX(0), toY(d.read[0]));
+      for (var i = 0; i < d.gd.length; i++) ctxT.lineTo(toX(i), toY(d.read[i] + d.hash[i]));
+      for (var i = d.gd.length - 1; i >= 0; i--) ctxT.lineTo(toX(i), toY(d.read[i]));
+      ctxT.closePath();
+      ctxT.fillStyle = COLORS.hash; ctxT.globalAlpha = 0.12; ctxT.fill(); ctxT.globalAlpha = 1;
+
+      // Commit area (stacked on read+hash)
+      ctxT.beginPath();
+      ctxT.moveTo(toX(0), toY(d.read[0] + d.hash[0]));
+      for (var i = 0; i < d.gd.length; i++) ctxT.lineTo(toX(i), toY(d.read[i] + d.hash[i] + d.commit[i]));
+      for (var i = d.gd.length - 1; i >= 0; i--) ctxT.lineTo(toX(i), toY(d.read[i] + d.hash[i]));
+      ctxT.closePath();
+      ctxT.fillStyle = COLORS.commit; ctxT.globalAlpha = 0.08; ctxT.fill(); ctxT.globalAlpha = 1;
+    }
+
+    // Lines + dots
+    function drawLine(vals, color, width) {
+      if (vals.every(function(v) { return v === 0; })) return;
+      ctxT.beginPath();
+      for (var i = 0; i < vals.length; i++) {
+        if (i === 0) ctxT.moveTo(toX(i), toY(vals[i]));
+        else ctxT.lineTo(toX(i), toY(vals[i]));
+      }
+      ctxT.strokeStyle = color; ctxT.lineWidth = width;
+      ctxT.lineJoin = 'round'; ctxT.lineCap = 'round'; ctxT.stroke();
+      for (var i = 0; i < vals.length; i++) {
+        ctxT.beginPath();
+        ctxT.arc(toX(i), toY(vals[i]), 3, 0, Math.PI * 2);
+        ctxT.fillStyle = color; ctxT.fill();
+      }
+    }
+    drawLine(d.read, COLORS.read, 1.8);
+    if (hasWrite) { drawLine(d.hash, COLORS.hash, 1.8); drawLine(d.commit, COLORS.commit, 1.2); }
+    drawLine(d.total, COLORS.total, 2.5);
+
+    // Winner ring + label
+    var wi = d.winner, wx = toX(wi), wy = toY(d.total[wi]);
+    ctxT.beginPath(); ctxT.arc(wx, wy, 9, 0, Math.PI * 2);
+    ctxT.strokeStyle = '#2ca02c'; ctxT.lineWidth = 2; ctxT.stroke();
+    ctxT.fillStyle = '#2ca02c';
+    ctxT.font = "600 12px 'IBM Plex Mono', monospace";
+    ctxT.textAlign = 'center';
+    ctxT.fillText(Math.round(d.total[wi]).toLocaleString() + ' ms', wx, wy - 16);
+
+    // Crossover annotation (where hash overtakes read cost)
+    if (hasWrite) {
+      for (var i = 0; i < d.gd.length - 1; i++) {
+        var diff1 = d.hash[i] - d.read[i];
+        var diff2 = d.hash[i + 1] - d.read[i + 1];
+        if (diff1 <= 0 && diff2 > 0) {
+          var t = -diff1 / (diff2 - diff1);
+          var crossX = toX(i + t);
+          var crossVal = d.read[i] + t * (d.read[i + 1] - d.read[i]);
+          var crossY = toY(crossVal);
+          ctxT.setLineDash([3, 3]);
+          ctxT.beginPath();
+          ctxT.moveTo(crossX, crossY - 22); ctxT.lineTo(crossX, crossY + 22);
+          ctxT.strokeStyle = '#F59E0B'; ctxT.lineWidth = 1; ctxT.globalAlpha = 0.7;
+          ctxT.stroke(); ctxT.setLineDash([]); ctxT.globalAlpha = 1;
+          ctxT.fillStyle = '#F59E0B';
+          ctxT.font = "600 10px 'IBM Plex Mono', monospace";
+          ctxT.textAlign = 'left';
+          ctxT.fillText('hash > reads', crossX + 5, crossY - 26);
+          break;
+        }
+      }
+    }
+  }
+
+  function setMode(m) {
+    var tabs = document.querySelectorAll('#tro-tabs .tro-tab');
+    for (var i = 0; i < tabs.length; i++)
+      tabs[i].classList.toggle('active', tabs[i].getAttribute('data-mode') === m);
+    animFrom = JSON.parse(JSON.stringify(DATA[currentMode]));
+    animTo = DATA[m];
+    currentMode = m;
+    animProgress = 0;
+    document.getElementById('tro-insight').innerHTML = DATA[m].insight;
+    if (!animFrameId) animFrameId = requestAnimationFrame(animateTransition);
+  }
+
+  function animateTransition() {
+    animProgress = Math.min(1, animProgress + 0.055);
+    var t = 1 - Math.pow(1 - animProgress, 3);
+    var frame = {
+      gd: animTo.gd,
+      read:   lerpArr(animFrom.read,   animTo.read,   t),
+      hash:   lerpArr(animFrom.hash,   animTo.hash,   t),
+      commit: lerpArr(animFrom.commit, animTo.commit, t),
+      total:  lerpArr(animFrom.total,  animTo.total,  t),
+      winner: animTo.winner
+    };
+    drawChart(frame);
+    if (animProgress < 1) animFrameId = requestAnimationFrame(animateTransition);
+    else animFrameId = null;
+  }
+
+  var tabs = document.querySelectorAll('#tro-tabs .tro-tab');
+  for (var i = 0; i < tabs.length; i++) {
+    tabs[i].addEventListener('click', function() { setMode(this.getAttribute('data-mode')); });
+  }
+
+  drawChart(DATA.write);
+})();
+</script>
+
 <script>
 (function() {
   const nav = document.getElementById('section-nav');
