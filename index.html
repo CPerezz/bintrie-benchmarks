@@ -100,16 +100,16 @@
     <a class="card" href="group-depth-benchmarks/index.html">
       <div class="card-title">Group Depth Benchmarks</div>
       <div class="card-summary">
-        Compared GD-1, GD-2, GD-4, and GD-8 on 360 GB databases (~400M state entries).
-        Five benchmark types under cold-cache protocol: synthetic SLOAD/SSTORE and ERC20 contract workloads.
+        Compared all eight group-depth configurations (GD-1 through GD-8) on 360&nbsp;GB databases (~400M state entries).
+        Five benchmark types under verified cold-cache protocol: synthetic SLOAD/SSTORE and ERC20 contract workloads.
       </div>
       <div class="card-result">
-        Result: GD-4 is optimal &mdash; 3% read sacrifice buys a 45% write gain over GD-8.
+        Result: The sweet spot is GD-5 or GD-6. GD-5 wins writes (+7% over GD-4), GD-6 leads reads (6.39&nbsp;Mgas/s) and mixed workloads.
       </div>
       <div class="card-meta">
-        <span>4 configurations</span>
+        <span>8 configurations</span>
         <span>5 benchmark types</span>
-        <span>~450 runs</span>
+        <span>~700 runs</span>
       </div>
     </a>
   </div>
