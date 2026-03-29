@@ -112,6 +112,22 @@
         <span>~700 runs</span>
       </div>
     </a>
+
+    <a class="card" href="mpt-vs-bintrie/index.html">
+      <div class="card-title">MPT vs Binary Trie</div>
+      <div class="card-summary">
+        Head-to-head comparison of production MPT against optimized BT-GD5 on bare-metal AMD&nbsp;EPYC (48&nbsp;cores, 126&nbsp;GB&nbsp;RAM).
+        ERC20 read and write workloads with 100 MPT runs and 10 BT runs under cold-cache protocol on ~1.5&nbsp;TB databases.
+      </div>
+      <div class="card-result">
+        Result: BT is ~1.7&times; slower on reads, ~2.5&times; on writes per storage slot. Raw Mgas/s (up to 9.6&times;) is misleading due to different EIP-4762 gas schedules.
+      </div>
+      <div class="card-meta">
+        <span>2 architectures</span>
+        <span>3 benchmark types</span>
+        <span>330 runs</span>
+      </div>
+    </a>
   </div>
 </body>
 </html>
