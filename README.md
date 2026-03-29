@@ -13,3 +13,13 @@ Compared all eight group-depth configurations (GD-1 through GD-8) on 360 GB data
 [Full report](group-depth-benchmarks/index.html) ·
 [ethresear.ch post](group-depth-benchmarks/ethresearch-post.md) ·
 [Raw data](group-depth-benchmarks/data/)
+
+### [MPT vs Binary Trie](mpt-vs-bintrie/)
+
+Head-to-head comparison of production MPT (upstream geth) against optimized BT-GD5 (bintrie fork with 3 merged performance PRs) on bare-metal AMD EPYC (48 cores, 126 GB RAM, 3.5 TB SSD RAID). Three ERC20 benchmarks (balanceOf, approve, mixed) with 100 MPT runs and 10 BT runs under cold-cache protocol on ~1.5 TB databases with ~400M state entries.
+
+**Result:** BT-GD5 is 1.7× slower on reads (19.0 vs 11.2 Mgas/s), 9.6× on writes (99.8 vs 10.4 Mgas/s raw), and 3.0× on mixed workloads (29.8 vs 9.8 Mgas/s). The write gap is inflated by a cache asymmetry artifact (BT 35--73% storage cache hit rate vs MPT 7--15%). Per-cache-miss read cost shows a 2.8× structural penalty. The binary trie is not ready for production today, but the optimization trajectory is encouraging and the snapshot layer -- the largest potential improvement -- remains unexplored.
+
+[Full report](mpt-vs-bintrie/index.html) ·
+[ethresear.ch post](mpt-vs-bintrie/ethresearch-post.md) ·
+[Raw data](mpt-vs-bintrie/data/)

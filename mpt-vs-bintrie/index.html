@@ -1,0 +1,1030 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Binary Trie Part 2 — How Fast Is the Binary Trie Today?</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600;700;800&family=IBM+Plex+Sans:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: #0A0E17;
+    color: #E2E8F0;
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 16px;
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+  }
+  .container { max-width: 780px; margin: 0 auto; padding: 0 24px; }
+
+  /* Header */
+  .report-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: #F59E0B;
+    margin-bottom: 12px;
+  }
+  h1.hero-title {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 42px;
+    font-weight: 800;
+    line-height: 1.15;
+    background: linear-gradient(135deg, #94A3B8, #F59E0B);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 12px;
+  }
+  .hero-subtitle {
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 18px;
+    color: #94A3B8;
+    margin-bottom: 36px;
+    line-height: 1.5;
+  }
+  .meta-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 48px;
+  }
+  .meta-card {
+    background: #0F172A;
+    border: 1px solid #1E293B;
+    border-radius: 8px;
+    padding: 16px;
+    text-align: center;
+  }
+  .meta-card-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #64748B;
+    margin-bottom: 6px;
+  }
+  .meta-card-value {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    font-weight: 600;
+    color: #E2E8F0;
+    line-height: 1.4;
+  }
+
+  /* Nav */
+  .section-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 24px;
+    padding: 16px 0;
+    border-top: 1px solid #1E293B;
+    border-bottom: 1px solid #1E293B;
+    position: sticky;
+    top: 0;
+    background: #0A0E17;
+    z-index: 100;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  }
+  .nav-pill {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 6px 14px;
+    border-radius: 20px;
+    border: 1px solid #1E293B;
+    background: transparent;
+    color: #94A3B8;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+    text-decoration: none;
+  }
+  .nav-pill:hover {
+    border-color: #F59E0B;
+    color: #F59E0B;
+  }
+  .nav-pill.active {
+    border-color: #F59E0B;
+    background: rgba(245, 158, 11, 0.1);
+    color: #F59E0B;
+  }
+
+  /* Sections */
+  .section { margin-bottom: 72px; }
+  .section-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: #64748B;
+    margin-bottom: 8px;
+  }
+  h2 {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 28px;
+    font-weight: 700;
+    color: #E2E8F0;
+    margin-bottom: 24px;
+    line-height: 1.3;
+  }
+  h3 {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 20px;
+    font-weight: 700;
+    color: #CBD5E1;
+    margin-top: 36px;
+    margin-bottom: 16px;
+  }
+  p { margin-bottom: 16px; }
+  .muted { color: #94A3B8; }
+  a { color: #F59E0B; text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  /* Callouts */
+  .callout {
+    border-left: 3px solid;
+    padding: 16px 20px;
+    margin: 24px 0;
+    background: #0F172A;
+    border-radius: 0 8px 8px 0;
+    font-size: 15px;
+    line-height: 1.6;
+  }
+  .callout-green { border-color: #2ca02c; }
+  .callout-amber { border-color: #F59E0B; }
+  .callout-red { border-color: #d62728; }
+  .callout strong { color: #F8FAFC; }
+
+  /* Tables */
+  .data-table-wrap {
+    overflow-x: auto;
+    margin: 20px 0;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+  }
+  thead th {
+    text-align: left;
+    padding: 10px 12px;
+    border-bottom: 2px solid #1E293B;
+    color: #64748B;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+  tbody td {
+    padding: 8px 12px;
+    border-bottom: 1px solid #1E293B;
+    color: #CBD5E1;
+  }
+  tbody tr:hover { background: rgba(30, 41, 59, 0.5); }
+  .cell-bold { font-weight: 700; color: #F8FAFC; }
+  .cell-green { color: #2ca02c; }
+  .cell-red { color: #d62728; }
+  .cell-amber { color: #F59E0B; }
+  .cell-dim { color: #64748B; }
+
+  /* Cards */
+  .dark-card {
+    background: #0F172A;
+    border: 1px solid #1E293B;
+    border-radius: 8px;
+    padding: 20px;
+    margin: 20px 0;
+  }
+  .verdict-card {
+    background: #0F172A;
+    border: 1px solid #1E293B;
+    border-radius: 12px;
+    padding: 28px;
+    margin: 28px 0;
+  }
+
+  /* Images */
+  .graph-img {
+    width: 100%;
+    border-radius: 8px;
+    border: 1px solid #1E293B;
+    margin: 16px 0;
+  }
+  .graph-hero {
+    width: 100%;
+    border-radius: 8px;
+    border: 2px solid #1E293B;
+    margin: 20px 0;
+  }
+
+  /* Bullet lists */
+  ul, ol { padding-left: 24px; margin-bottom: 16px; }
+  li { margin-bottom: 6px; }
+
+  /* Pattern cards */
+  .pattern-card {
+    border-left: 3px solid;
+    padding: 14px 18px;
+    margin: 12px 0;
+    background: #0F172A;
+    border-radius: 0 8px 8px 0;
+  }
+  .pattern-card p { margin: 0; font-size: 14px; }
+
+  /* Open question cards */
+  .oq-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin: 20px 0;
+  }
+  .oq-card {
+    background: #0F172A;
+    border: 1px solid #1E293B;
+    border-radius: 8px;
+    padding: 16px;
+  }
+  .oq-number {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    color: #F59E0B;
+    margin-bottom: 4px;
+  }
+  .oq-card p { font-size: 14px; margin: 0; color: #94A3B8; }
+
+  /* Recommendation */
+  .recommendation {
+    border-left: 4px solid #d62728;
+    padding: 24px 28px;
+    margin: 28px 0;
+    background: #0F172A;
+    border-radius: 0 12px 12px 0;
+  }
+  .recommendation .big-text {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 22px;
+    font-weight: 700;
+    color: #d62728;
+    margin-bottom: 8px;
+  }
+
+  /* Graph caption */
+  .graph-caption {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    color: #64748B;
+    text-align: center;
+    margin-top: -8px;
+    margin-bottom: 16px;
+  }
+
+  /* Footer */
+  footer {
+    border-top: 1px solid #1E293B;
+    padding: 32px 0 48px;
+    text-align: center;
+    color: #475569;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+  }
+  footer a { color: #64748B; text-decoration: none; }
+  footer a:hover { color: #F59E0B; }
+
+  /* Responsive */
+  @media (max-width: 640px) {
+    h1.hero-title { font-size: 28px; }
+    .meta-grid { grid-template-columns: 1fr 1fr; }
+    .oq-grid { grid-template-columns: 1fr; }
+    .section-nav { gap: 6px; }
+    .nav-pill { font-size: 11px; padding: 5px 10px; }
+  }
+  @media (max-width: 768px) {
+    h1.hero-title { font-size: 32px; }
+    h2 { font-size: 22px; }
+    .container { padding: 0 16px; }
+  }
+  code {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.9em;
+    background: rgba(30, 41, 59, 0.8);
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: #F59E0B;
+  }
+</style>
+</head>
+<body>
+
+<div class="container" style="padding-top: 64px;">
+
+  <!-- Header -->
+  <div class="report-label">Benchmark Report &mdash; Part 2</div>
+  <h1 class="hero-title">How Fast Is the Binary Trie Today?</h1>
+  <p class="hero-subtitle">BT-GD5 vs production MPT on identical bare-metal hardware. The binary trie is ~2x slower per storage operation &mdash; 1.7x on reads, 2.5x on writes &mdash; but the gap is narrowing.</p>
+
+  <!-- Meta cards -->
+  <div class="meta-grid">
+    <div class="meta-card">
+      <div class="meta-card-label">Machine</div>
+      <div class="meta-card-value">AMD EPYC 9454P<br>48-Core / 126 GB</div>
+    </div>
+    <div class="meta-card">
+      <div class="meta-card-label">Databases</div>
+      <div class="meta-card-value">MPT 1.6 TB<br>BT-GD5 1.4 TB</div>
+    </div>
+    <div class="meta-card">
+      <div class="meta-card-label">Protocol</div>
+      <div class="meta-card-value">Cold cache<br>OS drop + --cache 0</div>
+    </div>
+    <div class="meta-card">
+      <div class="meta-card-label">Runs</div>
+      <div class="meta-card-value">MPT: 100/bench<br>BT: 10/bench</div>
+    </div>
+  </div>
+
+  <!-- Sticky nav -->
+  <nav class="section-nav" id="section-nav">
+    <a class="nav-pill" href="#s1">S1 Summary</a>
+    <a class="nav-pill" href="#s2">S2 Changes</a>
+    <a class="nav-pill" href="#s3">S3 Method</a>
+    <a class="nav-pill" href="#s4">S4 Reads</a>
+    <a class="nav-pill" href="#s5">S5 Writes</a>
+    <a class="nav-pill" href="#s6">S6 Patterns</a>
+    <a class="nav-pill" href="#s7">S7 Gap</a>
+    <a class="nav-pill" href="#s8">S8 Verdict</a>
+  </nav>
+
+  <!-- ============================================================
+       S1 — Executive Summary
+       ============================================================ -->
+  <div class="section" id="s1">
+    <div class="section-label">Section 1</div>
+    <h2>Executive Summary</h2>
+
+    <div class="callout callout-amber">
+      <strong>The binary trie is ~2x slower than production MPT per storage operation</strong> &mdash; 1.7x on reads, 2.5x on writes. Raw Mgas/s numbers appear worse (up to 9.6x) because the bintrie fork uses EIP-4762 verkle gas rules, making the same work consume less gas. After 4 optimization PRs in one week, the gap is real but bounded.
+    </div>
+
+    <p>The binary trie is on the <a href="https://strawmap.org/">Ethereum protocol strawman</a> as a future state tree replacement (<a href="https://eips.ethereum.org/EIPS/eip-7864">EIP-7864</a>). <a href="https://ethresear.ch/t/narrower-than-expected-optimal-group-depth-for-ethereums-binary-trie/22029">Part 1</a> established GD-5 and GD-6 as the optimal group-depth settings for the binary trie. With those parameters decided, the natural next question is: <strong>how does the optimized binary trie compare to production MPT?</strong></p>
+
+    <h3>What we tested</h3>
+    <p>BT-GD5 (bintrie fork, commit <code>991300c4</code>) vs MPT (upstream geth master, commit <code>5d0e18f7</code>) on identical bare-metal hardware. Three ERC20 workloads: <code>erc20_balanceof</code> (reads), <code>erc20_approve</code> (writes), <code>mixed_sload_sstore</code> (50-50). Cold-cache protocol with OS page cache drops and <code>--cache 0</code> between every run. MPT: 100 runs per benchmark. BT-GD5: 10 runs per benchmark.</p>
+
+    <h3>What we found</h3>
+    <ul>
+      <li><strong>Reads show a 1.7x throughput gap</strong> (Section 4): MPT delivers 19.0 Mgas/s vs BT's 11.2 Mgas/s on identical 100M-gas blocks. Gas schedules are the same for reads, so Mgas/s is apples-to-apples. Per-cache-miss cost is 2.8x (0.15 vs 0.41 ms/miss).</li>
+      <li><strong>Writes show a 2.5x gap per storage slot</strong> (Section 5): 0.23 vs 0.57 ms/slot total time. The raw Mgas/s ratio (9.6x) is misleading because BT uses EIP-4762 witness gas where SSTORE costs ~5,600 gas vs MPT's ~22,100 under EIP-2929.</li>
+      <li><strong>Per-cache-miss read cost escalates 7.5x as tx_count grows</strong> (Section 6): From 0.40 ms/miss at tx=1 to 2.99 ms/miss at tx=9 in BT approve blocks. The prefetcher drains hot upper-path nodes first, leaving progressively colder trie paths.</li>
+      <li><strong>4 optimization PRs merged in one week, all in the binary</strong> (Section 7): Parallel hashing, allocation avoidance, redundant commit elimination, per-account updateTrie bypass. A 5th PR (GC-free arena) remains open. The snapshot layer &mdash; the biggest potential improvement &mdash; hasn't been explored yet.</li>
+    </ul>
+
+    <h3>How to read this post</h3>
+    <p>Section 2 covers what changed since Part 1. Section 3 details methodology. Sections 4&ndash;5 present the results in a narrative arc: reads first (the clean comparison), then writes (where gas schedule differences require careful normalization). Section 6 explores the deeper architectural patterns &mdash; cold tail effects, why hash time is really trie-walking time, and what drives the gap from first principles. Section 7 surveys the optimization path forward, and Section 8 gives the verdict. <strong>Short on time? Start with Section 4's hero finding</strong> &mdash; it frames the entire discussion.</p>
+
+    <p><strong>Position:</strong> The binary trie is not ready for production today, but the gap is narrowing.</p>
+  </div>
+
+  <!-- ============================================================
+       S2 — What Changed Since Part 1
+       ============================================================ -->
+  <div class="section" id="s2">
+    <div class="section-label">Section 2</div>
+    <h2>What Changed Since Part 1</h2>
+
+    <h3>New hardware</h3>
+    <p>Part 1 ran on a QEMU VM (8 vCPUs, 30 GB RAM). Part 2 runs on bare metal &mdash; an AMD EPYC 9454P 48-Core (96 threads) with 126 GB RAM and 3.5 TB SSD RAID. This eliminates virtualization overhead and provides more realistic I/O characteristics. <strong>Absolute numbers between Part 1 and Part 2 are not comparable</strong> due to the hardware change.</p>
+
+    <h3>MPT baseline</h3>
+    <p>Part 1 compared binary trie configurations against each other (GD-1 through GD-8). Part 2 adds the first <strong>cross-architecture comparison</strong>: BT-GD5 vs production MPT. This is the question that matters for Ethereum's roadmap.</p>
+
+    <h3>Optimization PRs</h3>
+    <p>A focused sprint produced 4 merged PRs targeting binary trie performance:</p>
+
+    <div class="data-table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>PR</th>
+            <th>Description</th>
+            <th>Target</th>
+            <th>Merged</th>
+            <th>In benchmark binary?</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><a href="https://github.com/ethereum/go-ethereum/pull/34032">#34032</a></td>
+            <td>Parallelize InternalNode.Hash at shallow depths</td>
+            <td><code>state_hash_ms</code></td>
+            <td>2026-03-18</td>
+            <td>Yes</td>
+          </tr>
+          <tr>
+            <td><a href="https://github.com/ethereum/go-ethereum/pull/34025">#34025</a></td>
+            <td>Avoid Bytes() allocation in flatReader</td>
+            <td><code>state_read_ms</code>, GC</td>
+            <td>2026-03-17</td>
+            <td>Yes</td>
+          </tr>
+          <tr>
+            <td><a href="https://github.com/ethereum/go-ethereum/pull/34021">#34021</a></td>
+            <td>Skip redundant trie Commit for Verkle</td>
+            <td><code>commit_ms</code></td>
+            <td>2026-03-17</td>
+            <td>Yes</td>
+          </tr>
+          <tr>
+            <td><a href="https://github.com/ethereum/go-ethereum/pull/34022">#34022</a></td>
+            <td>Bypass per-account updateTrie for binary trie</td>
+            <td>commit overhead</td>
+            <td>2026-03-20</td>
+            <td>Yes (local branch)</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p>The benchmark binary (built 2026-03-19, commit <code>991300c4</code>) includes all 4 optimizations. PR #34022 was included via a local stacked branch before its upstream merge date. <em>This PR introduced a counter bug discussed in Section 3 Known Issues.</em></p>
+
+    <h3>Larger databases</h3>
+
+    <div class="data-table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Database</th>
+            <th>Size</th>
+            <th>Bloat</th>
+            <th>State entries</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>MPT</td>
+            <td>1.6 TB</td>
+            <td>~2.53 GB ERC20</td>
+            <td>~400M</td>
+          </tr>
+          <tr>
+            <td>BT-GD5</td>
+            <td>1.4 TB</td>
+            <td>~2.76 GB ERC20</td>
+            <td>~400M</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p>Both databases were generated using <code>state-actor</code> (100K contracts, seed 25519) followed by <code>spamoor erc20_bloater</code> to deploy ERC20 storage. The ~200 GB size difference reflects the binary trie's more compact encoding at GD-5.</p>
+
+    <p class="muted"><em>With the hardware and baseline established, we move to methodology &mdash; including a critical gas-schedule issue that shapes how we interpret every write benchmark.</em></p>
+  </div>
+
+  <!-- ============================================================
+       S3 — Methodology
+       ============================================================ -->
+  <div class="section" id="s3">
+    <div class="section-label">Section 3</div>
+    <h2>Methodology</h2>
+
+    <h3>Benchmark Setup</h3>
+
+    <div class="data-table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Parameter</th>
+            <th>Value</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Machine</td>
+            <td>Bare metal &mdash; AMD EPYC 9454P 48-Core (96 threads), 126 GB RAM, 3.5 TB SSD (md RAID), Ubuntu 24.04 LTS</td>
+          </tr>
+          <tr>
+            <td>Databases</td>
+            <td>MPT: 1.6 TB, BT-GD5: 1.4 TB (~400M accounts + storage)</td>
+          </tr>
+          <tr>
+            <td>Configurations</td>
+            <td><code>mpt</code> (upstream geth <code>5d0e18f7</code>) vs <code>bt-gd5</code> (bintrie fork <code>991300c4</code>)</td>
+          </tr>
+          <tr>
+            <td>Protocol</td>
+            <td>Cold cache (OS page cache dropped + <code>--cache 0</code> between runs)</td>
+          </tr>
+          <tr>
+            <td>Runs</td>
+            <td>MPT: 100 per benchmark, BT-GD5: 10 per benchmark</td>
+          </tr>
+          <tr>
+            <td>Gas target</td>
+            <td>100M gas per block</td>
+          </tr>
+          <tr>
+            <td>Benchmarks</td>
+            <td><code>erc20_balanceof</code> (reads), <code>erc20_approve</code> (writes), <code>mixed_sload_sstore</code> (mixed)</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Cold-cache protocol</h3>
+    <p>Each run: kill geth, <code>sync &amp;&amp; echo 3 &gt; /proc/sys/vm/drop_caches</code>, restart geth with <code>--cache 0 --dev.period 10 --dev.gaslimit 110000000</code>, wait for RPC ready, execute benchmark, save log. This ensures every run starts from a cold state &mdash; no trie cache, no Pebble block cache, no OS page cache.</p>
+
+    <h3>Statistical approach</h3>
+    <ul>
+      <li><strong>Mann-Whitney U test</strong> (non-parametric) for all pairwise comparisons</li>
+      <li><strong>Bootstrap 95% confidence intervals</strong> for median ratios (10,000 resamples)</li>
+      <li><strong>Welch's t-test</strong> on per-run medians as robustness check</li>
+      <li>All pairwise p-values &lt; 0.001 for throughput (<code>mgas_per_sec</code>)</li>
+      <li>Run-to-run stability: CV% 2&ndash;5% for MPT, 6&ndash;21% for BT</li>
+    </ul>
+
+    <h3>Known issues</h3>
+    <ol>
+      <li><strong>Different gas schedules.</strong> The bintrie fork has <code>IsVerkle()=true</code>, which triggers EIP-4762 witness-based gas costs (<code>core/vm/evm.go:152-154</code>, <code>core/vm/eips.go:450-458</code>). SSTORE costs ~5,600 gas under EIP-4762 vs ~22,100 gas under EIP-2929. For balanceof (reads), gas is identical &mdash; 100M for both configs, 2,722 gas/slot. For approve (writes), MPT uses 22,897 gas/slot vs BT's 5,955 gas/slot (3.85x different). <strong>This means Mgas/s is not a valid cross-architecture metric for write benchmarks.</strong> Per-slot time is the primary comparison metric for approve and mixed.</li>
+    </ol>
+
+    <p class="muted"><em>With the methodology and caveats in hand, we start with the cleanest comparison in the study: pure reads.</em></p>
+  </div>
+
+  <!-- ============================================================
+       S4 — Act I: Reads
+       ============================================================ -->
+  <div class="section" id="s4">
+    <div class="section-label">Section 4</div>
+    <h2>Act I: Reads</h2>
+
+    <p>The <a href="https://github.com/ethereum/execution-spec-tests/blob/main/tests/benchmark/stateful/bloatnet/test_single_opcode.py#L81"><code>erc20_balanceof</code></a> benchmark calls <code>balanceOf()</code> on a <a href="https://gist.github.com/CPerezz/f269e1cdbdbfa47f1694a579f247016e">minimal ERC20 contract</a> for ~36,741 random addresses per block. Each call triggers a cold <code>SLOAD</code> &mdash; a storage read that must traverse the trie from root to leaf. The addresses are keccak-hashed, scattering uniformly across the trie's keyspace, so there is no locality benefit. This is a pure read workload: maximum storage lookups per gas, minimum overhead from writes or contract logic.</p>
+
+    <p>It is also the cleanest comparison in the study: both configs process identical 100M-gas blocks with the same gas schedule (EIP-4762 and EIP-2929 charge the same for reads), the same ~36,741 slot lookups, and a single transaction per block. No normalization needed &mdash; Mgas/s is apples-to-apples.</p>
+
+    <div class="callout callout-amber">
+      <strong>MPT: 19.0 Mgas/s, BT: 11.2 Mgas/s &mdash; 1.7x gap</strong> (p &lt; 1e-6)
+    </div>
+
+    <p>Both configs process identical workloads: 1 transaction per block, ~36,741 storage slot reads, 100M gas. The component breakdown:</p>
+
+    <div class="data-table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Component</th>
+            <th>MPT</th>
+            <th>BT</th>
+            <th>Ratio</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>state_read_ms</code></td>
+            <td>4,956 ms</td>
+            <td>7,935 ms</td>
+            <td class="cell-amber">1.6x</td>
+          </tr>
+          <tr>
+            <td><code>execution_ms</code></td>
+            <td>~280 ms</td>
+            <td>~941 ms</td>
+            <td class="cell-dim">&mdash;</td>
+          </tr>
+          <tr>
+            <td><code>state_hash_ms</code></td>
+            <td>0.07 ms</td>
+            <td>0.18 ms</td>
+            <td class="cell-dim">&mdash;</td>
+          </tr>
+          <tr>
+            <td><code>commit_ms</code></td>
+            <td>27.8 ms</td>
+            <td>24.5 ms</td>
+            <td class="cell-green">0.9x</td>
+          </tr>
+          <tr>
+            <td class="cell-bold"><code>total_ms</code></td>
+            <td class="cell-bold">5,264 ms</td>
+            <td class="cell-bold">8,901 ms</td>
+            <td class="cell-bold cell-amber">1.7x</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p>State reads dominate for both configs &mdash; 94% of MPT's time, 89% of BT's. The 1.6x gap in <code>state_read_ms</code> is the core penalty: binary trie paths are deeper (~52 group nodes at GD-5, each bundling a 5-level subtree, vs MPT's ~5&ndash;6 hex branch nodes), and each group node requires a separate database lookup through Pebble's LSM tree on cold reads.</p>
+
+    <p><strong>Per-slot read cost:</strong> 0.135 vs 0.216 ms/slot = <strong>1.6x</strong>.</p>
+
+    <p><strong>Per-cache-miss read cost:</strong> 0.146 vs 0.405 ms/miss = <strong>2.8x</strong> (95% CI: [2.22, 3.36]). Each cache miss is one cold trie traversal from disk. This normalizes away cache rate differences entirely and represents the raw cost of traversing a binary trie path (~52 GD-5 nodes through Pebble) vs an MPT hex path (~5&ndash;6 branch nodes).</p>
+
+    <p class="muted"><em>Cache caveat: BT's 35% cache hit rate vs MPT's 7% is a prefetcher artifact, not a bintrie caching advantage. Both use the identical <code>stateReaderWithCache</code> code path. BT's slower per-slot resolution gives the prefetcher goroutine more time to race ahead and warm the shared map.</em></p>
+
+    <img class="graph-hero" src="graphs-light/g01_hero_time_breakdown.png" alt="Hero Time Breakdown">
+
+    <img class="graph-img" src="graphs-light/g02_throughput_boxplots.png" alt="Throughput Boxplots">
+    <p class="graph-caption">The balanceof panel is valid for direct comparison. The approve and mixed panels show Mgas/s, which is confounded by different gas schedules for writes &mdash; see Section 5.</p>
+
+    <img class="graph-img" src="graphs-light/g03_per_miss_read_cost.png" alt="Per-Cache-Miss Read Cost">
+
+    <p>For reads, the gap is real and bounded at 1.7&ndash;2.8x depending on the metric. The binary trie's deeper path (~52 vs ~5 nodes) makes each traversal more expensive, but by less than one might expect from a 10x depth difference. Writes are a different story &mdash; and a more complex one.</p>
+  </div>
+
+  <!-- ============================================================
+       S5 — Act II: Writes
+       ============================================================ -->
+  <div class="section" id="s5">
+    <div class="section-label">Section 5</div>
+    <h2>Act II: Writes</h2>
+
+    <p>The <a href="https://github.com/ethereum/execution-spec-tests/blob/main/tests/benchmark/stateful/bloatnet/test_single_opcode.py"><code>erc20_approve</code></a> benchmark calls <code>approve()</code> on the same <a href="https://gist.github.com/CPerezz/f269e1cdbdbfa47f1694a579f247016e">minimal ERC20 contract</a> for ~4,094 random spender addresses per block. Each call triggers a cold <code>SLOAD</code> (read current allowance) followed by a cold <code>SSTORE</code> (write new allowance). Unlike balanceof, this workload exercises both the read and write paths of the trie.</p>
+
+    <p>The approve benchmark reveals an important methodological caveat: the bintrie fork uses <a href="https://eips.ethereum.org/EIPS/eip-4762">EIP-4762</a> witness-based gas rules (<code>IsVerkle()=true</code>), where SSTORE costs ~5,600 gas vs MPT's ~22,100 gas under EIP-2929. For the same 4,094 storage operations, MPT consumes ~93.7M gas while BT consumes ~24.4M &mdash; a 3.85x difference. Dividing less gas by wall-clock time produces a lower Mgas/s, so <strong>raw Mgas/s is not a valid cross-architecture metric for writes</strong>.</p>
+
+    <p>Per-slot time is the primary comparison:</p>
+
+    <div class="data-table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Benchmark</th>
+            <th>MPT ms/slot</th>
+            <th>BT ms/slot</th>
+            <th>Ratio</th>
+            <th>95% CI</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>approve (total)</td>
+            <td>0.229</td>
+            <td>0.569</td>
+            <td class="cell-bold cell-amber">2.5x</td>
+            <td>[2.24, 2.64]</td>
+          </tr>
+          <tr>
+            <td>approve (hash)</td>
+            <td>0.070</td>
+            <td>0.184</td>
+            <td class="cell-bold cell-amber">2.6x</td>
+            <td>[2.51, 2.73]</td>
+          </tr>
+          <tr>
+            <td>approve (read)</td>
+            <td>0.139</td>
+            <td>0.260</td>
+            <td class="cell-bold cell-amber">1.9x</td>
+            <td>&mdash;</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p>The per-slot total time ratio (2.5x for approve) is the fairest write comparison. Both configs process 4,094 storage slots per single-tx block. The 2.6x hash cost reflects BT-GD5's internal subtree rehashing &mdash; 2<sup>5</sup> - 1 = 31 hash operations per node vs MPT's more compact structure. The 1.9x read cost is slightly higher than balanceof's 1.6x because balanceof reads ~36,741 slots vs approve's ~4,094. With 9x more reads, balanceof warms the upper trie node cache more thoroughly &mdash; shared path prefixes are resolved once and reused. Approve's smaller workload leaves more of the upper trie cold per read.</p>
+
+    <img class="graph-img" src="graphs-light/g07_per_slot_total_time.png" alt="Per-Slot Total Time">
+
+    <img class="graph-img" src="graphs-light/g08_per_slot_write_cost.png" alt="Per-Slot Write Cost">
+
+    <p>For reference, the raw Mgas/s numbers are 99.8 vs 10.4 (9.6x), but this ratio conflates the architectural performance gap with the gas schedule difference. Mgas/s remains useful for within-MPT or within-BT comparisons, but not for cross-architecture comparison on write workloads.</p>
+
+    <p>The real gap is ~1.7x on reads and ~2.5x on writes per storage slot. What drives this gap architecturally, and are there deeper patterns in the data?</p>
+  </div>
+
+  <!-- ============================================================
+       S6 — Deeper Patterns
+       ============================================================ -->
+  <div class="section" id="s6">
+    <div class="section-label">Section 6</div>
+    <h2>Deeper Patterns</h2>
+
+    <h3>6a. Cold Tail Effect</h3>
+
+    <p><strong>This is the most interesting finding in the study.</strong></p>
+
+    <div class="callout callout-red">
+      <strong>Per-cache-miss cost escalates 7.5x as tx_count grows in BT approve blocks.</strong>
+    </div>
+
+    <p>In multi-tx blocks, the prefetcher caches easy-to-access slots first. As tx_count increases, the remaining cache misses correspond to progressively colder, deeper trie paths. The mechanism: the prefetcher goroutine drains hot upper-path shared nodes first. Later misses diverge at shallower depths, requiring fresh disk seeks at every level of the trie path.</p>
+
+    <div class="data-table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>tx_count</th>
+            <th>n_blocks</th>
+            <th>Median ms/miss</th>
+            <th>vs tx=1</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1</td>
+            <td>9</td>
+            <td>0.40</td>
+            <td class="cell-dim">baseline</td>
+          </tr>
+          <tr>
+            <td>5</td>
+            <td>6</td>
+            <td>1.37</td>
+            <td class="cell-amber">3.4x</td>
+          </tr>
+          <tr>
+            <td>6</td>
+            <td>1</td>
+            <td>1.61</td>
+            <td class="cell-amber">4.0x</td>
+          </tr>
+          <tr>
+            <td>7</td>
+            <td>2</td>
+            <td>2.07</td>
+            <td class="cell-amber">5.2x</td>
+          </tr>
+          <tr>
+            <td>8</td>
+            <td>5</td>
+            <td>2.90</td>
+            <td class="cell-red">7.3x</td>
+          </tr>
+          <tr>
+            <td>9</td>
+            <td>2</td>
+            <td>2.99</td>
+            <td class="cell-bold cell-red">7.5x</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p>This is not a measurement artifact. It is a fundamental property of the binary trie's access pattern: frequently accessed slots cluster in warmer trie regions, and as the prefetcher drains those first, the remaining misses hit increasingly cold paths. The cold tail effect explains why approve and mixed per-miss costs (8.4&ndash;8.5x) in the all-blocks numbers are much higher than balanceof (2.8x) &mdash; the multi-tx blocks leave only the hardest misses after caching.</p>
+
+    <img class="graph-img" src="graphs-light/g04_cold_tail_effect.png" alt="Cold Tail Effect">
+
+    <h3>6b. Architectural Overhead</h3>
+
+    <p>The performance gap is rooted in fundamental structural differences between the two trie designs.</p>
+
+    <p><strong>Why MPT needs only 5&ndash;6 nodes per lookup.</strong> MPT uses separate per-account storage tries with 16-way hex branching. An account lookup traverses ~5 hex branch nodes in the account trie, then a separate, smaller storage trie for the target slot. The per-account trie is shallow because it only indexes that account's storage &mdash; not the entire state.</p>
+
+    <p><strong>Why BT needs ~52 nodes per lookup.</strong> The binary trie unifies all accounts and storage into a single 256-bit keyspace. Every key is SHA-256 hashed, and at GD-5 each node encapsulates 5 binary levels (2<sup>5</sup> = 32 child pointers). A full traversal from root to leaf crosses ~52 on-disk nodes &mdash; each requiring a separate Pebble lookup.</p>
+
+    <p><strong>Why hash cost is 2.6x from first principles.</strong> Each GD-5 group node contains a 5-level internal binary subtree. When a key is modified, the dirty path through the subtree requires 5 hash operations (one per level). With ~52 group nodes on the path, a single-key update triggers ~260 SHA-256 hashes total. If multiple keys dirty different paths within the same group, the cost rises toward the worst case of 2<sup>5</sup> - 1 = 31 hashes per group. MPT, by contrast, updates ~2&ndash;3 branch modifications across ~5 path nodes, yielding ~10&ndash;15 updates. The measured 2.6x gap is much smaller than the raw hash count ratio because 95&ndash;98% of "hash time" is actually node traversal, dirty-node collection, and I/O &mdash; not the cryptographic operation itself (see 6c below).</p>
+
+    <div class="data-table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Property</th>
+            <th>Binary Trie (GD-5)</th>
+            <th>MPT</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Hash function</td>
+            <td>SHA-256</td>
+            <td>Keccak-256</td>
+          </tr>
+          <tr>
+            <td>Structure</td>
+            <td>Unified trie (all accounts + storage)</td>
+            <td>Separate per-account storage tries</td>
+          </tr>
+          <tr>
+            <td>Path depth</td>
+            <td>~52 nodes per lookup</td>
+            <td>~5&ndash;6 branch nodes per lookup</td>
+          </tr>
+          <tr>
+            <td>Node size</td>
+            <td>~1 KB (32 child pointers x 32 bytes)</td>
+            <td>Variable (branch: up to 17 slots)</td>
+          </tr>
+          <tr>
+            <td>Key distribution</td>
+            <td>SHA-256 hashed into 256-bit space</td>
+            <td>Keccak-256 hashed per trie</td>
+          </tr>
+          <tr>
+            <td>Internal hashes per write</td>
+            <td>5 per node x ~52 nodes = ~260 (single key; up to 31 per node worst case)</td>
+            <td>~2&ndash;3 per node x ~5 nodes = ~10&ndash;15</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>6c. Hash Time Is Trie-Walking</h3>
+
+    <p>The <code>state_hash_ms</code> metric is misleadingly named. It measures the full state root recomputation: traversing the trie to locate dirty nodes, <strong>reading sibling nodes from disk</strong> where needed for hash computation, and computing the cryptographic hashes. It is dominated by I/O and traversal, not the hash function itself.</p>
+
+    <ul>
+      <li><strong>MPT:</strong> 288 ms hashing for 4,094 slots. Pure Keccak-256 cost for the same data volume would be ~4.8 ms. That is a <strong>60x overhead</strong> from trie operations.</li>
+      <li><strong>BT:</strong> 727 ms hashing for 4,094 slots. Pure SHA-256 cost would be ~38 ms. That is a <strong>19x overhead</strong> from trie operations.</li>
+    </ul>
+
+    <p>95&ndash;98% of "hashing" time is node traversal, dirty-node collection, and serialization &mdash; not the actual SHA-256 or Keccak crypto. The implication is clear: optimizing the hash function (SHA-256 vs Keccak) would not meaningfully change the performance gap. Optimizing trie traversal and node update paths would.</p>
+
+    <p class="muted"><em>From the architectural patterns, we turn to what can be done about them.</em></p>
+  </div>
+
+  <!-- ============================================================
+       S7 — Closing the Gap
+       ============================================================ -->
+  <div class="section" id="s7">
+    <div class="section-label">Section 7</div>
+    <h2>Closing the Gap</h2>
+
+    <h3>Remaining Optimization Avenues</h3>
+
+    <p><strong>Snapshot layer / pathdb fast reads.</strong> In geth's current <code>pathdb</code> scheme, flat state reads already use a snapshot-like path &mdash; a direct hash lookup through diff layers to disk, essentially a key-value fetch. Geth developers expect pathdb reads to approach snapshot-level speed. If this holds for the binary trie, the 1.7x read gap could narrow significantly. The remaining gap would be the 2.6x write cost &mdash; dominated by trie traversal and sibling resolution, which no snapshot layer can avoid.</p>
+
+    <p><strong>Pebble block size tuning.</strong> GD-5 nodes serialize to ~1 KB. Pebble's default 4 KB block size means multiple nodes fit per block, but <a href="https://github.com/rjl493456442/bench/blob/main/disk/pageread/results.md">NVMe page-read benchmarks</a> show random 16 KB reads achieve 2.3x throughput of 4 KB. Larger Pebble blocks may help if they align better with the access pattern.</p>
+
+    <p><strong>Parallel execution.</strong> NVMe at QD=8 improves random 4 KB throughput 8.7x over QD=1 (673 vs 77 MB/s). Parallel EVM execution could increase effective I/O queue depth, compressing read latency differences between architectures.</p>
+
+    <p><strong><code>--cache.noprefetch</code> benchmarks.</strong> Disabling the transaction-level prefetcher would remove the parallel pre-execution that warms the shared state cache, showing raw trie performance without that optimization. However, the trie-node prefetcher (which pre-populates trie nodes during transaction processing) would remain active regardless. This gives a partially-controlled view &mdash; cleaner than the current data, but still not pure cold-trie performance. It would also sacrifice a real production optimization, so results would not reflect deployed behavior.</p>
+  </div>
+
+  <!-- ============================================================
+       S8 — Conclusions: Is Binary Trie Ready?
+       ============================================================ -->
+  <div class="section" id="s8">
+    <div class="section-label">Section 8</div>
+    <h2>Conclusions: Is Binary Trie Ready?</h2>
+
+    <div class="recommendation">
+      <div class="big-text">The binary trie is not ready for production today.</div>
+      <p>The ~2x read gap is the critical concern because Ethereum is read-heavy. However, the optimization trajectory is encouraging &mdash; 4 PRs merged in a single week &mdash; and the largest potential improvement (snapshot layer) hasn't been explored yet.</p>
+    </div>
+
+    <h3>12s Slot Budget</h3>
+
+    <p>How close is BT to fitting within Ethereum's 12-second slot window?</p>
+
+    <div class="data-table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Benchmark</th>
+            <th>BT for 100M gas</th>
+            <th>% of 12s slot</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>balanceof</td>
+            <td>~8.9 s</td>
+            <td>74%</td>
+          </tr>
+          <tr>
+            <td>approve</td>
+            <td>~7.6 s</td>
+            <td>64%</td>
+          </tr>
+          <tr>
+            <td>mixed</td>
+            <td>~10.9 s</td>
+            <td class="cell-bold cell-red">91%</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p>BT mixed at 91% of a 12-second slot leaves almost no margin for networking, attestation, and other non-execution overhead. On typical validator hardware (which is more modest than our 48-core EPYC), this is likely unviable without further optimization. MPT, by contrast, processes 100M gas in 3.4&ndash;5.3 s (28&ndash;44% of a slot). While this appears to leave headroom, the actual budget for block execution in practice is tighter &mdash; re-execution, networking, and attestation overhead consume much of the remaining time. Ethereum has been operating near the edge of its execution budget, though without incident so far.</p>
+
+    <h3>Decision Framework</h3>
+
+    <div class="data-table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Factor</th>
+            <th>Favors BT</th>
+            <th>Favors MPT</th>
+            <th>Weight</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Stateless client proofs</td>
+            <td>Moderate (smaller witnesses, helpful for ZK-EVM proof generation, though ZK-EVMs already operate with MPT today)</td>
+            <td class="cell-dim">&mdash;</td>
+            <td class="cell-bold">High</td>
+          </tr>
+          <tr>
+            <td>Current read throughput</td>
+            <td class="cell-dim">&mdash;</td>
+            <td>Strong (1.7&ndash;2.8x faster)</td>
+            <td class="cell-bold">High</td>
+          </tr>
+          <tr>
+            <td>Current write throughput</td>
+            <td class="cell-dim">&mdash;</td>
+            <td>Strong (2.5x per slot)</td>
+            <td class="cell-bold">High</td>
+          </tr>
+          <tr>
+            <td>Optimization ceiling</td>
+            <td>Moderate (early stage, fast velocity)</td>
+            <td>Low (mature codebase)</td>
+            <td>Medium</td>
+          </tr>
+          <tr>
+            <td>Code complexity</td>
+            <td>Simpler (unified trie)</td>
+            <td>Complex (per-account tries)</td>
+            <td>Low</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Patterns That Hold</h3>
+
+    <div class="pattern-card" style="border-color: #F59E0B;">
+      <p><strong>Pattern 1: The read gap is real but bounded (1.7&ndash;2.8x).</strong> The per-cache-miss comparison (2.8x) is the upper bound; raw throughput (1.7x) is the lower bound. Both are trustworthy &mdash; they use identical gas, identical slot counts, identical tx_count. The binary trie's ~52-node path vs MPT's ~5-node path makes each traversal more expensive, but by far less than the 10x depth ratio would suggest.</p>
+    </div>
+
+    <div class="pattern-card" style="border-color: #F59E0B;">
+      <p><strong>Pattern 2: BT is read-bound.</strong> State reads consume ~89% of BT's block processing time for read-heavy workloads, and ~94% for MPT. The read path is the dominant optimization target &mdash; reducing per-node read latency compounds across ~52 nodes per lookup.</p>
+    </div>
+
+    <div class="pattern-card" style="border-color: #F59E0B;">
+      <p><strong>Pattern 3: Hash cost is 2.6x per slot and trie-walk dominated.</strong> The clean write penalty from GD-5's 2<sup>5</sup> - 1 = 31 internal hash operations per node. But 95&ndash;98% of the measured hash time is trie traversal and serialization, not cryptographic hashing. Changing the hash function would not materially help.</p>
+    </div>
+
+    <h3>Open Questions</h3>
+
+    <div class="oq-grid">
+      <div class="oq-card">
+        <div class="oq-number">Q1</div>
+        <p><strong>Snapshot layer benchmark.</strong> Does a flat snapshot layer close the read gap? This is the single most important experiment for the binary trie's production viability.</p>
+      </div>
+      <div class="oq-card">
+        <div class="oq-number">Q2</div>
+        <p><strong><code>--cache.noprefetch</code> runs.</strong> A benchmark with prefetching disabled would eliminate the cache asymmetry confound and give the purest trie-vs-trie comparison.</p>
+      </div>
+      <div class="oq-card">
+        <div class="oq-number">Q3</div>
+        <p><strong>Mainnet read/write ratio analysis.</strong> Ethereum blocks are read-heavy, but the exact ratio has not been systematically measured. The real-world impact of the 1.7x read gap vs the 2.5x write gap depends on this split.</p>
+      </div>
+      <div class="oq-card">
+        <div class="oq-number">Q4</div>
+        <p><strong>Database schema redesign.</strong> Could a different on-disk layout reduce the binary trie's traversal penalty? The current implementation stores each GD-5 node as a separate Pebble key &mdash; alternative layouts (e.g., co-locating path siblings) might reduce seek overhead.</p>
+      </div>
+      <div class="oq-card" style="grid-column: 1 / -1;">
+        <div class="oq-number">Q5</div>
+        <p><strong>Is Pebble the right database engine for the unified binary trie?</strong> The binary trie's access pattern &mdash; ~52 sequential key lookups per storage read, each resolving a different group node &mdash; differs fundamentally from MPT's per-account storage tries. A database engine optimized for prefix-sequential reads or with better support for the binary trie's access pattern might reduce the read gap.</p>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <p>Benchmarks run on the Ethereum execution-specs framework with the geth binary trie fork (<a href="https://eips.ethereum.org/EIPS/eip-7864">EIP-7864</a>).<br>
+    Methodology, raw data, and reproducibility scripts available in the <a href="https://github.com/CPerezz/bintrie-benchmarks/tree/main/mpt-vs-bintrie">bintrie-benchmarks repository</a>.<br>
+    Part 1: <a href="https://ethresear.ch/t/narrower-than-expected-optimal-group-depth-for-ethereums-binary-trie/22029">Narrower Than Expected: Optimal Group Depth for Ethereum's Binary Trie</a>.</p>
+  </footer>
+
+</div>
+
+<!-- Minimal JS: sticky nav active state -->
+<script>
+(function() {
+  const pills = document.querySelectorAll('.nav-pill');
+  const sections = [];
+  pills.forEach(function(p) {
+    var id = p.getAttribute('href').replace('#', '');
+    var el = document.getElementById(id);
+    if (el) sections.push({ id: id, el: el, pill: p });
+  });
+  function update() {
+    var scrollY = window.scrollY + 120;
+    var active = sections[0];
+    for (var i = 0; i < sections.length; i++) {
+      if (sections[i].el.offsetTop <= scrollY) active = sections[i];
+    }
+    pills.forEach(function(p) { p.classList.remove('active'); });
+    if (active) active.pill.classList.add('active');
+  }
+  window.addEventListener('scroll', update, { passive: true });
+  update();
+})();
+</script>
+
+</body>
+</html>
