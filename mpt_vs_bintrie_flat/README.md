@@ -8,7 +8,7 @@ Three-way performance comparison: Ethereum's Merkle Patricia Trie (MPT), Binary 
 [Procedure](BENCHMARK_PROCEDURE.md) ·
 [Raw data](data/)
 
-**Headline:** Flat state makes bintrie **2.0–2.3× faster than MPT** for read-heavy workloads and **3.0–3.7× faster per slot**. For write-heavy workloads (`erc20_approve`), bintrie-flat is still ~25% slower than MPT — the bottleneck has shifted from `state_read` (resolved by flat state) to `state_hash` (trie root recomputation, structural to the binary trie).
+**Headline:** Flat state makes bintrie **2.0–2.3× faster than MPT** for read-heavy workloads and **3.0–3.7× faster per slot on read latency**. For write-heavy workloads (`erc20_approve`), bintrie-flat is still ~25% slower than MPT end-to-end — the bottleneck has shifted from `state_read` (resolved by flat state) to `trie_updates` (root recomputation, structural to the binary trie).
 
 ## Campaign
 
@@ -56,7 +56,7 @@ BT-GD5-flat produces multiple blocks per run because EIP-7825 (Osaka) caps per-t
 
 ### Raw results (mean per benchmark block, gas > 500K filter)
 
-| Benchmark | Config | total_ms | µs/slot | slots/sec | storage cache hit |
+| Benchmark | Config | total_ms | read latency (µs/slot) | slots/sec (all phases) | storage cache hit |
 |:----------|:-------|:---------|:--------|:----------|:------------------|
 | erc20_balanceof | MPT | 5,280 | 135 | 6,958 | 7.1% |
 | | BT-GD5 | 10,620 | 255 | 3,460 | 38.5% |
@@ -68,7 +68,9 @@ BT-GD5-flat produces multiple blocks per run because EIP-7825 (Osaka) caps per-t
 | | BT-GD5 | 2,242 | 334 | 1,790 | 64.6% |
 | | **BT-GD5-flat** | **1,169** | **23** | **3,494** | **83.8%** |
 
-**Note on aggregation**: tables in this report show **means per block** (matching `FLAT_STATE_ANALYSIS.md`). The companion `analysis_results.json` carries **medians** for the Mann-Whitney U / bootstrap-CI hypothesis tests, which are robust to the long tails created by EIP-7825 multi-block fragmentation. Mean and median can diverge by ~10-20% on the bintrie configs; both views are valid and serve different purposes. The `µs/slot` column uses `state_read_ms / storage_slots_read` for all three benchmarks.
+**Note on metrics**: the `read latency (µs/slot)` column is `state_read_ms / storage_slots_read` — the cost of resolving each storage slot from disk (or flat-state blob). The `slots/sec (all phases)` column is `(slots_read + slots_written) / total_ms`, including `state_read`, `trie_updates`, EVM execution, and commit. The two diverge for `erc20_approve`: BT-GD5-flat reads each slot 3× faster than MPT but spends 85% of its block time in `trie_updates` (vs 31% for MPT), so end-to-end throughput is lower despite faster reads. §S4 of the report unpacks this phase shift.
+
+**Note on aggregation**: tables in this report show **means per block** (matching `FLAT_STATE_ANALYSIS.md`). The companion `analysis_results.json` carries **medians** for the Mann-Whitney U / bootstrap-CI hypothesis tests, which are robust to the long tails created by EIP-7825 multi-block fragmentation. Mean and median can diverge by ~10-20% on the bintrie configs; both views are valid and serve different purposes.
 
 **Note on cache hit rates**: BT-GD5-flat shows the highest rates (68-84%). The cause is the same `stateReaderWithCache` prefetcher race documented in Part 2 ([`../mpt-vs-bintrie/CACHE_ANALYSIS.md`](../mpt-vs-bintrie/CACHE_ANALYSIS.md)) — when reads are faster, the prefetcher wins more races. `total_ms` and `state_read_ms` remain the authoritative wall-clock metrics.
 
