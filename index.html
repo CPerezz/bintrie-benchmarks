@@ -128,6 +128,22 @@
         <span>330 runs</span>
       </div>
     </a>
+
+    <a class="card" href="mpt_vs_bintrie_flat/index.html">
+      <div class="card-title">MPT vs Binary Trie · Part 3 (Flat State)</div>
+      <div class="card-summary">
+        Three-way comparison adding bintrie with flat-state stem blobs (BT-GD5-flat) on the same bare-metal AMD&nbsp;EPYC.
+        ERC20 read and write workloads, cold-cache protocol, 100 MPT runs and 10 runs each for the two bintrie configs.
+      </div>
+      <div class="card-result">
+        Result: Flat state makes bintrie 2.0&ndash;2.3&times; faster than MPT for reads (3.0&ndash;3.7&times; per slot). For writes, the bottleneck shifts from state_read to state_hash; bintrie-flat is ~25% slower than MPT on approve.
+      </div>
+      <div class="card-meta">
+        <span>3 configurations</span>
+        <span>3 benchmark types</span>
+        <span>~360 runs</span>
+      </div>
+    </a>
   </div>
 </body>
 </html>
