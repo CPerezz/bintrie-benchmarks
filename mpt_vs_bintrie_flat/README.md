@@ -54,7 +54,7 @@ Three-way performance comparison: Ethereum's Merkle Patricia Trie (MPT), Binary 
 
 BT-GD5-flat produces multiple blocks per run because EIP-7825 (Osaka) caps per-transaction gas at 16M, splitting the 100M-gas benchmark into ~6 transactions across 2-3 blocks.
 
-### Raw results (median per benchmark, gas > 500K filter)
+### Raw results (mean per benchmark block, gas > 500K filter)
 
 | Benchmark | Config | total_ms | µs/slot | slots/sec | storage cache hit |
 |:----------|:-------|:---------|:--------|:----------|:------------------|
@@ -67,6 +67,8 @@ BT-GD5-flat produces multiple blocks per run because EIP-7825 (Osaka) caps per-t
 | erc20_approve | MPT | 937 | 69 | 8,741 | 14.5% |
 | | BT-GD5 | 2,242 | 334 | 1,790 | 64.6% |
 | | **BT-GD5-flat** | **1,169** | **23** | **3,494** | **83.8%** |
+
+**Note on aggregation**: tables in this report show **means per block** (matching `FLAT_STATE_ANALYSIS.md`). The companion `analysis_results.json` carries **medians** for the Mann-Whitney U / bootstrap-CI hypothesis tests, which are robust to the long tails created by EIP-7825 multi-block fragmentation. Mean and median can diverge by ~10-20% on the bintrie configs; both views are valid and serve different purposes. The `µs/slot` column uses `state_read_ms / storage_slots_read` for all three benchmarks.
 
 **Note on cache hit rates**: BT-GD5-flat shows the highest rates (68-84%). The cause is the same `stateReaderWithCache` prefetcher race documented in Part 2 ([`../mpt-vs-bintrie/CACHE_ANALYSIS.md`](../mpt-vs-bintrie/CACHE_ANALYSIS.md)) — when reads are faster, the prefetcher wins more races. `total_ms` and `state_read_ms` remain the authoritative wall-clock metrics.
 

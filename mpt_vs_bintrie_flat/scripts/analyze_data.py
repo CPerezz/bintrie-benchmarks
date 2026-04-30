@@ -68,7 +68,13 @@ def load_data(data_dir):
             bench = row["benchmark"]
             gas = int(row["gas_used"])
             run = int(row["run"])
-            # Standard filters: gas > 500K and run > 1
+            # Standard filters:
+            #   gas > 500K  -- excludes empty/pre-allocation blocks; benchmark
+            #     blocks are 16-100M gas. The 500K threshold also drops a small
+            #     number of EIP-7825 fragmented tail blocks in the bt-gd5-flat
+            #     config (100M / 6 txs ~ 16.7M typical, but the final fragment
+            #     can be smaller); those tail blocks add noise without signal.
+            #   run > 1     -- excludes the warmup run for each benchmark.
             if gas > 500_000 and run > 1:
                 data[config][bench].append(row)
     return data

@@ -156,4 +156,4 @@ The read story is essentially solved. With bintrie's read-path performance now a
 | | BT-GD5 | 2,242 | 1,341 (60%) | 745 | 86 | 69 | 4,014 |
 | | **BT-GD5-flat** | **1,169** | **93 (8%)** | **988 (85%)** | 79 | 9 | 4,086 |
 
-Source: [analysis_results.json](https://github.com/CPerezz/bintrie-benchmarks/blob/main/mpt_vs_bintrie_flat/analysis_results.json), [data/](https://github.com/CPerezz/bintrie-benchmarks/tree/main/mpt_vs_bintrie_flat/data)
+Tables show **means per block**. The companion [analysis_results.json](https://github.com/CPerezz/bintrie-benchmarks/blob/main/mpt_vs_bintrie_flat/analysis_results.json) carries **medians** used for the Mann-Whitney U / bootstrap-CI hypothesis tests (robust to the long tails created by EIP-7825 multi-block fragmentation). Both views are valid; they serve different purposes. Raw per-block CSVs: [data/](https://github.com/CPerezz/bintrie-benchmarks/tree/main/mpt_vs_bintrie_flat/data).
