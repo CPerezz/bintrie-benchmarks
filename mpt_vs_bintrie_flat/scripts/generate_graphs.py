@@ -54,7 +54,7 @@ BENCH_LABELS: dict[str, str] = {
     "mixed_sload_sstore": "mixed",
 }
 
-STACKED_COMPONENTS = ["state_read_ms", "execution_ms", "state_hash_ms", "commit_ms"]
+STACKED_COMPONENTS = ["state_read_ms", "execution_ms", "trie_updates_ms", "commit_ms"]
 STACKED_LABELS = ["State Read", "Execution", "Trie Updates", "Commit"]
 STACKED_COLORS = ["#3B82F6", "#14B8A6", "#EF4444", "#A855F7"]
 
@@ -123,7 +123,7 @@ def load_data(data_dir: Path) -> dict[str, list[dict[str, Any]]]:
         return {}
 
     float_cols = [
-        "gas_used", "execution_ms", "state_read_ms", "state_hash_ms",
+        "gas_used", "execution_ms", "state_read_ms", "trie_updates_ms",
         "commit_ms", "total_ms", "mgas_per_sec",
         "account_cache_hit_rate", "storage_cache_hit_rate",
         "code_cache_hit_rate",
@@ -158,7 +158,7 @@ def load_data(data_dir: Path) -> dict[str, list[dict[str, Any]]]:
             slots = row.get("storage_slots_read", 0)
             if slots and slots > 0:
                 row["ms_per_slot_read"] = row["state_read_ms"] / slots
-                row["ms_per_slot_hash"] = row["state_hash_ms"] / slots
+                row["ms_per_slot_hash"] = row["trie_updates_ms"] / slots
                 row["ms_per_slot_total"] = row["total_ms"] / slots
             else:
                 row["ms_per_slot_read"] = None
@@ -898,7 +898,7 @@ def g08_per_slot_write_cost(all_data: dict, theme: Theme,
 
     ax.set_xticks(tick_positions)
     ax.set_xticklabels(tick_labels_list, fontsize=9)
-    ax.set_ylabel("ms per slot (state_hash_ms / storage_slots_read)", fontsize=9)
+    ax.set_ylabel("ms per slot (trie_updates_ms / storage_slots_read)", fontsize=9)
     ax.set_title("Per-Slot Write Cost (Trie Update)", fontsize=13, fontweight="bold")
     ax.set_xlabel("Benchmark")
 
@@ -964,10 +964,10 @@ def g10_phase_mix_shift(all_data: dict, theme: Theme,
     """Stacked-100% bars: phase mix per config for erc20_approve.
 
     Shows how flat state shifts the bottleneck from state_read (60%)
-    to state_hash (85%) for write workloads.
+    to trie_updates (85%) for write workloads.
     """
     bench = "erc20_approve"
-    phases = ["state_read_ms", "execution_ms", "state_hash_ms", "commit_ms"]
+    phases = ["state_read_ms", "execution_ms", "trie_updates_ms", "commit_ms"]
     phase_labels = ["State Read", "Execution", "Trie Updates", "Commit"]
     phase_colors = ["#3B82F6", "#14B8A6", "#EF4444", "#A855F7"]
 

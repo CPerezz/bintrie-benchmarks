@@ -37,7 +37,7 @@ NUM_RUNS = int(__import__('os').environ.get('NUM_RUNS', '10'))
 BLOCK_COLUMNS = [
     "config", "trie_type", "group_depth", "pebble_block_size_kb",
     "benchmark", "run", "block_number", "gas_used", "tx_count",
-    "execution_ms", "state_read_ms", "state_hash_ms", "commit_ms", "total_ms",
+    "execution_ms", "state_read_ms", "trie_updates_ms", "commit_ms", "total_ms",
     "mgas_per_sec",
     "accounts_read", "storage_slots_read", "code_read", "code_bytes_read",
     "accounts_written", "accounts_deleted", "storage_slots_written",
@@ -55,7 +55,7 @@ CACHE_COLUMNS = [
     "total_acct_hits", "total_acct_misses", "acct_cache_rate",
     "total_slot_hits", "total_slot_misses", "slot_cache_rate",
     "total_code_hits", "total_code_misses", "code_cache_rate",
-    "avg_execution_ms", "avg_state_read_ms", "avg_state_hash_ms",
+    "avg_execution_ms", "avg_state_read_ms", "avg_trie_updates_ms",
     "avg_commit_ms", "avg_total_ms", "avg_mgas_per_sec",
 ]
 
@@ -94,7 +94,9 @@ def block_to_row(config_meta, benchmark, run, data):
         "tx_count": b["tx_count"],
         "execution_ms": round(t["execution_ms"], 4),
         "state_read_ms": round(t["state_read_ms"], 4),
-        "state_hash_ms": round(t["state_hash_ms"], 4),
+        # Note: upstream geth's slow-block JSON emits this as "state_hash_ms";
+        # we rename to "trie_updates_ms" in the CSV to match the report's phase label.
+        "trie_updates_ms": round(t["state_hash_ms"], 4),
         "commit_ms": round(t["commit_ms"], 4),
         "total_ms": round(t["total_ms"], 4),
         "mgas_per_sec": round(data["throughput"]["mgas_per_sec"], 4),
@@ -170,7 +172,8 @@ def compute_cache_summary(config_meta, benchmark, run, blocks):
         "avg_state_read_ms": round(
             sum(b["timing"]["state_read_ms"] for b in big_blocks) / n, 2
         ),
-        "avg_state_hash_ms": round(
+        # Upstream JSON field is "state_hash_ms"; renamed for CSV output.
+        "avg_trie_updates_ms": round(
             sum(b["timing"]["state_hash_ms"] for b in big_blocks) / n, 2
         ),
         "avg_commit_ms": round(

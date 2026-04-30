@@ -41,7 +41,7 @@ except ImportError:
 
 CONFIGS = ["mpt", "bt-gd5", "bt-gd5-flat"]
 BENCHMARKS = ["erc20_balanceof", "erc20_approve", "mixed_sload_sstore"]
-SUMMARY_COLS = ["total_ms", "mgas_per_sec", "state_read_ms", "state_hash_ms",
+SUMMARY_COLS = ["total_ms", "mgas_per_sec", "state_read_ms", "trie_updates_ms",
                 "commit_ms", "storage_cache_hit_rate"]
 COMPARISON_METRICS = ["total_ms", "mgas_per_sec", "ms_per_slot_read",
                       "ms_per_slot_hash", "ms_per_cache_miss",
@@ -132,7 +132,7 @@ def compute_derived_metrics(rows):
     for r in rows:
         slots_read = int(r["storage_slots_read"])
         state_read = float(r["state_read_ms"])
-        state_hash = float(r["state_hash_ms"])
+        state_hash = float(r["trie_updates_ms"])
         cache_misses = int(r["storage_cache_misses"])
 
         total_ms = float(r["total_ms"])
