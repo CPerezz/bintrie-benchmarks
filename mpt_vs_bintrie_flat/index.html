@@ -1,0 +1,883 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Binary Trie Part 3 — Flat State Closes the Read Gap</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600;700;800&family=IBM+Plex+Sans:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: #0A0E17;
+    color: #E2E8F0;
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 16px;
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+  }
+  .container { max-width: 780px; margin: 0 auto; padding: 0 24px; }
+
+  /* Header */
+  .report-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: #F59E0B;
+    margin-bottom: 12px;
+  }
+  h1.hero-title {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 42px;
+    font-weight: 800;
+    line-height: 1.15;
+    background: linear-gradient(135deg, #94A3B8, #F59E0B);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 12px;
+  }
+  .hero-subtitle {
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 18px;
+    color: #94A3B8;
+    margin-bottom: 36px;
+    line-height: 1.5;
+  }
+  .meta-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 48px;
+  }
+  .meta-card {
+    background: #0F172A;
+    border: 1px solid #1E293B;
+    border-radius: 8px;
+    padding: 16px;
+    text-align: center;
+  }
+  .meta-card-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #64748B;
+    margin-bottom: 6px;
+  }
+  .meta-card-value {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    font-weight: 600;
+    color: #E2E8F0;
+    line-height: 1.4;
+  }
+
+  /* Nav */
+  .section-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 24px;
+    padding: 16px 0;
+    border-top: 1px solid #1E293B;
+    border-bottom: 1px solid #1E293B;
+    position: sticky;
+    top: 0;
+    background: #0A0E17;
+    z-index: 100;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  }
+  .nav-pill {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 6px 14px;
+    border-radius: 20px;
+    border: 1px solid #1E293B;
+    background: transparent;
+    color: #94A3B8;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+    text-decoration: none;
+  }
+  .nav-pill:hover {
+    border-color: #F59E0B;
+    color: #F59E0B;
+  }
+  .nav-pill.active {
+    border-color: #F59E0B;
+    background: rgba(245, 158, 11, 0.1);
+    color: #F59E0B;
+  }
+
+  /* Sections */
+  .section { margin-bottom: 72px; }
+  .section-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: #64748B;
+    margin-bottom: 8px;
+  }
+  h2 {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 28px;
+    font-weight: 700;
+    color: #E2E8F0;
+    margin-bottom: 24px;
+    line-height: 1.3;
+  }
+  h3 {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 20px;
+    font-weight: 700;
+    color: #CBD5E1;
+    margin-top: 36px;
+    margin-bottom: 16px;
+  }
+  p { margin-bottom: 16px; }
+  .muted { color: #94A3B8; }
+  a { color: #F59E0B; text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  /* Callouts */
+  .callout {
+    border-left: 3px solid;
+    padding: 16px 20px;
+    margin: 24px 0;
+    background: #0F172A;
+    border-radius: 0 8px 8px 0;
+    font-size: 15px;
+    line-height: 1.6;
+  }
+  .callout-green { border-color: #2ca02c; }
+  .callout-amber { border-color: #F59E0B; }
+  .callout-red { border-color: #d62728; }
+  .callout strong { color: #F8FAFC; }
+
+  /* Tables */
+  .data-table-wrap {
+    overflow-x: auto;
+    margin: 20px 0;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+  }
+  thead th {
+    text-align: left;
+    padding: 10px 12px;
+    border-bottom: 2px solid #1E293B;
+    color: #64748B;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+  tbody td {
+    padding: 8px 12px;
+    border-bottom: 1px solid #1E293B;
+    color: #CBD5E1;
+  }
+  tbody tr:hover { background: rgba(30, 41, 59, 0.5); }
+  .cell-bold { font-weight: 700; color: #F8FAFC; }
+  .cell-green { color: #2ca02c; }
+  .cell-red { color: #d62728; }
+  .cell-amber { color: #F59E0B; }
+  .cell-dim { color: #64748B; }
+
+  /* Cards */
+  .dark-card {
+    background: #0F172A;
+    border: 1px solid #1E293B;
+    border-radius: 8px;
+    padding: 20px;
+    margin: 20px 0;
+  }
+  .verdict-card {
+    background: #0F172A;
+    border: 1px solid #1E293B;
+    border-radius: 12px;
+    padding: 28px;
+    margin: 28px 0;
+  }
+
+  /* Images */
+  .graph-img {
+    width: 100%;
+    border-radius: 8px;
+    border: 1px solid #1E293B;
+    margin: 16px 0;
+  }
+  .graph-hero {
+    width: 100%;
+    border-radius: 8px;
+    border: 2px solid #1E293B;
+    margin: 20px 0;
+  }
+
+  /* Bullet lists */
+  ul, ol { padding-left: 24px; margin-bottom: 16px; }
+  li { margin-bottom: 6px; }
+
+  /* Pattern cards */
+  .pattern-card {
+    border-left: 3px solid;
+    padding: 14px 18px;
+    margin: 12px 0;
+    background: #0F172A;
+    border-radius: 0 8px 8px 0;
+  }
+  .pattern-card p { margin: 0; font-size: 14px; }
+
+  /* Open question cards */
+  .oq-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin: 20px 0;
+  }
+  .oq-card {
+    background: #0F172A;
+    border: 1px solid #1E293B;
+    border-radius: 8px;
+    padding: 16px;
+  }
+  .oq-number {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    color: #F59E0B;
+    margin-bottom: 4px;
+  }
+  .oq-card p { font-size: 14px; margin: 0; color: #94A3B8; }
+
+  /* Recommendation */
+  .recommendation {
+    border-left: 4px solid #d62728;
+    padding: 24px 28px;
+    margin: 28px 0;
+    background: #0F172A;
+    border-radius: 0 12px 12px 0;
+  }
+  .recommendation .big-text {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 22px;
+    font-weight: 700;
+    color: #d62728;
+    margin-bottom: 8px;
+  }
+
+  /* Graph caption */
+  .graph-caption {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    color: #64748B;
+    text-align: center;
+    margin-top: -8px;
+    margin-bottom: 16px;
+  }
+
+  /* Footer */
+  footer {
+    border-top: 1px solid #1E293B;
+    padding: 32px 0 48px;
+    text-align: center;
+    color: #475569;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+  }
+  footer a { color: #64748B; text-decoration: none; }
+  footer a:hover { color: #F59E0B; }
+
+  /* Responsive */
+  @media (max-width: 640px) {
+    h1.hero-title { font-size: 28px; }
+    .meta-grid { grid-template-columns: 1fr 1fr; }
+    .oq-grid { grid-template-columns: 1fr; }
+    .section-nav { gap: 6px; }
+    .nav-pill { font-size: 11px; padding: 5px 10px; }
+  }
+  @media (max-width: 768px) {
+    h1.hero-title { font-size: 32px; }
+    h2 { font-size: 22px; }
+    .container { padding: 0 16px; }
+  }
+  code {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.9em;
+    background: rgba(30, 41, 59, 0.8);
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: #F59E0B;
+  }
+</style>
+</head>
+<body>
+
+<div class="container" style="padding-top: 64px;">
+
+  <!-- Header -->
+  <div class="report-label">REPORT &middot; 2026-04-30</div>
+  <h1 class="hero-title">Flat State Closes the Read Gap</h1>
+  <p class="hero-subtitle">Three-way comparison: MPT vs Binary Trie (group-depth 5) vs Binary Trie + Flat State. Same hardware as Part 2 &mdash; bintrie-flat is 2.0&ndash;2.3&times; faster than MPT for reads.</p>
+
+  <!-- Meta cards -->
+  <div class="meta-grid">
+    <div class="meta-card">
+      <div class="meta-card-label">Machine</div>
+      <div class="meta-card-value">AMD EPYC 9454P &middot; 96 threads &middot; 126 GB RAM &middot; 3.5 TB SSD</div>
+    </div>
+    <div class="meta-card">
+      <div class="meta-card-label">Configs</div>
+      <div class="meta-card-value">MPT &middot; BT-GD5 &middot; <strong>BT-GD5-flat</strong></div>
+    </div>
+    <div class="meta-card">
+      <div class="meta-card-label">Runs</div>
+      <div class="meta-card-value">100 + 10 + 10 cold-cache runs</div>
+    </div>
+    <div class="meta-card">
+      <div class="meta-card-label">Date</div>
+      <div class="meta-card-value">2026-04-30</div>
+    </div>
+  </div>
+
+  <!-- Sticky nav -->
+  <nav class="section-nav" id="section-nav">
+    <a class="nav-pill" href="#s1">S1 &middot; Headline</a>
+    <a class="nav-pill" href="#s2">S2 &middot; What's New</a>
+    <a class="nav-pill" href="#s3">S3 &middot; Methodology</a>
+    <a class="nav-pill" href="#s4">S4 &middot; Read Collapse</a>
+    <a class="nav-pill" href="#s5">S5 &middot; Write Shift</a>
+    <a class="nav-pill" href="#s6">S6 &middot; Throughput</a>
+    <a class="nav-pill" href="#s7">S7 &middot; Caveats</a>
+    <a class="nav-pill" href="#s8">S8 &middot; What's Next</a>
+    <a class="nav-pill" href="#appendix">App &middot; Detail</a>
+  </nav>
+
+  <!-- ============================================================
+       S1 — Headline
+       ============================================================ -->
+  <div class="section" id="s1">
+    <div class="section-label">Section 1</div>
+    <h2>Headline</h2>
+
+    <div class="callout callout-amber">
+      <strong>Flat state flips the verdict.</strong> Bintrie with flat state is 2.0&ndash;2.3&times; faster than MPT on read-heavy workloads (3.0&ndash;3.7&times; per slot) and ~25% slower on <code>erc20_approve</code>. The remaining gap is now concentrated in <code>state_hash</code> (trie root recomputation), not slot resolution.
+    </div>
+
+    <p>This is a follow-up to <a href="https://ethresear.ch/t/the-path-towards-binary-tries-2-mpt-vs-bt-gd5/22253">Part 2</a> (MPT vs BT-GD5). Same hardware, same workloads, same cold-cache protocol. The new variable: <code>bt-gd5-flat</code> &mdash; bintrie group-depth 5 with flat-state stem blobs enabled.</p>
+
+    <p>In Part 2, BT-GD5 was ~1.7&times; slower than MPT on reads, ~2.5&times; on writes per storage slot. The dominant cost was <code>state_read_ms</code> &mdash; every storage slot required walking ~50 binary trie nodes from the disk-resident pathdb.</p>
+
+    <p>Flat state changes this. Each SLOAD becomes a single Pebble read of a packed stem blob keyed by <code>"vX" + stem(31 bytes)</code>, followed by an in-memory bitmap+offset extraction. Trie traversal is bypassed for reads.</p>
+
+    <p>The result, in three numbers (<code>µs/slot</code>, lower is better):</p>
+
+    <div class="data-table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Benchmark</th>
+            <th>MPT</th>
+            <th>BT-GD5</th>
+            <th>BT-GD5-flat</th>
+            <th>flat vs MPT</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>balanceof</td>
+            <td>135</td>
+            <td>255</td>
+            <td class="cell-bold">45</td>
+            <td class="cell-bold cell-green">3.0&times; faster</td>
+          </tr>
+          <tr>
+            <td>mixed</td>
+            <td>134</td>
+            <td>287</td>
+            <td class="cell-bold">36</td>
+            <td class="cell-bold cell-green">3.7&times; faster</td>
+          </tr>
+          <tr>
+            <td>approve</td>
+            <td>69</td>
+            <td>334</td>
+            <td class="cell-bold">23</td>
+            <td class="cell-bold cell-green">3.0&times; faster</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p>Throughput tells the same story for reads and a different one for writes:</p>
+
+    <div class="data-table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Benchmark</th>
+            <th>MPT slots/s</th>
+            <th>BT-GD5 slots/s</th>
+            <th>BT-GD5-flat slots/s</th>
+            <th>flat vs MPT</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>balanceof</td>
+            <td>6,958</td>
+            <td>3,460</td>
+            <td class="cell-bold">13,873</td>
+            <td class="cell-bold cell-green">2.0&times; faster</td>
+          </tr>
+          <tr>
+            <td>mixed</td>
+            <td>6,993</td>
+            <td>2,762</td>
+            <td class="cell-bold">16,040</td>
+            <td class="cell-bold cell-green">2.3&times; faster</td>
+          </tr>
+          <tr>
+            <td>approve</td>
+            <td>8,741</td>
+            <td>1,790</td>
+            <td class="cell-bold">3,494</td>
+            <td class="cell-bold cell-red">0.4&times; (slower)</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p><strong>Position:</strong> Flat state is the single biggest improvement to bintrie performance demonstrated to date. The remaining gap is concentrated in one phase (<code>state_hash</code>) rather than distributed across the read path.</p>
+  </div>
+
+  <!-- ============================================================
+       S2 — What's New Since Part 2
+       ============================================================ -->
+  <div class="section" id="s2">
+    <div class="section-label">Section 2</div>
+    <h2>What's New Since Part 2</h2>
+
+    <h3>New geth binary</h3>
+    <p><code>bintrie-flat-state</code> branch, commit <code>7d2e7cbe</code>, built 2026-04-27. Implements flat-state read path through <code>bintrieFlatReader.Storage()</code> &mdash; single Pebble read + bitmap extraction.</p>
+
+    <h3>State-actor flat-state metadata layer</h3>
+    <p>Three architecture-level fixes were required for geth to recognize the stem blobs that <code>state-actor</code> was already writing:</p>
+    <ol>
+      <li><code>WriteDatabaseVersion(9)</code> &mdash; without this, <code>--dev</code> mode treats the DB as uninitialized and ignores all state-actor data.</li>
+      <li><code>"v"</code> prefix on PathDB metadata writes (<code>WriteStateID</code>, <code>WritePersistentStateID</code>, <code>WriteSnapshotRoot</code>) &mdash; pathdb in bintrie mode wraps the diskdb with <code>rawdb.NewTable(diskdb, "v")</code> and reads metadata under that prefix.</li>
+      <li><code>IsBintrie:true</code> in the <code>SnapshotGenerator</code> RLP &mdash; geth's <code>loadGenerator</code> discards markers tagged with the wrong trie type.</li>
+    </ol>
+
+    <h3>New 507 GB BT-GD5-flat database</h3>
+    <p>Smaller than the 1.4 TB BT-GD5 and 1.6 TB MPT databases. Caveat noted in &sect;S7.</p>
+
+    <h3>Same hardware as Part 2</h3>
+    <p>AMD EPYC 9454P, 126 GB RAM, 3.5 TB SSD RAID. Absolute numbers across Parts 2 and 3 are directly comparable.</p>
+
+    <h3>Block shape</h3>
+    <p>BT-GD5-flat activates Osaka at genesis, so EIP-7825 caps per-tx gas at 16M. The 100M-gas benchmark splits into ~6 transactions landing across 2-3 blocks. Per-slot metrics (<code>µs/slot</code>, <code>slots/s</code>) normalize this and are the authoritative comparison.</p>
+  </div>
+
+  <!-- ============================================================
+       S3 — Methodology Delta
+       ============================================================ -->
+  <div class="section" id="s3">
+    <div class="section-label">Section 3</div>
+    <h2>Methodology Delta</h2>
+
+    <p>Refer to <a href="https://ethresear.ch/t/the-path-towards-binary-tries-2-mpt-vs-bt-gd5/22253">Part 2</a> for the full setup. Only what changed in Part 3:</p>
+
+    <ul>
+      <li>New config <code>bt-gd5-flat</code> added (binary + DB + state-actor flat-state metadata).</li>
+      <li>10 cold-cache runs per benchmark for the new config (matching Part 2's BT-GD5 run count).</li>
+      <li>All other parameters identical: <code>--cache 0</code>, OS page cache dropped between every run, <code>--debug.logslowblock=0</code> to capture per-block timing JSON, ~100M gas target per block.</li>
+    </ul>
+
+    <div class="data-table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Parameter</th>
+            <th>Value</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Machine</td>
+            <td>Bare metal &mdash; AMD EPYC 9454P 48-Core (96 threads), 126 GB RAM, 3.5 TB SSD (md RAID), Ubuntu 24.04 LTS <em>(same as Part 2)</em></td>
+          </tr>
+          <tr>
+            <td>Databases</td>
+            <td>MPT: 1.6 TB, BT-GD5: 1.4 TB, BT-GD5-flat: 507 GB</td>
+          </tr>
+          <tr>
+            <td>Configurations</td>
+            <td><code>mpt</code>, <code>bt-gd5</code>, <code>bt-gd5-flat</code></td>
+          </tr>
+          <tr>
+            <td>Protocol</td>
+            <td>Cold cache (OS page cache dropped + <code>--cache 0</code> between runs)</td>
+          </tr>
+          <tr>
+            <td>Runs</td>
+            <td>MPT: 100 per benchmark, BT-GD5: 10, BT-GD5-flat: 10</td>
+          </tr>
+          <tr>
+            <td>Gas target</td>
+            <td>100M gas per block</td>
+          </tr>
+          <tr>
+            <td>Benchmarks</td>
+            <td><code>erc20_balanceof</code> (reads), <code>erc20_approve</code> (writes), <code>mixed_sload_sstore</code> (mixed)</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       S4 — Reads collapse
+       ============================================================ -->
+  <div class="section" id="s4">
+    <div class="section-label">Section 4</div>
+    <h2>Reads Collapse</h2>
+
+    <p>The most striking result is the median <code>state_read_ms</code> per block:</p>
+
+    <img class="graph-hero" src="graphs/g09_read_collapse.png" alt="State read time collapse">
+
+    <p>For <code>erc20_balanceof</code>, BT-GD5 spends 9,384 ms reading state per block; BT-GD5-flat spends 530 ms &mdash; <strong>a 17.7&times; reduction</strong>. MPT spends 4,971 ms; bintrie-flat resolves storage faster than MPT despite walking a deeper logical trie <em>because</em> it doesn't walk the trie at all.</p>
+
+    <p>Per-slot total time (<code>total_ms / slots</code>) makes this concrete:</p>
+
+    <img class="graph-img" src="graphs/g07_per_slot_total_time.png" alt="Per-slot total time">
+
+    <div class="data-table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Benchmark</th>
+            <th>MPT</th>
+            <th>BT-GD5</th>
+            <th>BT-GD5-flat</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>balanceof</td>
+            <td>135 µs/slot</td>
+            <td>255 µs/slot</td>
+            <td class="cell-bold">45 µs/slot</td>
+          </tr>
+          <tr>
+            <td>mixed</td>
+            <td>134 µs/slot</td>
+            <td>287 µs/slot</td>
+            <td class="cell-bold">36 µs/slot</td>
+          </tr>
+          <tr>
+            <td>approve</td>
+            <td>69 µs/slot</td>
+            <td>334 µs/slot</td>
+            <td class="cell-bold">23 µs/slot</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p><strong>Mechanism.</strong> Without flat state, each SLOAD on a binary trie at groupDepth=5 traverses ~50 group nodes &mdash; paths are 31 bytes &times; 8 bits = 248 bits, grouped into 5-bit chunks, so 248 / 5 &asymp; 50 group nodes per stem. With <code>--cache 0</code> and a cold OS page cache, every group node access is a Pebble disk lookup. With flat state, the entire path collapses to a single Pebble read at <code>"vX" + stem(31 bytes)</code>, returning a packed (bitmap, values) blob; offset extraction is in-memory.</p>
+
+    <p>For reads, this is a phase change: from O(depth) trie traversals to O(1) flat-state lookups. The 5.7&times; speedup over BT-GD5 and the 3.0&times; speedup over MPT are the direct consequence.</p>
+  </div>
+
+  <!-- ============================================================
+       S5 — Writes: the bottleneck shift
+       ============================================================ -->
+  <div class="section" id="s5">
+    <div class="section-label">Section 5</div>
+    <h2>Writes: The Bottleneck Shift</h2>
+
+    <p>For <code>erc20_approve</code>, the read-cost saving is real (14&times; faster <code>state_read</code>: 1,341 &rarr; 93 ms) but the bottleneck shifts:</p>
+
+    <img class="graph-img" src="graphs/g10_phase_mix_shift.png" alt="Phase mix shift">
+
+    <div class="data-table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Phase</th>
+            <th>BT-GD5</th>
+            <th>BT-GD5-flat</th>
+            <th>Change</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>state_read</td>
+            <td>1,341 ms (60%)</td>
+            <td>93 ms (8%)</td>
+            <td class="cell-bold cell-green">14.4&times; faster</td>
+          </tr>
+          <tr>
+            <td>state_hash</td>
+            <td>745 ms (33%)</td>
+            <td>988 ms (85%)</td>
+            <td class="cell-amber">1.3&times; slower</td>
+          </tr>
+          <tr>
+            <td class="cell-bold">total</td>
+            <td class="cell-bold">2,242 ms</td>
+            <td class="cell-bold">1,169 ms</td>
+            <td class="cell-bold cell-green">1.9&times; faster</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p>Total time still nearly halves vs BT-GD5, but <code>state_hash</code> now dominates. Compared to MPT (<code>state_hash = 289 ms</code>, 31% of approve), bintrie-flat's 988 ms is 3.4&times; higher &mdash; that's the residual gap.</p>
+
+    <h3>Why state_hash doesn't shrink with flat state</h3>
+
+    <p>Root recomputation walks every modified trie node from leaf to root. The binary trie is structurally deeper than MPT's hex trie (~50 levels at 1-bit-per-level vs ~5 levels at 4-bits-per-level), so roughly 10&times; more node hashes per modified slot. Flat state changes how reads resolve, not how writes commit.</p>
+
+    <div class="callout callout-amber">
+      <strong>This is the new structural ceiling on write performance for binary tries.</strong> Closing it requires something different from flat state: parallel hashing across more depth levels (#34032 helped at shallow levels), incremental hashing with cached subtree roots, or moving hash work off the critical path entirely.
+    </div>
+  </div>
+
+  <!-- ============================================================
+       S6 — 3-way Throughput
+       ============================================================ -->
+  <div class="section" id="s6">
+    <div class="section-label">Section 6</div>
+    <h2>3-Way Throughput</h2>
+
+    <img class="graph-img" src="graphs/g11_slots_per_sec_3way.png" alt="Throughput slots/sec">
+
+    <p>For read-heavy workloads, bintrie-flat is the clear winner:</p>
+
+    <ul>
+      <li><strong>balanceof:</strong> 13,873 slots/s &mdash; 2.0&times; faster than MPT</li>
+      <li><strong>mixed:</strong> 16,040 slots/s &mdash; 2.3&times; faster than MPT</li>
+      <li><strong>approve:</strong> 3,494 slots/s &mdash; 0.4&times; MPT (still 2.0&times; faster than non-flat BT-GD5, but losing to MPT)</li>
+    </ul>
+
+    <p>The block-time distribution is also tighter under flat state &mdash; the throughput boxplots show much smaller variance for the bt-gd5-flat config:</p>
+
+    <img class="graph-img" src="graphs/g02_throughput_boxplots.png" alt="Throughput boxplots">
+  </div>
+
+  <!-- ============================================================
+       S7 — Caveats
+       ============================================================ -->
+  <div class="section" id="s7">
+    <div class="section-label">Section 7</div>
+    <h2>Caveats</h2>
+
+    <h3>Database size asymmetry</h3>
+    <p>BT-GD5-flat is 507 GB; MPT 1.6 TB; BT-GD5 1.4 TB. Smaller LSM trees have shallower Pebble lookups, so absolute <code>µs/slot</code> for bt-gd5-flat may be modestly optimistic. The flat-state advantage is structural (O(1) vs O(depth) lookups) and would hold at any size, but a re-run with an equally-sized DB would tighten the comparison.</p>
+
+    <h3>EIP-7825 block fragmentation</h3>
+    <p>BT-GD5-flat splits the 100M-gas benchmark into ~6 transactions across 2-3 blocks. Per-slot metrics normalize this; per-block totals are not directly comparable.</p>
+
+    <h3>Run-count asymmetry</h3>
+    <p>MPT has 100 cold-cache runs per benchmark; BT-GD5 and BT-GD5-flat have 10 each. This matches Part 2's protocol &mdash; variance for the bintrie configs is higher (CV% ~15-20%) but all reported differences are statistically significant.</p>
+
+    <h3>Cache hit rate inflation</h3>
+    <p>BT-GD5-flat shows storage cache hit rates of 68-84%, compared to 38-64% for BT-GD5 and 7-15% for MPT. This is the same <code>stateReaderWithCache</code> prefetcher race documented in <a href="https://github.com/CPerezz/bintrie-benchmarks/blob/main/mpt-vs-bintrie/CACHE_ANALYSIS.md">Part 2's CACHE_ANALYSIS</a> &mdash; when reads are faster, the prefetcher wins more races. The wall-clock <code>total_ms</code> and <code>state_read_ms</code> already incorporate the prefetch benefit and are the authoritative metrics.</p>
+
+    <img class="graph-img" src="graphs/g04_cache_hit_panels.png" alt="Cache hit panels">
+  </div>
+
+  <!-- ============================================================
+       S8 — What's Next
+       ============================================================ -->
+  <div class="section" id="s8">
+    <div class="section-label">Section 8</div>
+    <h2>What's Next</h2>
+
+    <p><code>state_hash</code> is the remaining bottleneck for write-heavy workloads. Three viable optimization paths:</p>
+
+    <div class="oq-grid">
+      <div class="oq-card">
+        <div class="oq-number">1</div>
+        <p><strong>Parallel hashing across more depth levels.</strong> PR <a href="https://github.com/ethereum/go-ethereum/pull/34032">#34032</a> already parallelizes shallow <code>InternalNode.Hash</code> calls. Extending this deeper trades CPU cores for hash latency.</p>
+      </div>
+      <div class="oq-card">
+        <div class="oq-number">2</div>
+        <p><strong>Incremental hashing with cached subtree roots.</strong> Track which subtrees changed in a block and rehash only those, caching subtree roots in memory between blocks.</p>
+      </div>
+      <div class="oq-card" style="grid-column: 1 / -1;">
+        <div class="oq-number">3</div>
+        <p><strong>GC-free arena (PR <a href="https://github.com/ethereum/go-ethereum/pull/34055">#34055</a>, still open).</strong> Reduces GC pressure during commit, helps tail latency.</p>
+      </div>
+    </div>
+
+    <div class="callout callout-green">
+      <strong>The read story is essentially solved.</strong> With bintrie's read-path performance now ahead of MPT, the structural roadmap question shifts from "can binary tries match MPT?" to "can <code>state_hash</code> overhead be amortized down to the MPT range?" Part 4 will probably look at exactly that.
+    </div>
+  </div>
+
+  <!-- ============================================================
+       Appendix A — Full timing breakdown
+       ============================================================ -->
+  <div class="section" id="appendix">
+    <div class="section-label">Appendix A</div>
+    <h2>Full Timing Breakdown</h2>
+
+    <img class="graph-hero" src="graphs/g01_hero_time_breakdown.png" alt="Hero time breakdown">
+
+    <div class="data-table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Benchmark</th>
+            <th>Config</th>
+            <th>total_ms</th>
+            <th>state_read</th>
+            <th>state_hash</th>
+            <th>execution</th>
+            <th>commit</th>
+            <th>slots/block</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td rowspan="3">erc20_balanceof</td>
+            <td>MPT</td>
+            <td>5,280</td>
+            <td>4,971 (94%)</td>
+            <td>0</td>
+            <td>280</td>
+            <td>29</td>
+            <td>36,742</td>
+          </tr>
+          <tr>
+            <td>BT-GD5</td>
+            <td>10,620</td>
+            <td>9,384 (88%)</td>
+            <td>0</td>
+            <td>1,207</td>
+            <td>28</td>
+            <td>36,741</td>
+          </tr>
+          <tr>
+            <td class="cell-bold">BT-GD5-flat</td>
+            <td class="cell-bold">853</td>
+            <td class="cell-bold">530 (62%)</td>
+            <td>3</td>
+            <td>303</td>
+            <td>17</td>
+            <td>11,834</td>
+          </tr>
+          <tr>
+            <td rowspan="3">mixed_sload_sstore</td>
+            <td>MPT</td>
+            <td>3,349</td>
+            <td>3,149 (94%)</td>
+            <td>0</td>
+            <td>180</td>
+            <td>19</td>
+            <td>23,418</td>
+          </tr>
+          <tr>
+            <td>BT-GD5</td>
+            <td>4,638</td>
+            <td>3,679 (79%)</td>
+            <td>508</td>
+            <td>389</td>
+            <td>62</td>
+            <td>12,812</td>
+          </tr>
+          <tr>
+            <td class="cell-bold">BT-GD5-flat</td>
+            <td class="cell-bold">729</td>
+            <td class="cell-bold">421 (58%)</td>
+            <td>4</td>
+            <td>287</td>
+            <td>16</td>
+            <td>11,691</td>
+          </tr>
+          <tr>
+            <td rowspan="3">erc20_approve</td>
+            <td>MPT</td>
+            <td>937</td>
+            <td>568 (61%)</td>
+            <td>289</td>
+            <td>46</td>
+            <td>33</td>
+            <td>8,188</td>
+          </tr>
+          <tr>
+            <td>BT-GD5</td>
+            <td>2,242</td>
+            <td>1,341 (60%)</td>
+            <td>745</td>
+            <td>86</td>
+            <td>69</td>
+            <td>4,014</td>
+          </tr>
+          <tr>
+            <td class="cell-bold">BT-GD5-flat</td>
+            <td class="cell-bold">1,169</td>
+            <td class="cell-bold">93 (8%)</td>
+            <td class="cell-bold">988 (85%)</td>
+            <td>79</td>
+            <td>9</td>
+            <td>4,086</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p class="muted">Source: <a href="analysis_results.json">analysis_results.json</a>, <a href="data/">data/</a></p>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <p>Benchmarks run on the Ethereum execution-specs framework with the geth binary trie fork (<a href="https://eips.ethereum.org/EIPS/eip-7864">EIP-7864</a>) and the <code>bintrie-flat-state</code> branch.<br>
+    Methodology, raw data, and reproducibility scripts available in the <a href="https://github.com/CPerezz/bintrie-benchmarks/tree/main/mpt_vs_bintrie_flat">bintrie-benchmarks repository</a>.<br>
+    Part 1: <a href="https://ethresear.ch/t/narrower-than-expected-optimal-group-depth-for-ethereums-binary-trie/22029">Narrower Than Expected: Optimal Group Depth for Ethereum's Binary Trie</a>.<br>
+    Part 2: <a href="https://ethresear.ch/t/the-path-towards-binary-tries-2-mpt-vs-bt-gd5/22253">The Path Towards Binary Tries 2: MPT vs BT-GD5</a>.</p>
+  </footer>
+
+</div>
+
+<!-- Minimal JS: sticky nav active state -->
+<script>
+(function() {
+  const pills = document.querySelectorAll('.nav-pill');
+  const sections = [];
+  pills.forEach(function(p) {
+    var id = p.getAttribute('href').replace('#', '');
+    var el = document.getElementById(id);
+    if (el) sections.push({ id: id, el: el, pill: p });
+  });
+  function update() {
+    var scrollY = window.scrollY + 120;
+    var active = sections[0];
+    for (var i = 0; i < sections.length; i++) {
+      if (sections[i].el.offsetTop <= scrollY) active = sections[i];
+    }
+    pills.forEach(function(p) { p.classList.remove('active'); });
+    if (active) active.pill.classList.add('active');
+  }
+  window.addEventListener('scroll', update, { passive: true });
+  update();
+})();
+</script>
+
+</body>
+</html>
