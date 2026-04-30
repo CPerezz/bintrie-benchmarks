@@ -66,6 +66,16 @@ approve: 69 / 334 / **23** µs/slot read latency
 
 For reads, this is a phase change: from O(depth) trie traversals to O(1) flat-state lookups. The 5.7× speedup over BT-GD5 and the 3.0× speedup over MPT are the direct consequence.
 
+**A note on block shape and the 3× headline.** The numbers above average across all benchmark blocks. Looking at single-transaction blocks (the cleanest cold-cache comparison) gives a slightly different picture:
+
+| Block shape | µs/slot read latency | Notes |
+|:------------|:--------------------|:------|
+| MPT, single-tx | **131** | Each SLOAD pays the full trie-traversal cost |
+| BT-GD5-flat, single-tx | **69** | Each SLOAD = one Pebble lookup on a 507 GB LSM |
+| BT-GD5-flat, multi-tx | **~41** | Prefetcher goroutine warms the per-block shared cache for later transactions; the main processor's `time.Since(start)` measures cache-hit fast paths, not disk reads |
+
+Single-tx vs single-tx is the structurally honest comparison: **1.9× faster reads** end-to-end (1 Pebble read on a 507 GB LSM vs ~5 on a 1.6 TB LSM, plus the smaller LSM has shallower per-read I/O). The 3.0× headline averages mixed block shapes where the prefetcher race amplifies the win. Both numbers are real measurements at the same `state_object.go` timing boundary; they answer different questions — *cold-disk advantage* (1.9×) vs *observed read latency under realistic mixed workloads* (3.0×). The `stateReaderWithCache` race that drives this is the same one documented in [Part 2's CACHE_ANALYSIS.md](https://github.com/CPerezz/bintrie-benchmarks/blob/main/mpt-vs-bintrie/CACHE_ANALYSIS.md).
+
 ---
 
 ## S4 — Writes: the bottleneck shift

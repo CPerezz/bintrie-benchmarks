@@ -575,6 +575,41 @@
     <p><strong>Mechanism.</strong> Without flat state, each SLOAD on a binary trie at groupDepth=5 traverses ~50 group nodes &mdash; paths are 31 bytes &times; 8 bits = 248 bits, grouped into 5-bit chunks, so 248 / 5 &asymp; 50 group nodes per stem. With <code>--cache 0</code> and a cold OS page cache, every group node access is a Pebble disk lookup. With flat state, the entire path collapses to a single Pebble read at <code>"vX" + stem(31 bytes)</code>, returning a packed (bitmap, values) blob; offset extraction is in-memory.</p>
 
     <p>For reads, this is a phase change: from O(depth) trie traversals to O(1) flat-state lookups. The 5.7&times; speedup over BT-GD5 and the 3.0&times; speedup over MPT are the direct consequence.</p>
+
+    <h3>A note on block shape and the 3&times; headline</h3>
+
+    <p>The numbers above average across all benchmark blocks. Looking at single-transaction blocks (the cleanest cold-cache comparison) gives a slightly different picture:</p>
+
+    <div class="data-table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Block shape</th>
+            <th>&micro;s/slot read latency</th>
+            <th>Notes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>MPT, single-tx</td>
+            <td class="cell-bold">131</td>
+            <td>Each SLOAD pays the full trie-traversal cost</td>
+          </tr>
+          <tr>
+            <td>BT-GD5-flat, single-tx</td>
+            <td class="cell-bold">69</td>
+            <td>Each SLOAD = one Pebble lookup on a 507 GB LSM</td>
+          </tr>
+          <tr>
+            <td>BT-GD5-flat, multi-tx</td>
+            <td class="cell-bold">~41</td>
+            <td>Prefetcher goroutine warms the per-block shared cache for later transactions; the main processor's <code>time.Since(start)</code> measures cache-hit fast paths, not disk reads</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p>Single-tx vs single-tx is the structurally honest comparison: <strong>1.9&times; faster reads</strong> end-to-end (1 Pebble read on a 507 GB LSM vs ~5 on a 1.6 TB LSM, plus the smaller LSM has shallower per-read I/O). The 3.0&times; headline averages mixed block shapes where the prefetcher race amplifies the win. Both numbers are real measurements at the same <code>state_object.go</code> timing boundary; they answer different questions &mdash; <em>cold-disk advantage</em> (1.9&times;) vs <em>observed read latency under realistic mixed workloads</em> (3.0&times;). The <code>stateReaderWithCache</code> race that drives this is the same one documented in <a href="https://github.com/CPerezz/bintrie-benchmarks/blob/main/mpt-vs-bintrie/CACHE_ANALYSIS.md">Part 2's CACHE_ANALYSIS.md</a>.</p>
   </div>
 
   <!-- ============================================================
