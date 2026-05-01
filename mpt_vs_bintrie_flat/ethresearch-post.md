@@ -62,9 +62,20 @@ balanceof: 135 / 255 / **45** µs/slot read latency (MPT / BT-GD5 / BT-GD5-flat)
 mixed: 134 / 287 / **36** µs/slot read latency
 approve: 69 / 334 / **23** µs/slot read latency
 
-**Mechanism.** Without flat state, each SLOAD on a binary trie at groupDepth=5 traverses ~50 group nodes — paths are 31 bytes × 8 bits = 248 bits, grouped into 5-bit chunks, so 248 / 5 ≈ 50 group nodes per stem. With `--cache 0` and a cold OS page cache, every group node access is a Pebble disk lookup. With flat state, the entire path collapses to a single Pebble read at `"vX" + stem(31 bytes)`, returning a packed `(bitmap, values)` blob from which the offset of the requested slot is extracted in memory.
+**Mechanism.** Three configs, three different read shapes:
 
-For reads, this is a phase change: from O(depth) trie traversals to O(1) flat-state lookups. The 5.7× speedup over BT-GD5 and the 3.0× speedup over MPT are the direct consequence.
+| Config | Per-SLOAD work (cold cache) | Pebble reads per slot |
+|:-------|:----------------------------|:----------------------|
+| **MPT** | Walk account trie (root → ~3 branches → leaf), then storage trie (root → ~3 branches → leaf) | ~5 |
+| **BT-GD5** (no flat) | Walk binary trie at groupDepth=5: 31 bytes × 8 bits = 248 bits, grouped into 5-bit chunks → 248 / 5 ≈ 50 group nodes per stem | ~50 |
+| **BT-GD5-flat** | Single Pebble lookup at `"vX" + stem(31 bytes)` → packed `(bitmap, values)` blob → in-memory offset extraction | **1** |
+
+So BT-flat avoids ~49 Pebble reads vs BT-GD5 (the 5.7× speedup) and ~4 Pebble reads vs MPT. But the MPT-vs-flat gap is more than just "5× fewer reads" — there are two compounding effects:
+
+- **Fewer round-trips.** 1 Pebble read vs ~5 = ~5× fewer disk-cache-miss latencies in the cold-cache regime.
+- **Smaller LSM, shallower per-read I/O.** MPT's 1.6 TB database has more SST files at each Pebble level than BT-flat's 507 GB database, so each individual Pebble lookup also takes longer for MPT (more bloom-filter / index page reads to find the target SST). This is structural to LSM-tree behavior at scale and would shrink if MPT and BT-flat were sized identically — see §S6 for the size-asymmetry caveat.
+
+For reads, the combination is a phase change: from O(depth) trie traversals on a 1.6 TB LSM to O(1) flat-state lookups on a 507 GB LSM. The 5.7× speedup over BT-GD5 and the 3.0× speedup over MPT are the direct consequence — though the 3.0× MPT comparison is partly inflated by the DB-size asymmetry (a same-sized re-run would tighten this; the structural per-read advantage from "1 vs 5 lookups" alone is closer to the **1.9× single-tx number** in the next subsection).
 
 **A note on block shape and the 3× headline.** The numbers above average across all benchmark blocks. Looking at single-transaction blocks (the cleanest cold-cache comparison) gives a slightly different picture:
 
