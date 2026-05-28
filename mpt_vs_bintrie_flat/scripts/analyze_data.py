@@ -272,8 +272,9 @@ def main():
                       + "".join(f" {'--':>20}" for _ in SUMMARY_COLS))
                 continue
             n_blocks = len(rows)
+            n_runs = len({int(r["run"]) for r in rows})
             line = f"{config:>10} {n_blocks:>7}"
-            entry = {"n_blocks": n_blocks}
+            entry = {"n_blocks": n_blocks, "n_runs": n_runs}
             for col in SUMMARY_COLS:
                 vals = get_values(rows, col)
                 med = median(vals)
@@ -375,6 +376,20 @@ def main():
                 else:
                     vals_mpt = get_values(rows_mpt, metric)
                     vals_bt = get_values(rows_bt, metric)
+
+                # Guard against degenerate ratios: when MPT barely hashes
+                # (median trie_updates per slot ~ 0, e.g. read-dominated
+                # workloads), median(BT)/median(MPT) explodes to a meaningless
+                # ~10^4 value. Report it as undefined rather than a finding.
+                if metric == "ms_per_slot_hash" and vals_mpt and median(vals_mpt) < 1e-3:
+                    print(f"    {metric:>22}: MPT median ~0 (no rehash) "
+                          f"-- ratio undefined, skipped")
+                    results["bootstrap_ratios"][bench][other_cfg][metric] = {
+                        "ratio": None, "ci_low": None, "ci_high": None,
+                        "note": "MPT median trie_updates/slot ~ 0 on this "
+                                "workload; ratio undefined",
+                    }
+                    continue
 
                 ratio, ci_lo, ci_hi = bootstrap_ratio_ci(vals_bt, vals_mpt)
                 if ratio is None:

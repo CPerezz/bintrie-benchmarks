@@ -329,7 +329,7 @@
   <!-- Header -->
   <div class="report-label">REPORT &middot; 2026-04-30</div>
   <h1 class="hero-title">Flat State Closes the Read Gap</h1>
-  <p class="hero-subtitle">Three-way comparison: MPT vs Binary Trie (group-depth 5) vs Binary Trie + Flat State. Same hardware as Part 2 &mdash; bintrie-flat is 2.0&ndash;2.3&times; faster than MPT for reads.</p>
+  <p class="hero-subtitle">Three-way comparison: MPT vs Binary Trie (group-depth 5) vs Binary Trie + Flat State. Same hardware as Part 2 &mdash; bintrie-flat is 1.8&ndash;2.4&times; faster than MPT for reads.</p>
 
   <!-- Meta cards -->
   <div class="meta-grid">
@@ -371,16 +371,16 @@
     <h2>Headline</h2>
 
     <div class="callout callout-amber">
-      <strong>Flat state flips the verdict.</strong> Bintrie with flat state is 2.0&ndash;2.3&times; faster than MPT on read-heavy workloads (3.0&ndash;3.7&times; per slot, on read latency) and ~25% slower on <code>erc20_approve</code> end-to-end. The remaining gap is now concentrated in <code>trie_updates</code> (root recomputation), not slot resolution.
+      <strong>Flat state flips the verdict.</strong> Bintrie with flat state is 1.8&ndash;2.4&times; faster than MPT on read-heavy workloads (2.5&ndash;3.8&times; per slot on read latency) and statistically on par with MPT on <code>erc20_approve</code> end-to-end (median +10%, not significant) while resolving ~2.4&times; fewer slots/sec there. The remaining gap is now concentrated in <code>trie_updates</code> (root recomputation), not slot resolution.
     </div>
 
     <p>This is a follow-up to <a href="https://ethresear.ch/t/the-path-towards-binary-tries-2-mpt-vs-bt-gd5/22253">Part 2</a> (MPT vs BT-GD5). Same hardware, same workloads, same cold-cache protocol. The new variable: <code>bt-gd5-flat</code> &mdash; bintrie group-depth 5 with flat-state stem blobs enabled.</p>
 
-    <p>In Part 2, BT-GD5 was ~1.7&times; slower than MPT on reads, ~2.5&times; on writes per storage slot. The dominant cost was <code>state_read_ms</code> &mdash; every storage slot required walking ~50 binary trie nodes from the disk-resident pathdb.</p>
+    <p>In Part 2, BT-GD5 was ~1.7&times; slower than MPT on reads per storage slot. The dominant cost was <code>state_read_ms</code> &mdash; without a flat layer, every storage slot was resolved by walking the binary trie.</p>
 
-    <p>Flat state changes this. Each SLOAD becomes a single Pebble read of a packed stem blob keyed by <code>"vX" + stem(31 bytes)</code>, followed by an in-memory bitmap+offset extraction. Trie traversal is bypassed for reads.</p>
+    <p>Flat state changes this. Each SLOAD becomes a single Pebble read of a packed stem blob keyed by <code>"vX" + stem(31 bytes)</code>, followed by an in-memory bitmap+offset extraction. This puts bintrie's storage reads on the same footing as MPT, whose SLOADs are already served by its flat <strong>snapshot</strong> in ~1 read (the trie is not walked for reads &mdash; see &sect;S3).</p>
 
-    <p>The result, in three numbers &mdash; <strong>read latency</strong> (<code>state_read_ms / slots</code>, lower is better):</p>
+    <p>The result, in three numbers &mdash; <strong>read latency</strong> (median <code>state_read_ms / storage_slots_read</code>, lower is better):</p>
 
     <div class="data-table-wrap">
       <table>
@@ -397,22 +397,22 @@
           <tr>
             <td>balanceof</td>
             <td>135</td>
-            <td>255</td>
-            <td class="cell-bold">45</td>
-            <td class="cell-bold cell-green">3.0&times; faster</td>
+            <td>216</td>
+            <td class="cell-bold">55</td>
+            <td class="cell-bold cell-green">2.5&times; faster</td>
           </tr>
           <tr>
             <td>mixed</td>
-            <td>134</td>
-            <td>287</td>
-            <td class="cell-bold">36</td>
-            <td class="cell-bold cell-green">3.7&times; faster</td>
+            <td>135</td>
+            <td>334</td>
+            <td class="cell-bold">35</td>
+            <td class="cell-bold cell-green">3.8&times; faster</td>
           </tr>
           <tr>
             <td>approve</td>
-            <td>69</td>
-            <td>334</td>
-            <td class="cell-bold">23</td>
+            <td>139</td>
+            <td>364</td>
+            <td class="cell-bold">46</td>
             <td class="cell-bold cell-green">3.0&times; faster</td>
           </tr>
         </tbody>
@@ -435,23 +435,23 @@
         <tbody>
           <tr>
             <td>balanceof</td>
-            <td>6,958</td>
-            <td>3,460</td>
-            <td class="cell-bold">13,873</td>
-            <td class="cell-bold cell-green">2.0&times; faster</td>
+            <td>6,980</td>
+            <td>4,128</td>
+            <td class="cell-bold">12,486</td>
+            <td class="cell-bold cell-green">1.8&times; faster</td>
           </tr>
           <tr>
             <td>mixed</td>
-            <td>6,993</td>
-            <td>2,762</td>
-            <td class="cell-bold">16,040</td>
-            <td class="cell-bold cell-green">2.3&times; faster</td>
+            <td>6,987</td>
+            <td>1,991</td>
+            <td class="cell-bold">16,520</td>
+            <td class="cell-bold cell-green">2.4&times; faster</td>
           </tr>
           <tr>
             <td>approve</td>
-            <td>8,741</td>
-            <td>1,790</td>
-            <td class="cell-bold">3,494</td>
+            <td>8,715</td>
+            <td>1,757</td>
+            <td class="cell-bold">3,555</td>
             <td class="cell-bold cell-red">0.4&times; (slower)</td>
           </tr>
         </tbody>
@@ -459,10 +459,10 @@
     </div>
 
     <div class="callout callout-amber">
-      The two tables measure different things and diverge for <code>approve</code> on purpose. <strong>Read latency</strong> is the cost of resolving a single slot from disk; <strong>throughput</strong> is the rate at which whole blocks finish, including <code>trie_updates</code> and commit. For read-heavy workloads they point the same way (read latency dominates total time, so faster reads &rarr; higher throughput). For <code>approve</code>, BT-GD5-flat reads each slot 3&times; faster than MPT but spends 85% of its block time in <code>trie_updates</code> (vs 31% for MPT) &mdash; that phase shift is exactly what &sect;S4 unpacks.
+      The two tables measure different things and diverge for <code>approve</code> on purpose. <strong>Read latency</strong> is the cost of resolving a single slot; <strong>throughput</strong> is the rate at which whole blocks finish, including <code>trie_updates</code> and commit. For read-heavy workloads they point the same way. For <code>approve</code>, BT-GD5-flat reads each slot ~3&times; faster than MPT but spends ~80% of its block time in <code>trie_updates</code> (vs 31% for MPT), so it resolves ~2.4&times; fewer slots/sec despite faster reads. End-to-end, approve's per-block wall-clock is only ~10% above MPT and <strong>not statistically significant</strong> (&sect;S6) because EIP-7825 makes flat's blocks smaller; the honest write comparison is the per-slot/throughput one. &sect;S4 unpacks the phase shift.
     </div>
 
-    <p><strong>Position:</strong> Flat state is the single biggest improvement to bintrie performance demonstrated to date. The remaining gap is concentrated in one phase (<code>trie_updates</code>) rather than distributed across the read path.</p>
+    <p><strong>Position:</strong> Flat state is the single biggest improvement to bintrie read performance demonstrated to date &mdash; it removes bintrie's structural read penalty and brings it to parity with (and, at this database size, ahead of) MPT. The remaining gap is concentrated in one phase (<code>trie_updates</code>) rather than distributed across the read path.</p>
   </div>
 
   <!-- ============================================================
@@ -476,9 +476,13 @@
 
     <ul>
       <li>New config <code>bt-gd5-flat</code> added (binary + DB + state-actor flat-state metadata).</li>
-      <li>10 cold-cache runs per benchmark for the new config (matching Part 2's BT-GD5 run count).</li>
+      <li>10 cold-cache runs per benchmark for the new config (matching Part 2's BT-GD5 run count); MPT has 100.</li>
       <li>All other parameters identical: <code>--cache 0</code>, OS page cache dropped between every run, <code>--debug.logslowblock=0</code> to capture per-block timing JSON, ~100M gas target per block.</li>
     </ul>
+
+    <div class="callout callout-amber">
+      All figures in this report are <strong>medians per block</strong> (matching <code>analysis_results.json</code> and the graphs). Means per block run 10&ndash;35% higher for the bintrie configs because of the long tail from EIP-7825 fragmentation. One asymmetry to keep in mind: only the bintrie-flat branch activates Osaka (EIP-7825), so its 100M-gas benchmark fragments into ~6 transactions across 2&ndash;3 smaller blocks while MPT and BT-GD5 run a single block. Per-slot metrics normalize the slot count, not the block shape (&sect;S6).
+    </div>
 
     <div class="data-table-wrap">
       <table>
@@ -533,9 +537,9 @@
 
     <img class="graph-hero" src="graphs/g09_read_collapse.png" alt="State read time collapse">
 
-    <p>For <code>erc20_balanceof</code>, BT-GD5 spends 9,384 ms reading state per block; BT-GD5-flat spends 530 ms &mdash; <strong>a 17.7&times; reduction</strong>. MPT spends 4,971 ms; bintrie-flat resolves storage faster than MPT despite walking a deeper logical trie <em>because</em> it doesn't walk the trie at all.</p>
+    <p>For <code>erc20_balanceof</code>, BT-GD5 spends 7,935 ms reading state per block; BT-GD5-flat spends 469 ms. <strong>Per slot, that is a 3.9&times; read-latency reduction</strong> (216 &rarr; 55 &micro;s/slot). The per-block ratio looks larger (16.9&times;), but roughly 3&times; of that is just flat's smaller EIP-7825 blocks &mdash; per-block totals are not comparable across configs (&sect;S6), so the per-slot number is the honest one. MPT spends 4,956 ms (135 &micro;s/slot).</p>
 
-    <p>Per-slot total time (<code>total_ms / slots</code>) makes this concrete:</p>
+    <p>Per-slot <strong>total</strong> time (<code>total_ms / storage_slots_read</code>, median) tells the same story for read-heavy work &mdash; and shows the write penalty for <code>approve</code>:</p>
 
     <img class="graph-img" src="graphs/g07_per_slot_total_time.png" alt="Per-slot total time">
 
@@ -552,69 +556,71 @@
         <tbody>
           <tr>
             <td>balanceof</td>
-            <td>135 µs/slot</td>
-            <td>255 µs/slot</td>
-            <td class="cell-bold">45 µs/slot</td>
+            <td>143 µs/slot</td>
+            <td>242 µs/slot</td>
+            <td class="cell-bold">83 µs/slot</td>
           </tr>
           <tr>
             <td>mixed</td>
-            <td>134 µs/slot</td>
-            <td>287 µs/slot</td>
-            <td class="cell-bold">36 µs/slot</td>
+            <td>143 µs/slot</td>
+            <td>502 µs/slot</td>
+            <td class="cell-bold">61 µs/slot</td>
           </tr>
           <tr>
             <td>approve</td>
-            <td>69 µs/slot</td>
-            <td>334 µs/slot</td>
-            <td class="cell-bold">23 µs/slot</td>
+            <td>230 µs/slot</td>
+            <td>569 µs/slot</td>
+            <td class="cell-bold">563 µs/slot</td>
           </tr>
         </tbody>
       </table>
     </div>
 
-    <p><strong>Mechanism.</strong> Three configs, three different read shapes:</p>
+    <p>For <code>approve</code>, BT-GD5-flat's per-slot <em>total</em> time (563 &micro;s) is essentially tied with non-flat BT-GD5 (569 &micro;s) even though its reads are 3&times; faster &mdash; the cost has moved entirely into <code>trie_updates</code> (&sect;S4).</p>
+
+    <p><strong>Mechanism.</strong> The three configs resolve a cold SLOAD differently:</p>
 
     <div class="data-table-wrap">
       <table>
         <thead>
           <tr>
             <th>Config</th>
-            <th>Per-SLOAD work (cold cache)</th>
-            <th>Pebble reads per slot</th>
+            <th>Per-SLOAD read path (cold cache)</th>
+            <th>Disk reads per slot</th>
           </tr>
         </thead>
         <tbody>
           <tr>
             <td><strong>MPT</strong></td>
-            <td>Walk account trie (root &rarr; ~3 branches &rarr; leaf), then storage trie (root &rarr; ~3 branches &rarr; leaf)</td>
-            <td class="cell-bold">~5</td>
+            <td>Leaf served from the flat <strong>snapshot</strong> (<code>snapStorage</code>); the trie is <em>not</em> walked for reads</td>
+            <td class="cell-bold">~1</td>
           </tr>
           <tr>
             <td><strong>BT-GD5</strong> (no flat)</td>
-            <td>Walk binary trie at groupDepth=5: 31 bytes &times; 8 bits = 248 bits, grouped into 5-bit chunks &rarr; 248 / 5 &asymp; 50 group nodes per stem</td>
-            <td class="cell-bold">~50</td>
+            <td>No flat layer &rarr; binary-trie traversal; upper group nodes amortize in-memory within a block, so the marginal cost is a few node reads, not the full ~50-node logical path to the stem</td>
+            <td class="cell-bold">a few</td>
           </tr>
           <tr>
             <td><strong>BT-GD5-flat</strong></td>
             <td>Single Pebble lookup at <code>"vX" + stem(31 bytes)</code> &rarr; packed (bitmap, values) blob &rarr; in-memory offset extraction</td>
-            <td class="cell-bold">1</td>
+            <td class="cell-bold">~1</td>
           </tr>
         </tbody>
       </table>
     </div>
 
-    <p>So BT-flat avoids ~49 Pebble reads vs BT-GD5 (the 5.7&times; speedup) and ~4 Pebble reads vs MPT. But the MPT-vs-flat gap is more than just "5&times; fewer reads" &mdash; there are two compounding effects:</p>
+    <p>So MPT and BT-GD5-flat both resolve a storage leaf in ~1 flat read; <strong>the flat-state win over MPT is not a &ldquo;fewer reads&rdquo; effect.</strong> Per cold disk read the two are statistically indistinguishable (median <code>ms_per_cache_miss</code> on balanceof: MPT 146 &micro;s vs flat 135 &micro;s, <em>p</em> = 1.0). Flat-state's lower <code>state_read_ms</code>/slot comes from two things, both flagged as partial confounders in &sect;S6:</p>
 
     <ul>
-      <li><strong>Fewer round-trips.</strong> 1 Pebble read vs ~5 = ~5&times; fewer disk-cache-miss latencies in the cold-cache regime.</li>
-      <li><strong>Smaller LSM, shallower per-read I/O.</strong> MPT's 1.6 TB database has more SST files at each Pebble level than BT-flat's 507 GB database, so each individual Pebble lookup also takes longer for MPT (more bloom-filter / index page reads to find the target SST). This is structural to LSM-tree behavior at scale and would shrink if MPT and BT-flat were sized identically &mdash; see &sect;S6 for the size-asymmetry caveat.</li>
+      <li><strong>Fewer disk trips per slot.</strong> A stem blob packs many slots, and the <code>stateReaderWithCache</code> prefetcher wins more races when reads are fast, so flat does ~0.4 disk reads/slot vs MPT's ~0.9 on balanceof.</li>
+      <li><strong>A 3&times; smaller LSM.</strong> BT-GD5-flat's database is 507 GB vs MPT's 1.6 TB. This does <em>not</em> obviously make individual reads cheaper here (per-miss latency is equal-or-higher for flat), but it interacts with the cache/prefetch behavior; a same-size re-run is needed to isolate it.</li>
     </ul>
 
-    <p>For reads, the combination is a phase change: from O(depth) trie traversals on a 1.6 TB LSM to O(1) flat-state lookups on a 507 GB LSM. The 5.7&times; speedup over BT-GD5 and the 3.0&times; speedup over MPT are the direct consequence &mdash; though the 3.0&times; MPT comparison is partly inflated by the DB-size asymmetry (a same-sized re-run would tighten this; the structural per-read advantage from "1 vs 5 lookups" alone is closer to the <strong>1.9&times; single-tx number</strong> in the next subsection).</p>
+    <p>The structural takeaway is the robust one: <strong>without flat state bintrie is ~1.6&times; slower than MPT on reads; with it, bintrie reaches MPT-snapshot parity and, at this DB size and prefetch regime, pulls ahead by 2.5&ndash;3.8&times;.</strong></p>
 
-    <h3>A note on block shape and the 3&times; headline</h3>
+    <h3>A note on block shape</h3>
 
-    <p>The numbers above average across all benchmark blocks. Looking at single-transaction blocks (the cleanest cold-cache comparison) gives a slightly different picture:</p>
+    <p>The numbers above are medians across all benchmark blocks. Single-transaction blocks (the cleanest cold comparison) give a tighter ratio:</p>
 
     <div class="data-table-wrap">
       <table>
@@ -628,24 +634,24 @@
         <tbody>
           <tr>
             <td>MPT, single-tx</td>
-            <td class="cell-bold">131</td>
-            <td>Each SLOAD pays the full trie-traversal cost</td>
+            <td class="cell-bold">135</td>
+            <td>Leaf from the flat snapshot, ~1 read on a 1.6 TB LSM</td>
           </tr>
           <tr>
             <td>BT-GD5-flat, single-tx</td>
-            <td class="cell-bold">69</td>
-            <td>Each SLOAD = one Pebble lookup on a 507 GB LSM</td>
+            <td class="cell-bold">77</td>
+            <td>One stem-blob read on a 507 GB LSM</td>
           </tr>
           <tr>
             <td>BT-GD5-flat, multi-tx</td>
-            <td class="cell-bold">~41</td>
-            <td>Prefetcher goroutine warms the per-block shared cache for later transactions; the main processor's <code>time.Since(start)</code> measures cache-hit fast paths, not disk reads</td>
+            <td class="cell-bold">~39</td>
+            <td>Prefetcher goroutine warms the per-block shared cache for later transactions; the main processor's <code>time.Since(start)</code> increasingly measures cache-hit fast paths, not disk reads</td>
           </tr>
         </tbody>
       </table>
     </div>
 
-    <p>Single-tx vs single-tx is the structurally honest comparison: <strong>1.9&times; faster reads</strong> end-to-end (1 Pebble read on a 507 GB LSM vs ~5 on a 1.6 TB LSM, plus the smaller LSM has shallower per-read I/O). The 3.0&times; headline averages mixed block shapes where the prefetcher race amplifies the win. Both numbers are real measurements at the same <code>state_object.go</code> timing boundary; they answer different questions &mdash; <em>cold-disk advantage</em> (1.9&times;) vs <em>observed read latency under realistic mixed workloads</em> (3.0&times;). The <code>stateReaderWithCache</code> race that drives this is the same one documented in <a href="https://github.com/CPerezz/bintrie-benchmarks/blob/main/mpt-vs-bintrie/CACHE_ANALYSIS.md">Part 2's CACHE_ANALYSIS.md</a>.</p>
+    <p>Single-tx vs single-tx is the size-and-shape-controlled comparison: <strong>~1.8&times; faster reads</strong> (135 vs 77 &micro;s/slot), versus the 2.5&times; balanceof median. The difference is the prefetcher race: multi-tx blocks let the prefetcher goroutine warm the per-block shared cache, so the win grows with more transactions. Both are real measurements at the same <code>state_object.go</code> boundary. The <code>stateReaderWithCache</code> race is the same one documented in <a href="https://github.com/CPerezz/bintrie-benchmarks/blob/main/mpt-vs-bintrie/CACHE_ANALYSIS.md">Part 2's CACHE_ANALYSIS.md</a>.</p>
   </div>
 
   <!-- ============================================================
@@ -655,7 +661,7 @@
     <div class="section-label">Section 4</div>
     <h2>Writes: The Bottleneck Shift</h2>
 
-    <p>For <code>erc20_approve</code>, the read-cost saving is real (14&times; faster <code>state_read</code>: 1,341 &rarr; 93 ms) but the bottleneck shifts:</p>
+    <p>For <code>erc20_approve</code>, the read-cost saving is real (12.8&times; faster <code>state_read</code>: 1,064 &rarr; 83 ms median) but the bottleneck shifts:</p>
 
     <img class="graph-img" src="graphs/g10_phase_mix_shift.png" alt="Phase mix shift">
 
@@ -672,31 +678,31 @@
         <tbody>
           <tr>
             <td>state_read</td>
-            <td>1,341 ms (60%)</td>
-            <td>93 ms (8%)</td>
-            <td class="cell-bold cell-green">14.4&times; faster</td>
+            <td>1,064 ms (53%)</td>
+            <td>83 ms (8%)</td>
+            <td class="cell-bold cell-green">12.8&times; faster</td>
           </tr>
           <tr>
             <td>trie_updates</td>
-            <td>745 ms (33%)</td>
-            <td>988 ms (85%)</td>
-            <td class="cell-amber">1.3&times; slower</td>
+            <td>738 ms (37%)</td>
+            <td>829 ms (81%)</td>
+            <td class="cell-amber">1.1&times; slower</td>
           </tr>
           <tr>
             <td class="cell-bold">total</td>
-            <td class="cell-bold">2,242 ms</td>
-            <td class="cell-bold">1,169 ms</td>
+            <td class="cell-bold">2,000 ms</td>
+            <td class="cell-bold">1,030 ms</td>
             <td class="cell-bold cell-green">1.9&times; faster</td>
           </tr>
         </tbody>
       </table>
     </div>
 
-    <p>Total time still nearly halves vs BT-GD5, but <code>trie_updates</code> now dominate. Compared to MPT (<code>trie_updates = 289 ms</code>, 31% of approve), bintrie-flat's 988 ms is 3.4&times; higher &mdash; that's the residual gap.</p>
+    <p>Total time still nearly halves vs BT-GD5, but <code>trie_updates</code> now dominates. Compared to MPT (<code>trie_updates = 288 ms</code>, 31% of approve), bintrie-flat's 829 ms is 2.9&times; higher &mdash; and per slot written, the gap is <strong>~6.75&times;</strong> (bootstrap CI 6.3&ndash;7.4&times;). That's the residual gap.</p>
 
     <h3>Why trie updates don't shrink with flat state</h3>
 
-    <p>Root recomputation walks every modified trie node from leaf to root. The binary trie is structurally deeper than MPT's hex trie (~50 levels at 1-bit-per-level vs ~5 levels at 4-bits-per-level), so roughly 10&times; more node hashes per modified slot. Flat state changes how reads resolve, not how writes commit.</p>
+    <p>Flat state flattens <em>leaf</em> reads, but root recomputation needs the <strong>intermediate</strong> nodes along every modified path &mdash; and those are not in the flat layer, so they are read (cold) from the trie and rehashed. The binary trie is far deeper than MPT's hex trie (~248 bit-levels, &asymp;50 group nodes per stem at groupDepth=5, versus ~5&ndash;7 hex levels), so each modified slot pulls roughly an order of magnitude more intermediate nodes through the read-and-hash path. The measured ~6.75&times;/slot hashing cost is the consequence. Flat state changes how leaves resolve, not how roots recompute.</p>
 
     <div class="callout callout-amber">
       <strong>This is the new structural ceiling on write performance for binary tries.</strong> Closing it requires something different from flat state: parallel hashing across more depth levels (#34032 helped at shallow levels), incremental hashing with cached subtree roots, or moving hash work off the critical path entirely.
@@ -715,12 +721,12 @@
     <p>For read-heavy workloads, bintrie-flat is the clear winner:</p>
 
     <ul>
-      <li><strong>balanceof:</strong> 13,873 slots/s &mdash; 2.0&times; faster than MPT</li>
-      <li><strong>mixed:</strong> 16,040 slots/s &mdash; 2.3&times; faster than MPT</li>
-      <li><strong>approve:</strong> 3,494 slots/s &mdash; 0.4&times; MPT (still 2.0&times; faster than non-flat BT-GD5, but losing to MPT)</li>
+      <li><strong>balanceof:</strong> 12,486 slots/s &mdash; 1.8&times; faster than MPT</li>
+      <li><strong>mixed:</strong> 16,520 slots/s &mdash; 2.4&times; faster than MPT</li>
+      <li><strong>approve:</strong> 3,555 slots/s &mdash; 0.4&times; MPT (still ~2.0&times; faster than non-flat BT-GD5, but losing to MPT)</li>
     </ul>
 
-    <p>The block-time distribution is also tighter under flat state &mdash; the throughput boxplots show much smaller variance for the bt-gd5-flat config:</p>
+    <p>The block-time distribution is also tighter under flat state (CV &asymp; 7%, vs &asymp; 20% for BT-GD5 on read-heavy benchmarks) &mdash; the throughput boxplots show much smaller variance for the bt-gd5-flat config:</p>
 
     <img class="graph-img" src="graphs/g02_throughput_boxplots.png" alt="Throughput boxplots">
   </div>
@@ -732,17 +738,26 @@
     <div class="section-label">Section 6</div>
     <h2>Caveats</h2>
 
+    <h3>Reads hit a flat layer in both MPT and bintrie-flat</h3>
+    <p>MPT's SLOADs are served by its flat snapshot (~1 read) and bintrie-flat's by the stem blob (~1 read); per cold disk read the two are statistically indistinguishable (balanceof <code>ms_per_cache_miss</code>: 146 vs 135 &micro;s, <em>p</em> = 1.0, and on <code>approve</code>/<code>mixed</code> flat is actually <em>higher</em> per miss). So the read headline is <strong>not</strong> a &ldquo;1 vs 5 reads&rdquo; structural win &mdash; it is driven by (a) flat taking fewer disk trips per slot (blob packing + prefetcher race) and (b) the database-size asymmetry below. The structural claim that survives is parity-plus: flat removes bintrie's traversal penalty.</p>
+
     <h3>Database size asymmetry</h3>
-    <p>BT-GD5-flat is 507 GB; MPT 1.6 TB; BT-GD5 1.4 TB. Smaller LSM trees have shallower Pebble lookups, so absolute <code>µs/slot</code> for bt-gd5-flat may be modestly optimistic. The flat-state advantage is structural (O(1) vs O(depth) lookups) and would hold at any size, but a re-run with an equally-sized DB would tighten the comparison.</p>
+    <p>BT-GD5-flat is 507 GB; MPT 1.6 TB; BT-GD5 1.4 TB. This ~3&times; gap is <strong>mostly a generation-target choice</strong> (the flat DB was built to a 500 GB target vs ~1.2 TB for the others), not an intrinsic flat-state property &mdash; though flat blobs are genuinely more compact than per-slot snapshot entries. A same-size re-run is the single most important follow-up; until then, treat the 2.5&ndash;3.8&times; read multiple as an upper bound and the ~1.8&times; single-tx number as the size-and-shape-controlled estimate.</p>
+
+    <h3>Gas-schedule difference (and why it doesn't distort the comparison)</h3>
+    <p>MPT runs EIP-2929 (Prague) gas; the bintrie configs run EIP-4762 (Osaka). Despite that, the measured <code>gas_per_slot</code> is within <strong>0.2%</strong> across MPT and BT-GD5-flat for every benchmark (&asymp;2,722 gas/read-slot on balanceof, &asymp;22.9k gas/written-slot on approve), so &ldquo;100M gas&rdquo; buys the same slot count and the per-slot comparison is not distorted by the schedule.</p>
 
     <h3>EIP-7825 block fragmentation</h3>
-    <p>BT-GD5-flat splits the 100M-gas benchmark into ~6 transactions across 2-3 blocks. Per-slot metrics normalize this; per-block totals are not directly comparable.</p>
+    <p>Only the bintrie-flat branch activates Osaka, so its 100M-gas benchmark splits into ~6 transactions across 2&ndash;3 smaller blocks while MPT and BT-GD5 run a single block. Per-slot metrics normalize the slot count, but the multi-tx shape also feeds the prefetcher race (above) and is why per-block totals (e.g. the 16.9&times; read-collapse) are not directly comparable.</p>
 
-    <h3>Run-count asymmetry</h3>
-    <p>MPT has 100 cold-cache runs per benchmark; BT-GD5 and BT-GD5-flat have 10 each. This matches Part 2's protocol &mdash; variance for the bintrie configs is higher (CV% ~15-20%) but all reported differences are statistically significant.</p>
+    <h3>Write counter</h3>
+    <p>The bintrie binaries' <code>storage_slots_written</code> counter is unreliable: BT-GD5 reports 0 written slots on <code>approve</code> even though its 738 ms <code>trie_updates</code> time proves writes occurred. Read-heavy throughput is unaffected (writes &asymp; 0 there for all configs) and the flat-vs-MPT <code>approve</code> throughput is valid (both count writes), but BT-GD5's <code>approve</code> throughput is read-only, so &ldquo;flat is ~2&times; faster than BT-GD5 on approve&rdquo; is a lower bound.</p>
 
-    <h3>Cache hit rate inflation</h3>
-    <p>BT-GD5-flat shows storage cache hit rates of 68-84%, compared to 38-64% for BT-GD5 and 7-15% for MPT. This is the same <code>stateReaderWithCache</code> prefetcher race documented in <a href="https://github.com/CPerezz/bintrie-benchmarks/blob/main/mpt-vs-bintrie/CACHE_ANALYSIS.md">Part 2's CACHE_ANALYSIS</a> &mdash; when reads are faster, the prefetcher wins more races. The wall-clock <code>total_ms</code> and <code>state_read_ms</code> already incorporate the prefetch benefit and are the authoritative metrics.</p>
+    <h3>Run-count asymmetry and significance</h3>
+    <p>MPT has 99 analyzed runs per benchmark; BT-GD5 and BT-GD5-flat have 9 each (yielding 18&ndash;27 EIP-7825 blocks). Inference therefore rests on ~9 independent runs for the bintrie configs; the per-block Mann-Whitney/bootstrap <em>n</em> overstates independence (within-run blocks are correlated), so we also report the per-run Welch test. <strong>All read-path differences are significant across all three tests. The end-to-end <code>approve</code> total-time difference (flat vs MPT) is NOT significant</strong> (Mann-Whitney <em>p</em> = 1.0, bootstrap ratio CI [0.01, 2.44]) &mdash; flat and MPT finish approve blocks in statistically indistinguishable wall-clock time. Variance (CV%): MPT &asymp; 2&ndash;5%, bt-gd5-flat &asymp; 7%, BT-GD5 up to &asymp; 21% on read-heavy benchmarks.</p>
+
+    <h3>Cache hit rate</h3>
+    <p>Median per-block storage cache hit rates: MPT 7&ndash;15%, BT-GD5 35&ndash;73%, BT-GD5-flat 11&ndash;42% &mdash; note BT-GD5, not flat, shows the highest medians. All bintrie configs run elevated versus MPT because of the same <code>stateReaderWithCache</code> prefetcher race (<a href="https://github.com/CPerezz/bintrie-benchmarks/blob/main/mpt-vs-bintrie/CACHE_ANALYSIS.md">Part 2's CACHE_ANALYSIS</a>). The wall-clock <code>total_ms</code> and <code>state_read_ms</code> already incorporate the prefetch benefit and are the authoritative metrics.</p>
 
     <img class="graph-img" src="graphs/g04_cache_hit_panels.png" alt="Cache hit panels">
   </div>
@@ -763,7 +778,7 @@
       </div>
       <div class="oq-card">
         <div class="oq-number">2</div>
-        <p><strong>Incremental hashing with cached subtree roots.</strong> Track which subtrees changed in a block and rehash only those, caching subtree roots in memory between blocks.</p>
+        <p><strong>Incremental hashing with cached subtree roots.</strong> Track which subtrees changed in a block and rehash only those, caching subtree roots in memory between blocks. (Bounded for keccak-scattered writes, which rarely share dirty subtrees &mdash; helps most for hot/co-located stems.)</p>
       </div>
       <div class="oq-card" style="grid-column: 1 / -1;">
         <div class="oq-number">3</div>
@@ -772,7 +787,7 @@
     </div>
 
     <div class="callout callout-green">
-      <strong>The read story is essentially solved.</strong> With bintrie's read-path performance now ahead of MPT, the structural roadmap question shifts from "can binary tries match MPT?" to "can <code>trie_updates</code> overhead be amortized down to the MPT range?" Part 4 will probably look at exactly that.
+      <strong>The read story is now a parity story.</strong> With bintrie's read path level with MPT's flat snapshot, the structural roadmap question shifts from &ldquo;can binary tries match MPT on reads?&rdquo; to &ldquo;can <code>trie_updates</code> overhead be amortized down to the MPT range?&rdquo; This is all about <em>full-node</em> read latency &mdash; flat state does nothing for witness generation, proof sizes, or stateless verification, which still derive from the trie nodes and are the broader motivation for EIP-7864. Part 4 will probably look at the write path.
     </div>
   </div>
 
@@ -803,92 +818,96 @@
           <tr>
             <td rowspan="3">erc20_balanceof</td>
             <td>MPT</td>
-            <td>5,280</td>
-            <td>4,971 (94%)</td>
+            <td>5,264</td>
+            <td>4,956 (94%)</td>
             <td>0</td>
-            <td>280</td>
-            <td>29</td>
+            <td>282</td>
+            <td>28</td>
             <td>36,742</td>
           </tr>
           <tr>
             <td>BT-GD5</td>
-            <td>10,620</td>
-            <td>9,384 (88%)</td>
+            <td>8,901</td>
+            <td>7,935 (89%)</td>
             <td>0</td>
-            <td>1,207</td>
-            <td>28</td>
+            <td>964</td>
+            <td>25</td>
             <td>36,741</td>
           </tr>
           <tr>
             <td class="cell-bold">BT-GD5-flat</td>
-            <td class="cell-bold">853</td>
-            <td class="cell-bold">530 (62%)</td>
-            <td>3</td>
-            <td>303</td>
-            <td>17</td>
-            <td>11,834</td>
+            <td class="cell-bold">658</td>
+            <td class="cell-bold">469 (71%)</td>
+            <td>2</td>
+            <td>182</td>
+            <td>9</td>
+            <td>6,114</td>
           </tr>
           <tr>
             <td rowspan="3">mixed_sload_sstore</td>
             <td>MPT</td>
-            <td>3,349</td>
-            <td>3,149 (94%)</td>
+            <td>3,352</td>
+            <td>3,151 (94%)</td>
             <td>0</td>
-            <td>180</td>
-            <td>19</td>
+            <td>181</td>
+            <td>18</td>
             <td>23,418</td>
           </tr>
           <tr>
             <td>BT-GD5</td>
-            <td>4,638</td>
-            <td>3,679 (79%)</td>
-            <td>508</td>
-            <td>389</td>
-            <td>62</td>
-            <td>12,812</td>
+            <td>3,470</td>
+            <td>2,302 (66%)</td>
+            <td>412</td>
+            <td>65</td>
+            <td>56</td>
+            <td>5,556</td>
           </tr>
           <tr>
             <td class="cell-bold">BT-GD5-flat</td>
-            <td class="cell-bold">729</td>
-            <td class="cell-bold">421 (58%)</td>
-            <td>4</td>
-            <td>287</td>
-            <td>16</td>
+            <td class="cell-bold">660</td>
+            <td class="cell-bold">372 (56%)</td>
+            <td>3</td>
+            <td>265</td>
+            <td>10</td>
             <td>11,691</td>
           </tr>
           <tr>
             <td rowspan="3">erc20_approve</td>
             <td>MPT</td>
-            <td>937</td>
-            <td>568 (61%)</td>
-            <td>289</td>
-            <td>46</td>
-            <td>33</td>
+            <td>939</td>
+            <td>570 (61%)</td>
+            <td>288</td>
+            <td>45</td>
+            <td>31</td>
             <td>8,188</td>
           </tr>
           <tr>
             <td>BT-GD5</td>
-            <td>2,242</td>
-            <td>1,341 (60%)</td>
-            <td>745</td>
-            <td>86</td>
-            <td>69</td>
-            <td>4,014</td>
+            <td>2,000</td>
+            <td>1,064 (53%)</td>
+            <td>738</td>
+            <td>66</td>
+            <td>65</td>
+            <td>4,094</td>
           </tr>
           <tr>
             <td class="cell-bold">BT-GD5-flat</td>
-            <td class="cell-bold">1,169</td>
-            <td class="cell-bold">93 (8%)</td>
-            <td class="cell-bold">988 (85%)</td>
-            <td>79</td>
-            <td>9</td>
+            <td class="cell-bold">1,030</td>
+            <td class="cell-bold">83 (8%)</td>
+            <td class="cell-bold">829 (81%)</td>
+            <td>68</td>
+            <td>6</td>
             <td>4,086</td>
           </tr>
         </tbody>
       </table>
     </div>
 
-    <p class="muted">Tables show <strong>means per block</strong> (matching <code>FLAT_STATE_ANALYSIS.md</code>). The companion <a href="analysis_results.json">analysis_results.json</a> carries <strong>medians</strong> for the Mann-Whitney U / bootstrap-CI hypothesis tests &mdash; robust to long tails from EIP-7825 multi-block fragmentation. Both views are valid; they serve different purposes. Raw per-block CSVs: <a href="data/">data/</a>.</p>
+    <p class="muted">Tables show <strong>medians per block</strong> (matching the companion <a href="analysis_results.json">analysis_results.json</a>, which also carries the Mann-Whitney U / bootstrap-CI hypothesis tests &mdash; robust to the long tails from EIP-7825 multi-block fragmentation). Means per block run 10&ndash;35% higher for the bintrie configs; raw per-block CSVs are in <a href="data/">data/</a>. Throughput (&sect;S1/&sect;S5) is the median of per-block <code>slots/s</code>; because block sizes vary under EIP-7825, it is <strong>not</strong> this table's <code>slots/block &divide; total_ms</code>.</p>
+
+    <div class="callout callout-amber">
+      <strong>Note on <code>mixed_sload_sstore</code>.</strong> This workload is ~90% reads / 10% writes (not an even split). In these runs the write fraction committed almost no storage slots for MPT and BT-GD5-flat (<code>trie_updates</code> &asymp; 0; <code>storage_slots_written</code> &asymp; 0), so for those configs it behaves as a second read-heavy workload &mdash; which is why flat's throughput on <code>mixed</code> is its highest. BT-GD5 is the outlier (<code>trie_updates</code> &asymp; 412 ms): a plausible explanation is that Osaka system-contract state (touched each block) is resolved through the trie rather than the flat layer for the bintrie configs, but we have not isolated this and treat it as a hypothesis.
+    </div>
   </div>
 
   <!-- Footer -->

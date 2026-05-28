@@ -4,7 +4,7 @@ Performance comparison of Ethereum's Merkle Patricia Trie (MPT), Binary Trie wit
 
 ## Key finding
 
-**Flat state eliminates the state-read bottleneck for binary trie.** Read latency drops from 255–334 µs/slot (trie traversal) to 23–45 µs/slot (direct stem blob lookup), making bintrie **2.0–2.3× faster than MPT** for read-heavy workloads. The remaining bottleneck is `state_hash` (trie root recomputation), which dominates write-heavy benchmarks.
+**Flat state eliminates the state-read bottleneck for binary trie.** Read latency drops from 216–364 µs/slot (trie traversal) to 35–55 µs/slot (direct stem blob lookup), making bintrie **1.8–2.4× faster than MPT** for read-heavy workloads — bringing bintrie's reads to parity with MPT, whose SLOADs are already served by its flat snapshot in ~1 read (the multiple is parity-plus, driven by flat's 3× smaller DB and the prefetcher race; see the report's §S3/§S6). The remaining bottleneck is `trie_updates` (trie root recomputation), which dominates write-heavy benchmarks.
 
 ## Campaign
 
@@ -56,41 +56,41 @@ BT-GD5-flat produces multiple blocks per run due to EIP-7825's 16M per-transacti
 
 | Benchmark | MPT | BT-GD5 | BT-GD5-flat | flat vs MPT | flat vs BT-GD5 |
 |:----------|:----|:-------|:------------|:------------|:---------------|
-| **erc20_balanceof** | 6,958 | 3,460 | **13,873** | **2.0× faster** | **4.0× faster** |
-| **mixed_sload_sstore** | 6,993 | 2,762 | **16,040** | **2.3× faster** | **5.8× faster** |
-| **erc20_approve** | 8,741 | 1,790 | **3,494** | 0.4× (slower) | **2.0× faster** |
+| **erc20_balanceof** | 6,980 | 4,128 | **12,486** | **1.8× faster** | **3.0× faster** |
+| **mixed_sload_sstore** | 6,987 | 1,991 | **16,520** | **2.4× faster** | **8.3× faster** |
+| **erc20_approve** | 8,715 | 1,757 | **3,555** | 0.4× (slower) | **2.0× faster** |
 
 ### Read latency: µs per slot (lower = better)
 
 | Benchmark | MPT | BT-GD5 | BT-GD5-flat | flat vs MPT | flat vs BT-GD5 |
 |:----------|:----|:-------|:------------|:------------|:---------------|
-| **erc20_balanceof** | 135.3 | 255.4 | **44.8** | **3.0× faster** | **5.7× faster** |
-| **mixed_sload_sstore** | 134.5 | 287.2 | **36.0** | **3.7× faster** | **8.0× faster** |
-| **erc20_approve** | 69.4 | 334.2 | **22.7** | **3.1× faster** | **14.7× faster** |
+| **erc20_balanceof** | 135 | 216 | **55** | **2.5× faster** | **3.9× faster** |
+| **mixed_sload_sstore** | 135 | 334 | **35** | **3.8× faster** | **9.5× faster** |
+| **erc20_approve** | 139 | 364 | **46** | **3.0× faster** | **7.9× faster** |
 
-### Timing breakdown (avg per block, milliseconds)
+### Timing breakdown (median per block, milliseconds)
 
-| Benchmark | Config | total_ms | state_read | state_hash | execution | commit | slots/block |
+| Benchmark | Config | total_ms | state_read | trie_updates | execution | commit | slots/block |
 |:----------|:-------|:---------|:-----------|:-----------|:----------|:-------|:------------|
-| erc20_balanceof | MPT | 5,280 | 4,971 (94%) | 0 | 280 | 29 | 36,742 |
-| | BT-GD5 | 10,620 | 9,384 (88%) | 0 | 1,207 | 28 | 36,741 |
-| | **BT-GD5-flat** | **853** | **530 (62%)** | 3 | 303 | 17 | 11,834 |
-| mixed_sload_sstore | MPT | 3,349 | 3,149 (94%) | 0 | 180 | 19 | 23,418 |
-| | BT-GD5 | 4,638 | 3,679 (79%) | 508 | 389 | 62 | 12,812 |
-| | **BT-GD5-flat** | **729** | **421 (58%)** | 4 | 287 | 16 | 11,691 |
-| erc20_approve | MPT | 937 | 568 (61%) | 289 | 46 | 33 | 8,188 |
-| | BT-GD5 | 2,242 | 1,341 (60%) | 745 | 86 | 69 | 4,014 |
-| | **BT-GD5-flat** | **1,169** | **93 (8%)** | **988 (85%)** | 79 | 9 | 4,086 |
+| erc20_balanceof | MPT | 5,264 | 4,956 (94%) | 0 | 282 | 28 | 36,742 |
+| | BT-GD5 | 8,901 | 7,935 (89%) | 0 | 964 | 25 | 36,741 |
+| | **BT-GD5-flat** | **658** | **469 (71%)** | 2 | 182 | 9 | 6,114 |
+| mixed_sload_sstore | MPT | 3,352 | 3,151 (94%) | 0 | 181 | 18 | 23,418 |
+| | BT-GD5 | 3,470 | 2,302 (66%) | 412 | 65 | 56 | 5,556 |
+| | **BT-GD5-flat** | **660** | **372 (56%)** | 3 | 265 | 10 | 11,691 |
+| erc20_approve | MPT | 939 | 570 (61%) | 288 | 45 | 31 | 8,188 |
+| | BT-GD5 | 2,000 | 1,064 (53%) | 738 | 66 | 65 | 4,094 |
+| | **BT-GD5-flat** | **1,030** | **83 (8%)** | **829 (81%)** | 68 | 6 | 4,086 |
 
 ### Storage cache hit rates
 
 | Benchmark | MPT | BT-GD5 | BT-GD5-flat |
 |:----------|:----|:-------|:------------|
-| erc20_balanceof | 7.1% | 38.5% | 68.1% |
-| mixed_sload_sstore | 9.0% | 44.8% | 84.5% |
-| erc20_approve | 14.5% | 64.6% | 83.8% |
+| erc20_balanceof | 6.9% | 35.0% | 11.3% |
+| mixed_sload_sstore | 9.5% | 72.3% | 42.0% |
+| erc20_approve | 14.8% | 72.9% | 41.4% |
 
-See [`CACHE_ANALYSIS.md`](CACHE_ANALYSIS.md) for why bintrie configs show higher cache hit rates. The root cause is the `stateReaderWithCache` prefetcher race: when reads are faster (flat state), the prefetcher wins the race more often. This inflates the cache rate further for BT-GD5-flat but does **not** invalidate the wall-clock `total_ms` and `state_read_ms` metrics, which are the authoritative performance numbers.
+These are **median per-block** rates; note BT-GD5, not flat, shows the highest medians. (Pooled `hits/(hits+misses)` run higher — ~70–85% for flat — because a few large warm blocks dominate the pool.) See [`CACHE_ANALYSIS.md`](CACHE_ANALYSIS.md) for the root cause: the `stateReaderWithCache` prefetcher race lifts all bintrie configs above MPT. It does **not** invalidate the wall-clock `total_ms` and `state_read_ms` metrics, which are the authoritative performance numbers.
 
 ## Analysis
 
@@ -98,30 +98,30 @@ See [`CACHE_ANALYSIS.md`](CACHE_ANALYSIS.md) for why bintrie configs show higher
 
 Flat state transforms bintrie reads from O(depth) trie traversals to O(1) stem blob lookups:
 
-- **Without flat state**: each SLOAD requires traversing ~50 binary trie group nodes (31 bytes × 8 bits / groupDepth=5 ≈ 50 node reads). With `--cache 0` and cold OS cache, each node read is a Pebble disk lookup. Result: **255 µs/slot**.
-- **With flat state**: each SLOAD is a single Pebble read of the stem blob at `"vX" + stem(31 bytes)`, followed by a bitmap + offset extraction. Result: **45 µs/slot**.
+- **Without flat state**: each SLOAD traverses the binary trie (logical path ~248 bits ≈ 50 group nodes per stem at groupDepth=5). Upper group nodes amortize in-memory within a block, so the marginal cost is a few node reads rather than the full ~50. Result: **216 µs/slot** (median).
+- **With flat state**: each SLOAD is a single Pebble read of the stem blob at `"vX" + stem(31 bytes)`, followed by a bitmap + offset extraction. Result: **55 µs/slot** (median).
 
-This **5.7× read speedup** (cold cache) makes bintrie-flat **2× faster than MPT** for read-heavy workloads, because MPT's read path also requires multiple trie node traversals (~5 branch nodes per path at ~135 µs/slot).
+This **3.9× read speedup over non-flat BT-GD5** is the structural win: flat state removes bintrie's traversal penalty. The comparison **to MPT** is subtler — MPT's SLOADs are *also* served by its flat snapshot in ~1 read, and per cold disk read the two are statistically indistinguishable (`ms_per_cache_miss` ≈ 135–146 µs for both on balanceof). So flat-vs-MPT (2.5×) is not a "fewer reads" effect; it comes from flat taking fewer disk trips per slot (blob packing + prefetcher race) on a 3× smaller LSM. At equal DB size the two would be close to parity (see "Database size caveat" below).
 
 ### Where flat state doesn't help: writes (approve)
 
-For approve (SSTORE), flat state eliminates the read latency (93ms vs 1,341ms), but the bottleneck shifts to `state_hash`:
+For approve (SSTORE), flat state eliminates the read latency (83ms vs 1,064ms median), but the bottleneck shifts to `trie_updates`:
 
 | Phase | BT-GD5 | BT-GD5-flat | Change |
 |:------|:-------|:------------|:-------|
-| state_read | 1,341 ms (60%) | 93 ms (8%) | **14.4× faster** |
-| state_hash | 745 ms (33%) | 988 ms (85%) | 1.3× slower |
-| total | 2,242 ms | 1,169 ms | **1.9× faster** |
+| state_read | 1,064 ms (53%) | 83 ms (8%) | **12.8× faster** |
+| trie_updates | 738 ms (37%) | 829 ms (81%) | 1.1× slower |
+| total | 2,000 ms | 1,030 ms | **1.9× faster** |
 
-The `state_hash` increase (745 → 988ms) is because BT-GD5-flat processes slightly more slots per block (4,086 vs 4,014), and the trie root recomputation involves rehashing all modified nodes from leaf to root. This is inherent to the binary trie structure and unaffected by flat state.
+Root recomputation needs the **intermediate** nodes along every modified path — and those are not in the flat layer, so they are read (cold) from the trie and rehashed. The binary trie is far deeper than MPT's hex trie (~248 bit-levels, ≈50 group nodes per stem vs ~5–7 hex levels), so each modified slot pulls roughly an order of magnitude more intermediate nodes through the read-and-hash path. This is inherent to the binary trie structure and unaffected by flat state.
 
-MPT's `state_hash` is only 289ms because MPT's hex trie is shallower (~5 levels vs ~50 for binary trie), requiring fewer hash computations per write.
+MPT's `trie_updates` is only 288ms because its hex trie is shallower; per slot written, bintrie-flat's hashing cost is **~6.75× MPT's** (bootstrap CI 6.3–7.4×). (Note: BT-GD5's `storage_slots_written` counter reads 0 on approve despite the 738 ms it spends hashing — the counter is unreliable on the bintrie binaries, so per-slot write rates for BT-GD5 are derived from reads.)
 
 ### Slots per block asymmetry
 
-BT-GD5-flat processes fewer slots per block than MPT for balanceof (11,834 vs 36,742) because EIP-7825 (Osaka fork) caps per-transaction gas at 16M. The benchmark splits the 100M gas target into ~6 transactions, which may land across 2-3 blocks depending on timing. MPT and BT-GD5 (pre-Osaka) send a single 100M gas transaction per block.
+BT-GD5-flat processes fewer slots per block than MPT for balanceof (median 6,114 vs 36,742) because EIP-7825 (Osaka fork) caps per-transaction gas at 16M. The benchmark splits the 100M gas target into ~6 transactions, which may land across 2-3 blocks depending on timing. MPT and BT-GD5 (pre-Osaka) send a single 100M gas transaction per block.
 
-This asymmetry does **not** affect the per-slot metrics (`slots/s`, `µs/slot`) because those normalize by actual slot count. The `total_ms` per block is lower for BT-GD5-flat (853ms vs 5,280ms) partly because each block processes fewer slots, but the `µs/slot` metric (44.8 vs 135.3) confirms the improvement is real and not an artifact of smaller blocks.
+This asymmetry is why per-block totals are not comparable across configs; use the per-slot metrics (`slots/s`, `µs/slot`), which normalize by actual slot count. The `total_ms` per block is lower for BT-GD5-flat (658ms vs 5,264ms) largely because each block processes fewer slots; the `µs/slot` read-latency metric (55 vs 135 median) is the comparable figure. The multi-tx shape also feeds the `stateReaderWithCache` prefetcher race, which is part of why flat's per-slot read latency beats MPT's (see the report's §S3).
 
 ### Database size caveat
 
@@ -130,7 +130,7 @@ The BT-GD5-flat database (507 GB) is smaller than MPT (1.6 TB) and BT-GD5 (1.4 T
 2. The ERC20 bloat was stopped at ~2.0 GB (vs ~2.5-2.8 GB for the other configs)
 3. State-actor generated fewer total entries for the 500 GB target
 
-A smaller database means shorter Pebble LSM-tree lookups, which benefits all read paths equally. The flat state advantage (O(1) vs O(depth)) is structural and would hold at any database size, but the absolute µs/slot numbers for BT-GD5-flat may be slightly optimistic compared to an equally-sized database.
+A smaller database is *expected* to mean shorter Pebble LSM lookups — though in this campaign the measured per-cold-read latency (`ms_per_cache_miss`) is actually equal-or-higher for BT-GD5-flat than MPT, so the size effect shows up via the cache/prefetch path rather than cheaper individual reads. The flat-state advantage *over non-flat bintrie* (removing trie traversal) is structural and holds at any size; the advantage *over MPT* is largely the ~3× size gap plus the prefetcher race, so the absolute µs/slot numbers for BT-GD5-flat are optimistic, and an equally-sized re-run is the key follow-up.
 
 ## Flat state architecture
 

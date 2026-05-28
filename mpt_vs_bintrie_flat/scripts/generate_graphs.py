@@ -205,6 +205,19 @@ def median_val(values: list[float]) -> float:
     return statistics.median(values)
 
 
+def iqr_err(values: list[float], med: float) -> tuple[float, float]:
+    """Asymmetric IQR error-bar magnitudes (med-Q1, Q3-med).
+
+    Used to show per-block spread on the median bar charts (n can be as low
+    as 9 for the bintrie configs, so a point estimate alone is misleading).
+    Returns (0, 0) when there are too few blocks to form quartiles.
+    """
+    if len(values) < 4:
+        return (0.0, 0.0)
+    q1, _q2, q3 = statistics.quantiles(values, n=4)
+    return (max(0.0, med - q1), max(0.0, q3 - med))
+
+
 def cv_percent(values: list[float]) -> float:
     """Coefficient of variation as percentage."""
     if len(values) < 2:
@@ -365,7 +378,8 @@ def g01_hero_time_breakdown(all_data: dict, theme: Theme,
     ax.set_yticks(y_positions)
     ax.set_yticklabels(y_labels, fontsize=8)
     ax.set_xlabel("Median ms", fontsize=10)
-    ax.set_title("Time Breakdown: MPT vs BT-GD5", fontsize=13, fontweight="bold")
+    ax.set_title("Time Breakdown: MPT vs BT-GD5 vs BT-GD5-flat",
+                 fontsize=13, fontweight="bold")
     ax.grid(axis="x", alpha=0.3)
 
     # Deduplicated legend
@@ -428,7 +442,8 @@ def g02_throughput_boxplots(all_data: dict, theme: Theme,
                     ha="center", va="top", fontsize=6.5, color="#94A3B8",
                     transform=ax.transAxes, fontstyle="italic")
 
-    fig.suptitle("Throughput: MPT vs BT-GD5", fontsize=14, fontweight="bold")
+    fig.suptitle("Throughput: MPT vs BT-GD5 vs BT-GD5-flat",
+                 fontsize=14, fontweight="bold")
     fig.tight_layout(rect=[0, 0, 1, 0.95])
     save_fig(fig, output_dir, "g02_throughput_boxplots.png", dpi)
 
@@ -931,16 +946,21 @@ def g09_read_collapse(all_data: dict, theme: Theme,
     x_indices = list(range(n_bench))
 
     for cfg_idx, cfg in enumerate(CONFIGS):
-        medians = []
+        medians, err_lo, err_hi = [], [], []
         for bench in BENCHMARKS:
             filtered = filter_benchmark(all_data, bench, [cfg])
             rows = filtered.get(cfg, [])
             vals = col_values(rows, "state_read_ms")
-            medians.append(median_val(vals))
+            med = median_val(vals)
+            lo, hi = iqr_err(vals, med)
+            medians.append(med)
+            err_lo.append(lo)
+            err_hi.append(hi)
         offsets = [i + (cfg_idx - (n_cfg - 1) / 2) * bar_width for i in x_indices]
         bars = ax.bar(offsets, medians, bar_width, label=cfg_label(cfg),
                       color=COLORS[cfg], alpha=0.8, edgecolor=theme.text,
-                      linewidth=0.5)
+                      linewidth=0.5, yerr=[err_lo, err_hi], capsize=2.5,
+                      error_kw=dict(ecolor=theme.text, elinewidth=0.8, alpha=0.6))
         for bar, val in zip(bars, medians):
             if val > 0:
                 ax.text(bar.get_x() + bar.get_width() / 2, val,
@@ -949,7 +969,7 @@ def g09_read_collapse(all_data: dict, theme: Theme,
 
     ax.set_xticks(x_indices)
     ax.set_xticklabels([BENCH_LABELS[b] for b in BENCHMARKS], fontsize=10)
-    ax.set_ylabel("state_read_ms (median per block)")
+    ax.set_ylabel("state_read_ms (median per block, log scale)")
     ax.set_title("State Read Time Collapse: Flat State Eliminates Trie Traversal",
                  fontsize=13, fontweight="bold")
     ax.set_yscale("log")
@@ -983,7 +1003,13 @@ def g10_phase_mix_shift(all_data: dict, theme: Theme,
             cfg_totals[cfg] = 0.0
             continue
         med_phase = [median_val(col_values(rows, p)) for p in phases]
-        total = sum(med_phase) or 1.0
+        # Normalize by the authoritative median total_ms (not the sum of phase
+        # medians) so each segment's % equals phase / total_ms — the value a
+        # reader computes from the timing tables. Medians are not additive, so
+        # the segments sum to slightly under 100%; that gap is the unaccounted
+        # overhead and is shown honestly rather than hidden by renormalizing.
+        phase_sum = sum(med_phase) or 1.0
+        total = median_val(col_values(rows, "total_ms")) or phase_sum
         cfg_pcts[cfg] = [p / total * 100 for p in med_phase]
         cfg_totals[cfg] = total
 
@@ -1037,12 +1063,18 @@ def g11_slots_per_sec_3way(all_data: dict, theme: Theme,
     x_indices = list(range(n_bench))
 
     medians_by_cfg: dict[str, list[float]] = {c: [] for c in CONFIGS}
+    err_by_cfg: dict[str, tuple[list[float], list[float]]] = {
+        c: ([], []) for c in CONFIGS}
+    n_by_cfg: dict[str, list[int]] = {c: [] for c in CONFIGS}
     for cfg in CONFIGS:
         for bench in BENCHMARKS:
             filtered = filter_benchmark(all_data, bench, [cfg])
             rows = filtered.get(cfg, [])
             if not rows:
                 medians_by_cfg[cfg].append(0.0)
+                err_by_cfg[cfg][0].append(0.0)
+                err_by_cfg[cfg][1].append(0.0)
+                n_by_cfg[cfg].append(0)
                 continue
             slots_per_sec_vals = []
             for r in rows:
@@ -1052,19 +1084,29 @@ def g11_slots_per_sec_3way(all_data: dict, theme: Theme,
                 total_s = (r.get("total_ms", 0) or 0) / 1000.0
                 if total_s > 0 and total_slots > 0:
                     slots_per_sec_vals.append(total_slots / total_s)
-            medians_by_cfg[cfg].append(median_val(slots_per_sec_vals))
+            med = median_val(slots_per_sec_vals)
+            lo, hi = iqr_err(slots_per_sec_vals, med)
+            medians_by_cfg[cfg].append(med)
+            err_by_cfg[cfg][0].append(lo)
+            err_by_cfg[cfg][1].append(hi)
+            n_by_cfg[cfg].append(len(slots_per_sec_vals))
 
     for cfg_idx, cfg in enumerate(CONFIGS):
         medians = medians_by_cfg[cfg]
+        lo_list, hi_list = err_by_cfg[cfg]
         offsets = [i + (cfg_idx - (n_cfg - 1) / 2) * bar_width for i in x_indices]
         bars = ax.bar(offsets, medians, bar_width, label=cfg_label(cfg),
                       color=COLORS[cfg], alpha=0.8, edgecolor=theme.text,
-                      linewidth=0.5)
-        for bar, val in zip(bars, medians):
+                      linewidth=0.5, yerr=[lo_list, hi_list], capsize=2.5,
+                      error_kw=dict(ecolor=theme.text, elinewidth=0.8, alpha=0.6))
+        for bar, val, n in zip(bars, medians, n_by_cfg[cfg]):
             if val > 0:
                 ax.text(bar.get_x() + bar.get_width() / 2, val,
                         f"{val:.0f}", ha="center", va="bottom",
                         fontsize=7, color=theme.text)
+                ax.text(bar.get_x() + bar.get_width() / 2, 0,
+                        f"n={n}", ha="center", va="bottom",
+                        fontsize=5.5, color="#94A3B8")
 
     # Annotate flat-vs-MPT multipliers above each benchmark group
     flat_meds = medians_by_cfg["bt-gd5-flat"]
@@ -1077,6 +1119,11 @@ def g11_slots_per_sec_3way(all_data: dict, theme: Theme,
             ax.text(i, y_top, f"flat/MPT = {ratio:.2f}×",
                     ha="center", va="bottom", fontsize=9, fontweight="bold",
                     color=color)
+
+    # Headroom so the flat/MPT ratio annotations and IQR whiskers aren't clipped.
+    all_meds = [m for cfg in CONFIGS for m in medians_by_cfg[cfg] if m > 0]
+    if all_meds:
+        ax.set_ylim(0, max(all_meds) * 1.30)
 
     ax.set_xticks(x_indices)
     ax.set_xticklabels([BENCH_LABELS[b] for b in BENCHMARKS], fontsize=10)

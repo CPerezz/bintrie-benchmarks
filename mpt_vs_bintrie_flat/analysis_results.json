@@ -3,6 +3,7 @@
     "erc20_balanceof": {
       "mpt": {
         "n_blocks": 99,
+        "n_runs": 99,
         "median_total_ms": 5263.7732,
         "median_mgas_per_sec": 18.9978,
         "median_state_read_ms": 4956.2342,
@@ -12,6 +13,7 @@
       },
       "bt-gd5": {
         "n_blocks": 9,
+        "n_runs": 9,
         "median_total_ms": 8900.5056,
         "median_mgas_per_sec": 11.2353,
         "median_state_read_ms": 7935.412,
@@ -21,6 +23,7 @@
       },
       "bt-gd5-flat": {
         "n_blocks": 27,
+        "n_runs": 9,
         "median_total_ms": 658.1561,
         "median_mgas_per_sec": 42.9339,
         "median_state_read_ms": 469.3785,
@@ -32,6 +35,7 @@
     "erc20_approve": {
       "mpt": {
         "n_blocks": 99,
+        "n_runs": 99,
         "median_total_ms": 939.4779,
         "median_mgas_per_sec": 99.7781,
         "median_state_read_ms": 570.213,
@@ -41,6 +45,7 @@
       },
       "bt-gd5": {
         "n_blocks": 25,
+        "n_runs": 9,
         "median_total_ms": 2000.2818,
         "median_mgas_per_sec": 10.4135,
         "median_state_read_ms": 1063.8039,
@@ -50,6 +55,7 @@
       },
       "bt-gd5-flat": {
         "n_blocks": 18,
+        "n_runs": 9,
         "median_total_ms": 1029.9453,
         "median_mgas_per_sec": 45.6175,
         "median_state_read_ms": 83.224,
@@ -61,6 +67,7 @@
     "mixed_sload_sstore": {
       "mpt": {
         "n_blocks": 99,
+        "n_runs": 99,
         "median_total_ms": 3351.8642,
         "median_mgas_per_sec": 29.8341,
         "median_state_read_ms": 3150.8928,
@@ -70,6 +77,7 @@
       },
       "bt-gd5": {
         "n_blocks": 20,
+        "n_runs": 9,
         "median_total_ms": 3470.0018,
         "median_mgas_per_sec": 9.8148,
         "median_state_read_ms": 2301.7178,
@@ -79,6 +87,7 @@
       },
       "bt-gd5-flat": {
         "n_blocks": 18,
+        "n_runs": 9,
         "median_total_ms": 659.6082,
         "median_mgas_per_sec": 65.5737,
         "median_state_read_ms": 371.8517,
@@ -549,9 +558,10 @@
           "ci_high": 2.813342
         },
         "ms_per_slot_hash": {
-          "ratio": 51950.87357,
-          "ci_low": 5256.052481,
-          "ci_high": 57595.881367
+          "ratio": null,
+          "ci_low": null,
+          "ci_high": null,
+          "note": "MPT median trie_updates/slot ~ 0 on this workload; ratio undefined"
         },
         "ms_per_cache_miss": {
           "ratio": 8.45787,
@@ -586,9 +596,10 @@
           "ci_high": 0.293856
         },
         "ms_per_slot_hash": {
-          "ratio": 22.73392,
-          "ci_low": 5.580007,
-          "ci_high": 24.616034
+          "ratio": null,
+          "ci_low": null,
+          "ci_high": null,
+          "note": "MPT median trie_updates/slot ~ 0 on this workload; ratio undefined"
         },
         "ms_per_cache_miss": {
           "ratio": 1.570955,
